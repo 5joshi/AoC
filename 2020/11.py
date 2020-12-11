@@ -54,10 +54,10 @@ def solve2(d):
         for x in range(len(inp)):
             for y in range(len(inp[0])):
                 neighbors = get_neighbors2(cpy, x, y, OCT_DELTA)
-                if cpy[x][y] == "L" and get_neighbors2(cpy, x, y, OCT_DELTA).count("#") == 0:
+                if cpy[x][y] == "L" and neighbors.count("#") == 0:
                     inp[x][y] = "#"
                     change = True
-                elif cpy[x][y] == "#" and get_neighbors2(cpy, x, y, OCT_DELTA).count("#") >= 5:
+                elif cpy[x][y] == "#" and neighbors.count("#") >= 5:
                     inp[x][y] = "L"
                     change = True
     return sum(map(lambda x: x.count("#"), inp))
