@@ -27,4 +27,3 @@ s2 = """"""
 print("Example Solution:", solve(s))
 # print("Example 2 Solution:", solve(s2))
 print("Actual Solution:", solve(inp))
-# submit(solve(inp))
