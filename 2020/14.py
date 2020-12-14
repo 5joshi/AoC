@@ -33,18 +33,19 @@ def solve2(d):
     for line in inp:
         if "mask" in line:
             mask = line.split()[-1]
+            mask1 = int(mask.replace("X", "0"), 2)
+            mask2 = int(mask.replace("0", "1").replace("X", "0"), 2)
         else:
             idx, val = ints(line)
-            num = (idx | int(mask.replace("X", "0"), 2)) & int(
-                mask.replace("0", "1").replace("X", "0"), 2)
+            num = (idx | mask1) & mask2
             x = [i for i, ltr in enumerate(mask[::-1]) if ltr == "X"]
             for i in range(2**len(x)):
-                newnum = num
+                addr = num
                 comb = bin(i)[2:].zfill(len(x))
-                for elem in zip(comb, x):
-                    if elem[0] == "1":
-                        newnum += 2 ** elem[1]
-                mem[newnum] = val
+                for bit, power in zip(comb, x):
+                    if bit == "1":
+                        addr += 2 ** power
+                mem[addr] = val
     return sum(mem.values())
 
 
