@@ -10,8 +10,9 @@ from copy import deepcopy
 from utils import *
 from functools import reduce
 from aocd import get_data, submit
+import timeit
 
-inp = get_data()
+inp = get_data(day=16)
 
 
 def solve1(d):
@@ -76,7 +77,6 @@ def solve2(d):
         if "departure" in key:
             result *= my_ticket[rule_num]
         last_used = notes[key]
-
     return result
 
 
