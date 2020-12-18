@@ -15,22 +15,11 @@ inp = get_data(day=18)
 
 
 def solve1(d):
-    inp = d.splitlines()
-    result = 0
-    for line in inp:
-        count = line.count("*")
-        result += eval(count*"("+line.replace("(", count *
-                                              "(").replace(")", count*")").replace(" *", ") *"))
-    return result
+    return eval("+".join([line.count("*")*"("+line.replace("(", line.count("*")*"(").replace(")", line.count("*")*")").replace("*", ")*") for line in d.splitlines()]))
 
 
 def solve2(d):
-    inp = d.splitlines()
-    result = 0
-    for line in inp:
-        result += eval("("+line.replace("(",
-                                        "((").replace(")", "))").replace(" * ", ")*(")+")")
-    return result
+    return eval("+".join(["("+line.replace("(", "((").replace(")", "))").replace("*", ")*(")+")" for line in d.splitlines()]))
 
 
 s = """((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"""
@@ -42,5 +31,5 @@ print("Example Solution:", solve1(s))
 print("Actual Solution:", solve1(inp))
 print("PART 2")
 print("Example Solution:", solve2(s))
-print("Example 2 Solution:", solve2(s2))
+# print("Example 2 Solution:", solve2(s2))
 print("Actual Solution:", solve2(inp))
