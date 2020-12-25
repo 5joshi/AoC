@@ -13,6 +13,8 @@ from aocd import get_data, submit
 
 inp = get_data()
 
+# mostly done in c++, guessed final answer using binary search
+
 
 def flip_vert(tile):
     tile.reverse()
@@ -25,6 +27,7 @@ def transpose(tile):
 
 def rotate_cw(tile):
     flip_vert(transpose(tile))
+
 
 def solve(d):
     inp = d.split("\n\n")
