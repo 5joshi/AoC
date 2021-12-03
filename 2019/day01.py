@@ -11,23 +11,26 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(year=2021, day=1)
+inp = get_data(year=2019, day=1)
 
 
 def solve1(d):
-    inp = d.splitlines()
-    result = 0
-    return result
+    inp = ints(d)
+    return sum([n // 3 - 2 for n in inp])
 
 def solve2(d):
-    inp = d.splitlines()
+    inp = ints(d)
     result = 0
+    for n in inp:
+        while n > 0:
+            n = n // 3 - 2 
+            result += max(0, n)
     return result
 
 
-s = """
+s = """12
 """
-s2 = """
+s2 = """100756
 """
 
 print("PART 1")
