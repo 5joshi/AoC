@@ -13,9 +13,9 @@ from aocd import get_data, submit
 
 inp = get_data(year=2019, day=5)
 
-
-def solve1(d):
-    inp = ints(d)
+def computer(program, inputs):
+    inp = ints(program)
+    input_idx = 0
     idx = 0
     
     def get_value(value, mode):
@@ -36,42 +36,16 @@ def solve1(d):
             idx += 4
         elif opcode[-2:] == "03":
             pos1 = inp[idx+1]
-            inp[pos1] = int(input("Required input..."))
+            inp[pos1] = int(inputs[input_idx])
+            input_idx += 1
+            # inp[pos1] = int(input("Required input..."))
             idx += 2
         elif opcode[-2:] == "04":
             pos1 = inp[idx+1]
-            print(get_value(pos1, opcode[-3]))
-            idx += 2
-    
-    return get_value(inp[idx-1], opcode[-3])
-
-def solve2(d):
-    inp = ints(d)
-    idx = 0
-    
-    def get_value(value, mode):
-        if mode == "0":
-            return inp[value]
-        elif mode == "1":
-            return value
-        
-    while inp[idx] != 99:
-        opcode = str(inp[idx]).zfill(5)
-        if opcode[-2:] == "01":
-            pos1, pos2, pos3 = inp[idx+1:idx+4]
-            inp[pos3] = get_value(pos1, opcode[-3]) + get_value(pos2, opcode[-4])
-            idx += 4
-        elif opcode[-2:] == "02":
-            pos1, pos2, pos3 = inp[idx+1:idx+4]
-            inp[pos3] = get_value(pos1, opcode[-3]) * get_value(pos2, opcode[-4])
-            idx += 4
-        elif opcode[-2:] == "03":
-            pos1 = inp[idx+1]
-            inp[pos1] = int(input("Required input..."))
-            idx += 2
-        elif opcode[-2:] == "04":
-            pos1 = inp[idx+1]
-            print(get_value(pos1, opcode[-3]))
+            value = get_value(pos1, opcode[-3])
+            if value != 0:
+                return value
+            # print(get_value(pos1, opcode[-3]))
             idx += 2
         elif opcode[-2:] == "05":
             pos1, pos2 = inp[idx+1:idx+3]
@@ -96,6 +70,11 @@ def solve2(d):
     
     return get_value(inp[idx-1], opcode[-3])
 
+def solve1(d):
+    return computer(d, [1])
+
+def solve2(d):
+    return computer(d, [5])
 
 s = """
 """
