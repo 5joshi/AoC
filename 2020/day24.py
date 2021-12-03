@@ -11,7 +11,7 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(day=24)
+inp = get_data(year=2020, day=24)
 
 CHAR_TO_HEX_DELTA = {
     "ne": [-1, 0.5],

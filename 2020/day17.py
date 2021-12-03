@@ -11,7 +11,7 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(day=17)
+inp = get_data(year=2020, day=17)
 
 DELTA_3D = list(filter(
     lambda x: x != (0, 0, 0), it.product([-1, 0, 1], repeat=3)))

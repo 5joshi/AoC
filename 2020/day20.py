@@ -11,7 +11,7 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data()
+inp = get_data(year=2020, day=20)
 
 # mostly done in c++, guessed final answer using binary search
 

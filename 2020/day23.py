@@ -11,19 +11,19 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(day=23)
+inp = get_data(year=2020, day=23)
 
 # solved in c++
 
 
-def solve(d):
-    inp = lmap(int, d)
-    curr_idx = 0
-    print(inp)
-    for _ in range(100):
-        curr = inp[curr_idx]
-        next_three = inp[]
-    return result
+# def solve(d):
+#     inp = lmap(int, d)
+#     curr_idx = 0
+#     print(inp)
+#     for _ in range(100):
+#         curr = inp[curr_idx]
+#         next_three = inp[]
+#     return result
 
 
 s = """389125467"""

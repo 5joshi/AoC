@@ -8,7 +8,7 @@ import re
 from utils import *
 from aocd import get_data
 
-inp = get_data(day=2)
+inp = get_data(year=2020, day=2)
 
 
 def solve1(d):

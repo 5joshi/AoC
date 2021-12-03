@@ -12,7 +12,7 @@ from functools import reduce
 from aocd import get_data, submit
 import timeit
 
-inp = get_data(day=16)
+inp = get_data(year=2020, day=16)
 
 
 def solve1(d):

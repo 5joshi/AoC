@@ -11,7 +11,7 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(day=19)
+inp = get_data(year=2020, day=19)
 
 
 # THIS DOESNT ACTUALLY SOLVE THE PROBLEM, INSTEAD IT GENERATES A JSON FILE
