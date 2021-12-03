@@ -14,16 +14,28 @@ from aocd import get_data, submit
 inp = get_data()
 
 
-def solve(d):
+def solve1(d):
     inp = d.splitlines()
     result = 0
+    return result
 
+def solve2(d):
+    inp = d.splitlines()
+    result = 0
     return result
 
 
-s = """"""
-s2 = """"""
+s = """
+"""
+s2 = """
+"""
 
-print("Example Solution:", solve(s))
+print("PART 1")
+print("Example Solution:", solve1(s))
 # print("Example 2 Solution:", solve(s2))
-print("Actual Solution:", solve(inp))
+print("Actual Solution:", solve1(inp))
+
+print("PART 2")
+print("Example Solution:", solve2(s))
+# print("Example 2 Solution:", solve(s2))
+print("Actual Solution:", solve2(inp))
