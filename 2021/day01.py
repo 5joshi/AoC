@@ -11,17 +11,17 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(day=1)
+inp = get_data(year=2021, day=1)
 
 
 def solve1(d):
     inp = ints(d)
-    result = sum([inp[i+1] > inp[i] for i in range(len(inp) - 1)])
+    result = sum(x < y for (x, y) in zip(inp, inp[1:]))
     return result
 
 def solve2(d):
     inp = ints(d)
-    result = sum([sum(inp[i+1:i+4]) > sum(inp[i:i+3]) for i in range(len(inp) - 3)])
+    result = sum(x < y for (x, y) in zip(inp, inp[3:]))
     return result
 
 

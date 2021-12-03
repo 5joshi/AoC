@@ -11,18 +11,18 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data(day=2)
+inp = get_data(year=2021, day=2)
 
 
 def solve1(d):
     inp = d.splitlines()
     horizontal = depth = 0
     for line in inp:
-        direction, num = line
+        action, num = line
         num = int(num)
-        if direction == "up":
+        if action[0] == "u":
             depth -= num
-        elif direction == "down":
+        elif action[1] == "d":
             depth += num
         else:
             horizontal += num
@@ -32,11 +32,11 @@ def solve2(d):
     inp = d.splitlines()
     horizontal = depth = aim = 0
     for line in inp:
-        direction, num = line
+        action, num = line
         num = int(num)
-        if direction == "up":
+        if action[0] == "u":
             aim -= num
-        elif direction == "down":
+        elif action[1] == "d":
             aim += num
         else:
             horizontal += num 
