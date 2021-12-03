@@ -11,7 +11,7 @@ from utils import *
 from functools import reduce
 from aocd import get_data, submit
 
-inp = get_data()
+inp = get_data(year=2021, day=1)
 
 
 def solve1(d):
