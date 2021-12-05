@@ -17,6 +17,8 @@ T = typing.TypeVar("T")
 # Copy a function if you need to modify it.
 
 # region Strings, lists, dicts
+def transpose(*iterables):
+    return list(zip(*iterables))
 
 
 def lmap(func, *iterables):
