@@ -14,8 +14,6 @@ from aocd import get_data, submit
 inp = get_data(year=2021, day=5)
 
 
-
-
 def solve1(d):
     grid = coll.defaultdict(int)
     inp = d.splitlines()
