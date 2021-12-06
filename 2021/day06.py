@@ -26,7 +26,7 @@ def solve1(d):
             else:
                 new_counter[key-1] += item
         counter = new_counter
-    result = sum([item for _, item in counter.items()])
+    result = sum(counter.values())
     return result
 
 def solve2(d):
@@ -41,7 +41,7 @@ def solve2(d):
             else:
                 new_counter[key-1] += item
         counter = new_counter
-    result = sum([item for _, item in counter.items()])
+    result = sum(counter.values())
     return result
 
 
