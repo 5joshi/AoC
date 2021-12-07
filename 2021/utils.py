@@ -37,6 +37,11 @@ def avg(l):
     return sum(l) / len(l)
 
 
+def median(l):
+    if len(l) % 2 == 1:
+        return l[len(l) // 2]
+    return (l[len(l) // 2 - 1] + l[len(l) // 2]) / 2
+
 
 def gauss_sum(n):
     return (n * (n + 1)) // 2
