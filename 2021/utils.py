@@ -33,6 +33,15 @@ def make_grid(*dimensions: typing.List[int], fill=None):
     return [list(next_down) for _ in range(dimensions[0])]
 
 
+def avg(l):
+    return sum(l) / len(l)
+
+
+
+def gauss_sum(n):
+    return (n * (n + 1)) // 2
+
+
 def min_max(l):
     return min(l), max(l)
 
@@ -344,6 +353,8 @@ def bfs_single(
 BLANK = object()
 def hamming_distance(a, b) -> int:
     return sum(i is BLANK or j is BLANK or i != j for i, j in itertools.zip_longest(a, b, fillvalue=BLANK))
+
+
 def edit_distance(a, b) -> int:
     n = len(a)
     m = len(b)
