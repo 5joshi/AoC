@@ -22,7 +22,7 @@ def solve1(d):
         return sum([abs(a - n) for a in inp])
             
     result = calc(min(range(*min_max(inp)), key=calc))
-    return min(range(*min_max(inp)), key=calc)
+    return result
 
 def solve2(d):
     inp = lmap(int, d.split(','))
@@ -31,7 +31,7 @@ def solve2(d):
         return sum([gauss_sum(abs(a - n)) for a in inp])
 
     result = calc(min(range(*min_max(inp)), key=calc))
-    return calc(avg(inp))
+    return result
 
 
 s = """16,1,2,0,4,2,7,1,2,14
