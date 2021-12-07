@@ -27,12 +27,6 @@ def solve1(d):
                 depth += num
             case "forward":
                 horizontal += num 
-        # if action[0] == "u":
-        #     depth -= num
-        # elif action[1] == "d":
-        #     depth += num
-        # else:
-        #     horizontal += num
     return horizontal * depth
 
 def solve2(d):
@@ -49,13 +43,6 @@ def solve2(d):
             case "forward":
                 horizontal += num 
                 depth += aim * num
-        # if action[0] == "u":
-        #     aim -= num
-        # elif action[1] == "d":
-        #     aim += num
-        # else:
-        #     horizontal += num 
-        #     depth += aim * num
     return horizontal * depth
 
 
