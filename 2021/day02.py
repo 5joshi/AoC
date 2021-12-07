@@ -18,29 +18,44 @@ def solve1(d):
     inp = d.splitlines()
     horizontal = depth = 0
     for line in inp:
-        action, num = line
+        action, num = line.split()
         num = int(num)
-        if action[0] == "u":
-            depth -= num
-        elif action[1] == "d":
-            depth += num
-        else:
-            horizontal += num
+        match action:
+            case "up":
+                depth -= num
+            case "down":
+                depth += num
+            case "forward":
+                horizontal += num 
+        # if action[0] == "u":
+        #     depth -= num
+        # elif action[1] == "d":
+        #     depth += num
+        # else:
+        #     horizontal += num
     return horizontal * depth
 
 def solve2(d):
     inp = d.splitlines()
     horizontal = depth = aim = 0
     for line in inp:
-        action, num = line
+        action, num = line.split()
         num = int(num)
-        if action[0] == "u":
-            aim -= num
-        elif action[1] == "d":
-            aim += num
-        else:
-            horizontal += num 
-            depth += aim * num
+        match action:
+            case "up":
+                aim -= num
+            case "down":
+                aim += num
+            case "forward":
+                horizontal += num 
+                depth += aim * num
+        # if action[0] == "u":
+        #     aim -= num
+        # elif action[1] == "d":
+        #     aim += num
+        # else:
+        #     horizontal += num 
+        #     depth += aim * num
     return horizontal * depth
 
 
