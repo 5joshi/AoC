@@ -1,9 +1,4 @@
-use std::{
-    error::Error,
-    fs::File,
-    io::{BufRead, BufReader},
-    time::Instant,
-};
+use std::{error::Error, time::Instant};
 
 fn main() {
     if let Err(err) = run() {
