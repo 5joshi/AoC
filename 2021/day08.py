@@ -31,8 +31,8 @@ def solve2(d):
     for line in inp:
         line = line.split("|")
         data, output = map(lambda x: x.split(), line)
-        data = sorted(data, key=len)
-        mapping = coll.defaultdict(str)
+        data.sort(key=len)
+        mapping = dict()
         
         mapping[1] = frozenset(data[0])
         mapping[7] = frozenset(data[1])
