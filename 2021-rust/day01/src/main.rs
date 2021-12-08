@@ -19,24 +19,16 @@ fn main() {
 
 fn run() -> Result<(), Box<dyn Error>> {
     let start = Instant::now();
-    let file = File::open("./input")?;
-    let mut input = BufReader::new(file);
-
-    let mut line = String::new();
-
-    while input.read_line(&mut line)? != 0 {
-        //
-        line.clear();
-    }
+    let input: &str = include_str!("../../inputs/day01.txt");
 
     println!("Setup: {:?}", start.elapsed()); //
 
     let start = Instant::now();
-    let p1 = part1();
+    let p1 = part1(input);
     println!("Part 1: {} [{:?}]", p1, start.elapsed()); //
 
     let start = Instant::now();
-    let p2 = part2();
+    let p2 = part2(input);
     println!("Part 2: {} [{:?}]", p2, start.elapsed()); //
 
     // assert_eq!(p1, 0);
@@ -45,10 +37,20 @@ fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn part1() -> u32 {
-    todo!()
+fn part1(input: &str) -> u32 {
+    input
+        .lines()
+        .zip(input.lines().skip(1))
+        .fold(0, |x, (n1, n2)| {
+            x + (n1.parse::<u32>().unwrap() < n2.parse::<u32>().unwrap()) as u32
+        })
 }
 
-fn part2() -> u32 {
-    todo!()
+fn part2(input: &str) -> u32 {
+    input
+        .lines()
+        .zip(input.lines().skip(3))
+        .fold(0, |x, (n1, n2)| {
+            x + (n1.parse::<u32>().unwrap() < n2.parse::<u32>().unwrap()) as u32
+        })
 }
