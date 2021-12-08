@@ -56,7 +56,7 @@ fn part2(input: &str) -> u32 {
         match line.split(' ').next_tuple() {
             Some(("forward", num)) => {
                 horizontal += num.parse::<u32>().unwrap();
-                depth += num.parse::<u32>().unwrap() * aim
+                depth += num.parse::<u32>().unwrap() * aim;
             }
             Some(("down", num)) => aim += num.parse::<u32>().unwrap(),
             Some(("up", num)) => aim -= num.parse::<u32>().unwrap(),
