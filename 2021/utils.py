@@ -615,6 +615,7 @@ DELTA_TO_NESW = {
 def get_delta(p1, p2):
     return [(p1[0]!=p2[0]) * (-1) ** (p2[0]<p1[0]), (p1[1]!=p2[1]) * (-1) ** (p2[1]<p1[1])]
 
+
 def turn_180(drowcol):
     drow, dcol = drowcol
     return [-drow, -dcol]
@@ -628,6 +629,16 @@ def turn_right(drowcol):
 def turn_left(drowcol):
     drow, dcol = drowcol
     return [-dcol, drow]
+
+
+def get_neighbors_coords(grid, row, col, deltas):
+    n, m = len(grid), len(grid[0])
+    out = []
+    for i, j in deltas:
+        p_row, p_col = row+i, col+j
+        if 0 <= p_row < n and 0 <= p_col < m:
+            out.append((p_row, p_col))
+    return out
 
 
 def get_neighbors(grid, row, col, deltas, fill=None):
