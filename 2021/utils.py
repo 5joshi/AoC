@@ -33,6 +33,14 @@ def make_grid(*dimensions: typing.List[int], fill=None):
     return [list(next_down) for _ in range(dimensions[0])]
 
 
+def gridmap(func, grid):
+    return [lmap(func, row) for row in grid]
+
+
+def number_grid(inp):
+    return lmap(lambda l: [int(x) for x in l], inp.splitlines())
+
+
 def avg(l):
     return sum(l) / len(l)
 
