@@ -23,19 +23,13 @@ def solve1(d):
         cave[start].add(end)
         cave[end].add(start)
     
-    idx = 0         
-    paths = [["start"]]
-    while idx != len(paths):
-        path = paths[idx]
-        if path[-1] == "end": 
-            idx += 1
-        else:
-            for nxt in cave[path[-1]]:
-                if not (nxt.islower() and nxt in path): 
-                    paths.append(path + [nxt])
-            paths.pop(idx)
-    
-    result = len(paths)
+    def paths(curr, seen=set()):
+        if curr == "end": return 1
+        if curr.islower() and curr in seen: return 0
+        seen = seen | {curr}
+        return sum([paths(nxt, seen) for nxt in cave[curr]])
+     
+    result = paths("start")
     return result
     
 
@@ -45,23 +39,19 @@ def solve2(d):
     
     for line in inp:
         start, end = line.split("-")
-        if end != "start": cave[start].add(end)
-        if start != "start": cave[end].add(start)
-    lower = {key for key in cave.keys() if key.islower() and key not in ["start", "end"]}
-
-    idx = 0         
-    paths = [["start"]]
-    while idx != len(paths):
-        path = paths[idx]
-        if path[-1] == "end": 
-            idx += 1
-        else:
-            for nxt in cave[path[-1]]:
-                if not (nxt.islower() and nxt in path) or not any([path.count(key) >= 2 for key in lower]): 
-                    paths.append(path + [nxt])
-            paths.pop(idx)
+        cave[start].add(end)
+        cave[end].add(start)
     
-    result = len(paths)
+    def paths(curr, seen=set(), double=False):
+        if curr == "end": return 1
+        if curr == "start" and seen: return 0
+        if curr.islower() and curr in seen: 
+            if double: return 0
+            else: double = True
+        seen = seen | {curr}
+        return sum([paths(nxt, seen, double) for nxt in cave[curr]])
+     
+    result = paths("start")
     return result
 
 
