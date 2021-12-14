@@ -9,6 +9,7 @@ import pprint as pp
 import re
 import sys
 import typing
+import timeit
 # endregion
 
 sys.setrecursionlimit(100000)
@@ -65,6 +66,14 @@ def max_plus_min(l):
 
 def max_minus_min(l):
     return max(l) - min(l)
+
+
+def partial_sum(l):
+    "out[i] == sum(in[:i])"
+    out = [0]
+    for i in l:
+        out.append(out[-1] + i)
+    return out
 
 
 def list_diff(x):
@@ -590,6 +599,30 @@ class UnionFind:
             self.parents[j] = i
             self.ranks[i] += 1
         self.num_sets -= 1
+
+
+class Grid(typing.Generic[T]):
+    """2D only!!!"""
+
+    def __init__(self, grid: typing.List[typing.List[T]]) -> None:
+        self.grid = grid
+        self.rows = len(self.grid)
+        self.cols = len(self.grid[0])
+    
+    def coords(self) -> typing.List[typing.List[int]]:
+        return [[r, c] for r in range(self.rows) for c in range(self.cols)]
+    
+    def get_row(self, row: int):
+        assert 0 <= row < self.rows, f"row {row} is OOB"
+    
+    def in_bounds(self, row: int, col: int) -> bool:
+        return 0 <= row < self.rows and 0 <= col < self.cols
+    
+    def __contains__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> bool:
+        return self.in_bounds(*coord)
+    
+    def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> T:
+        return self.grid[coord[0]][coord[1]]
 #endregion
 
 
@@ -622,6 +655,15 @@ DELTA_TO_NESW = {
 # delta to go from p1 to p2
 def get_delta(p1, p2):
     return [(p1[0]!=p2[0]) * (-1) ** (p2[0]<p1[0]), (p1[1]!=p2[1]) * (-1) ** (p2[1]<p1[1])]
+
+
+def signum(n: int) -> int:
+    if n > 0:
+        return 1
+    elif n == 0:
+        return 0
+    else:
+        return -1
 
 
 def turn_180(drowcol):
@@ -752,6 +794,11 @@ def pdist2sq(x, y=None):
 
 def pdist2(v):
     return math.sqrt(pdist2sq(v))
+
+
+def pdistinf(x, y=None):
+    if y is not None: x = psub(x, y)
+    return max(map(abs, x))
 # endregion
 
 
@@ -783,3 +830,19 @@ def matexp(a, k):
         k //= 2
     return out
 # endregion
+
+
+imports = """import collections as coll
+import datetime as dt
+import itertools as it
+import math
+from operator import itemgetter as ig
+import pprint as pp
+import re
+import sys
+import typing
+"""
+def time(day, part):
+    time = timeit.timeit(stmt=f"solve{part}(inp)", setup=f"{imports}\nfrom day{day} import solve{part}, inp\n", number=100) / 100
+    print(f"Time taken: {time}s -- {time * 1000}ms -- {time * 1000 * 1000}µs")
+    
