@@ -26,6 +26,10 @@ def lmap(func, *iterables):
     return list(map(func, *iterables))
 
 
+def lfilter(func, *iterables):
+    return list(filter(func, *iterables))
+
+
 def make_grid(*dimensions: typing.List[int], fill=None):
     "Returns a grid such that 'dimensions' is juuust out of bounds."
     if len(dimensions) == 1:
@@ -652,7 +656,7 @@ def signum(n: int) -> int:
         return 0
     else:
         return -1
-
+    
 
 def turn_180(drowcol):
     drow, dcol = drowcol
@@ -781,6 +785,21 @@ def pdist2(v):
 def pdistinf(x, y=None):
     if y is not None: x = psub(x, y)
     return max(map(abs, x))
+
+# points needed to go from p1 to p2
+def line_points(p1, p2):
+    dist = psub(p1, p2)
+    assert 0 in dist or dist[0] == dist[1], "Can't draw straight line"
+    result = [p1]
+    delta = get_delta(p1, p2)
+    while result[-1] != p2:
+        result.append(padd(result[-1], delta))
+    return result
+
+# points needed to go delta * distance from p1
+def line_from(p1, delta, distance):
+    return line_points(p1, padd(p1, pmul(distance, delta)))
+    
 # endregion
 
 
@@ -788,7 +807,6 @@ def pdistinf(x, y=None):
 
 class Grid(typing.Generic[T]):
     """2D only!!!"""
-
     def __init__(self, grid: typing.List[typing.List[T]]) -> None:
         self.grid = grid
         self.rows = len(self.grid)
@@ -805,14 +823,56 @@ class Grid(typing.Generic[T]):
         assert 0 <= col < self.cols, f"row {col} is OOB"
         return transpose(self.grid)[col]
     
+    def rows(self):
+        return self.grid
+    
+    def cols(self):
+        return transpose(self.grid)
+    
     def in_bounds(self, row: int, col: int) -> bool:
         return 0 <= row < self.rows and 0 <= col < self.cols
     
-    def __contains__(self, coord: typing.Tuple[int, int] | typing.List[int]) -> bool:
-        return self.in_bounds(*coord)
+    def find(self, item: T) -> typing.Tuple[int, int]:
+        for c in self.coords():
+            if self[c] == item:
+                return c
+    
+    def findall(self, item: T) -> typing.Tuple[int, int]:
+        result = []
+        for c in self.coords():
+            if self[c] == item:
+                result.append(c)
+        return result
+    
+    def count(self, item: T) -> int:
+        return sum([row.count(item) for row in self.grid])
+    
+    def points_map(self, func, points: typing.List[typing.Tuple[int, int]]):
+        for p in points:
+            assert self.in_bounds(*p), f"cannot map point {p} as it is not in the grid"
+            self.grid[p] = func(self.grid[p])
+    
+    def map(self, func):
+        self.grid = [lmap(func, row) for row in self.grid]
+        
+    def sum(self):
+        return sum([row for row in self.grid])
+    
+    def __contains__(self, item: typing.Tuple[int, int] | typing.List[int] | T) -> bool:
+        if isinstance(item, T):
+            return any([item in row for row in self.grid])
+        else:
+            return self.in_bounds(*item)
     
     def __getitem__(self, coord: typing.Tuple[int, int] | typing.List[int]) -> T:
         return self.grid[coord[0]][coord[1]]
+    
+    def print(self, sep=""):
+        print("\n".join([sep.join([str(item) for item in line]) for line in self.grid]))
+    
+    def __repr__(self):
+        return "\n".join(["".join([str(item) for item in line]) for line in self.grid])
+    
 
 def matmat(a, b):
     n, k1 = len(a), len(a[0])
