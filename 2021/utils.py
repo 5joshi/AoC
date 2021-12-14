@@ -52,6 +52,26 @@ def number_grid(inp):
     return lmap(lambda l: [int(x) for x in l], inp.splitlines())
 
 
+def print_gridmap(grid: typing.Set[typing.Tuple[int, int]] | typing.Dict[typing.Tuple[int, int], T], fill=" ", rows=False):
+    print(gridmap_to_str(grid, fill, rows))
+
+
+def gridmap_to_str(grid: typing.Set[typing.Tuple[int, int]] | typing.Dict[typing.Tuple[int, int], T], fill=" ", rows=False):
+    left, right = min_max([y for (_, y) in grid])
+    up, down = min_max([x for (x, _) in grid])
+    maxrow = max(len(str(up)), len(str(down)))
+    result = "\n" 
+    if isinstance(grid, set):
+        for y in range(left, right+1):
+            result += (str(y).rjust(maxrow+1) + ": ") * rows
+            result += " ".join(["#" if (x, y) in grid else fill for x in range(up, down+1)]) + "\n"
+    elif isinstance(grid, dict):
+        for y in range(left, right+1):
+            result += (str(y).rjust(maxrow+1) + ": ") * rows
+            result += " ".join([str(grid[(x, y)]) if (x, y) in grid else fill for x in range(up, down+1)]) + "\n"
+    return result
+
+
 def avg(l):
     return sum(l) / len(l)
 
