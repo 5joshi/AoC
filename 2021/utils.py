@@ -1,16 +1,22 @@
 # Credits to mcpower for pretty much all of these utils
-# region Imports
-import collections as coll
-import datetime as dt
+#region Imports
+import collections
+import copy
+import functools as ft
+import heapq
 import itertools as it
 import math
-from operator import itemgetter as ig
-import pprint as pp
+import operator
 import re
 import sys
-import typing
 import timeit
-# endregion
+import typing
+from collections import Counter, defaultdict, deque
+from copy import deepcopy
+from functools import reduce
+from pprint import pprint
+from aocd import get_data, submit
+#endregion
 
 sys.setrecursionlimit(100000)
 T = typing.TypeVar("T")

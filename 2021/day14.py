@@ -1,15 +1,4 @@
-import collections as coll
-import datetime as dt
-import functools as ft
-import itertools as it
-import math
-from operator import itemgetter as ig
-import pprint as pp
-import re
-from copy import deepcopy
 from utils import *
-from functools import reduce
-from aocd import get_data, submit
 
 inp = get_data(year=2021, day=14)
 
@@ -27,7 +16,7 @@ def solve1(d):
             new_x += m[l1 + l2][1:]
         x = new_x
         
-    count = coll.Counter(x)
+    count = Counter(x)
     return max_minus_min(count.values())
 
 def solve2(d):
@@ -37,13 +26,12 @@ def solve2(d):
         fst, snd = rule.split(" -> ")
         m[fst] = fst[0] + snd + fst[1]
         
-    bigram_count = coll.Counter([a+b for a,b in zip(x, x[1:])])
-    letter_count = coll.Counter(x)
+    bigram_count = Counter([a+b for a,b in zip(x, x[1:])])
+    letter_count = Counter(x)
     for _ in range(40):
-        new_count = deepcopy(bigram_count)
+        new_count = Counter()
         for key, rule in m.items():
             w = bigram_count[key]
-            new_count[key] -= w
             new_count[rule[:2]] += w
             new_count[rule[1:]] += w
             letter_count[rule[1]] += w
