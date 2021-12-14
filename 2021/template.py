@@ -1,15 +1,4 @@
-import collections as coll
-import datetime as dt
-import functools as ft
-import itertools as it
-import math
-from operator import itemgetter as ig
-import pprint as pp
-import re
-from copy import deepcopy
 from utils import *
-from functools import reduce
-from aocd import get_data, submit
 
 inp = get_data(year=2021)
 
