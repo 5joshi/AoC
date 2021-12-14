@@ -599,45 +599,33 @@ class UnionFind:
             self.parents[j] = i
             self.ranks[i] += 1
         self.num_sets -= 1
-
-
-class Grid(typing.Generic[T]):
-    """2D only!!!"""
-
-    def __init__(self, grid: typing.List[typing.List[T]]) -> None:
-        self.grid = grid
-        self.rows = len(self.grid)
-        self.cols = len(self.grid[0])
-    
-    def coords(self) -> typing.List[typing.List[int]]:
-        return [[r, c] for r in range(self.rows) for c in range(self.cols)]
-    
-    def get_row(self, row: int):
-        assert 0 <= row < self.rows, f"row {row} is OOB"
-    
-    def in_bounds(self, row: int, col: int) -> bool:
-        return 0 <= row < self.rows and 0 <= col < self.cols
-    
-    def __contains__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> bool:
-        return self.in_bounds(*coord)
-    
-    def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> T:
-        return self.grid[coord[0]][coord[1]]
 #endregion
 
 
 # region List/Vector operations
-GRID_DELTA = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-OCT_DELTA = [[1, 1], [-1, -1], [1, -1], [-1, 1]] + GRID_DELTA
+GRID_DELTA = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+OCT_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)] + GRID_DELTA
 CHAR_TO_DELTA = {
-    "U": [-1, 0],
-    "R": [0, 1],
-    "D": [1, 0],
-    "L": [0, -1],
-    "N": [-1, 0],
-    "E": [0, 1],
-    "S": [1, 0],
-    "W": [0, -1],
+    "U": (-1, 0),
+    "R": (0, 1),
+    "D": (1, 0),
+    "L": (0, -1),
+    "N": (-1, 0),
+    "E": (0, 1),
+    "S": (1, 0),
+    "W": (0, -1),
+    "NE": (-1, 1),
+    "SE": (1, 1),
+    "NW": (-1, -1),
+    "SW": (1, -1),
+    "UR": (-1, 1),
+    "DR": (1, 1),
+    "UL": (-1, -1),
+    "DL": (1, -1),
+    "RU": (-1, 1),
+    "RD": (1, 1),
+    "LU": (-1, -1),
+    "LD": (1, -1),
 }
 DELTA_TO_UDLR = {
     (-1, 0): "U",
@@ -747,48 +735,42 @@ def snd(x):
 
 
 def padd(x, y):
-    if len(x) == 2:
-        return [x[0] + y[0], x[1] + y[1]]
+    if isinstance(x, tuple) and isinstance(y, tuple):
+        return (a+b for a, b in zip(x, y))
     return [a+b for a, b in zip(x, y)]
 
 
 def pneg(v):
-    if len(v) == 2:
-        return [-v[0], -v[1]]
+    if isinstance(v, tuple):
+        return (-i for i in v)
     return [-i for i in v]
 
 
 def psub(x, y):
-    if len(x) == 2:
-        return [x[0] - y[0], x[1] - y[1]]
+    if isinstance(x, tuple) and isinstance(y, tuple):
+        return (a-b for a, b in zip(x, y))
     return [a-b for a, b in zip(x, y)]
 
 
 def pmul(m: int, v):
-    if len(v) == 2:
-        return [m * v[0], m * v[1]]
+    if isinstance(v, tuple):
+        return (m * i for i in v)
     return [m * i for i in v]
 
 
 def pdot(x, y):
-    if len(x) == 2:
-        return x[0] * y[0] + x[1] * y[1]
     return sum(a*b for a, b in zip(x, y))
 
 
 def pdist1(x, y=None):
     if y is not None:
         x = psub(x, y)
-    if len(x) == 2:
-        return abs(x[0]) + abs(x[1])
     return sum(map(abs, x))
 
 
 def pdist2sq(x, y=None):
     if y is not None:
         x = psub(x, y)
-    if len(x) == 2:
-        return (x[0] * x[0]) + (x[1] * x[1])
     return sum(i*i for i in x)
 
 
@@ -804,6 +786,33 @@ def pdistinf(x, y=None):
 
 # region Matrices
 
+class Grid(typing.Generic[T]):
+    """2D only!!!"""
+
+    def __init__(self, grid: typing.List[typing.List[T]]) -> None:
+        self.grid = grid
+        self.rows = len(self.grid)
+        self.cols = len(self.grid[0])
+    
+    def coords(self) -> typing.List[typing.List[int]]:
+        return [(r, c) for r in range(self.rows) for c in range(self.cols)]
+    
+    def get_row(self, row: int):
+        assert 0 <= row < self.rows, f"row {row} is OOB"
+        return self.grid[row]
+        
+    def get_col(self, col: int):
+        assert 0 <= col < self.cols, f"row {col} is OOB"
+        return transpose(self.grid)[col]
+    
+    def in_bounds(self, row: int, col: int) -> bool:
+        return 0 <= row < self.rows and 0 <= col < self.cols
+    
+    def __contains__(self, coord: typing.Tuple[int, int] | typing.List[int]) -> bool:
+        return self.in_bounds(*coord)
+    
+    def __getitem__(self, coord: typing.Tuple[int, int] | typing.List[int]) -> T:
+        return self.grid[coord[0]][coord[1]]
 
 def matmat(a, b):
     n, k1 = len(a), len(a[0])
