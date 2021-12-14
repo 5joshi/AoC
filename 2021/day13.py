@@ -45,7 +45,7 @@ def solve2(d):
         l = max([y for (_, y) in grid]) + 1
         w = max([x for (x, _) in grid]) + 1
         for y in range(l):
-            result += " ".join(["#" if (x, y) in grid else "." for x in range(w)]) + "\n"
+            result += " ".join(["#" if (x, y) in grid else " " for x in range(w)]) + "\n"
         return result
     
     for coord in coords:
