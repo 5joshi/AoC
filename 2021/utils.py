@@ -706,7 +706,7 @@ def dimensions(grid: typing.List) -> typing.List[int]:
     return out
 
 
-def get_neighbors_coords(grid, row, col, deltas):
+def grid_neighbors(grid, row, col, deltas):
     n, m = len(grid), len(grid[0])
     out = []
     for i, j in deltas:
@@ -716,7 +716,16 @@ def get_neighbors_coords(grid, row, col, deltas):
     return out
 
 
-def get_neighbors(grid, row, col, deltas, fill=None):
+def neighbors(dimensions, coord, deltas) -> typing.List[typing.Tuple[int]]:
+    out = []
+    for delta in deltas:
+        new_coord = tuple(padd(coord, delta))
+        if all(0 <= c < c_max for c, c_max in zip(new_coord, dimensions)):
+            out.append(new_coord)
+    return out
+
+
+def neighbors_values(grid, row, col, deltas, fill=None):
     n, m = len(grid), len(grid[0])
     out = []
     for i, j in deltas:

@@ -9,7 +9,7 @@ def solve1(d):
     rows, cols = dimensions(grid)
     
     def expand(coord):
-        return [(grid[x][y], (x, y)) for x, y in get_neighbors_coords(grid, *coord, GRID_DELTA)]
+        return [(grid[x][y], (x, y)) for x, y in grid_neighbors(grid, *coord, GRID_DELTA)]
         
     path = a_star((0, 0), (rows-1, cols-1), expand)
     return path[0]
@@ -17,19 +17,25 @@ def solve1(d):
 def solve2(d):
     grid = number_grid(d)
     rows, cols = dimensions(grid)
-
+    
     def modified_neighbors(grid, row, col, deltas):
         out = []
         for i, j in deltas:
             p_row, p_col = row+i, col+j
             if 0 <= p_row < (rows * 5) and 0 <= p_col < (cols * 5):
-                val = (grid[p_row % rows][p_col % cols] + (p_row // rows) + (p_col // cols)) % 9
-                if val == 0: val = 9
-                out.append((val, (p_row, p_col)))
+                value = (((grid[p_row % rows][p_col % cols] + (p_row // rows) + (p_col // cols)) - 1) % 9) + 1
+                out.append((value, (p_row, p_col)))
         return out
     
     def expand(coord):
         return modified_neighbors(grid, coord[0], coord[1], GRID_DELTA)
+    
+    # def expand(coord):
+    #     result = []
+    #     for (x, y) in neighbors((rows*5, cols*5), coord, GRID_DELTA):
+    #         value = (((grid[x % rows][y % cols] + (x // rows) + (y // cols)) - 1) % 9) + 1
+    #         result.append((value, (x, y)))
+    #     return result
     
     path = a_star((0, 0), (rows*5 - 1, cols*5 - 1), expand)
     return path[0]
@@ -49,14 +55,14 @@ s = """1163751742
 s2 = """8
 """
 
-print("PART 1")
-print("Example Solution:", solve1(s))
-# print("Example 2 Solution:", solve1(s2))
-print("Actual Solution:", solve1(inp))
+# print("PART 1")
+# print("Example Solution:", solve1(s))
+# # print("Example 2 Solution:", solve1(s2))
+# print("Actual Solution:", solve1(inp))
 
-print("PART 2")
-print("Example Solution:", solve2(s))
-# print("Example 2 Solution:", solve2(s2))
-print("Actual Solution:", solve2(inp))
-
-time(15, 2, amount=10)
+# print("PART 2")
+# print("Example Solution:", solve2(s))
+# # print("Example 2 Solution:", solve2(s2))
+# print("Actual Solution:", solve2(inp))
+if __name__ == "__main__":
+    time(15, 2, amount=1)
