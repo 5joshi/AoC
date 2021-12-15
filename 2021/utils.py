@@ -52,11 +52,11 @@ def number_grid(inp):
     return lmap(lambda l: [int(x) for x in l], inp.splitlines())
 
 
-def print_gridmap(grid: typing.Set[typing.Tuple[int, int]] | typing.Dict[typing.Tuple[int, int], T], fill=" ", rows=False):
+def print_gridmap(grid: typing.Union[typing.Set[typing.Tuple[int, int]], typing.Dict[typing.Tuple[int, int], T]], fill=" ", rows=False):
     print(gridmap_to_str(grid, fill, rows))
 
 
-def gridmap_to_str(grid: typing.Set[typing.Tuple[int, int]] | typing.Dict[typing.Tuple[int, int], T], fill=" ", rows=False):
+def gridmap_to_str(grid: typing.Union[typing.Set[typing.Tuple[int, int]], typing.Dict[typing.Tuple[int, int], T]], fill=" ", rows=False):
     left, right = min_max([y for (_, y) in grid])
     up, down = min_max([x for (x, _) in grid])
     maxrow = max(len(str(up)), len(str(down)))
@@ -918,13 +918,13 @@ class Grid(typing.Generic[T]):
     def sum(self):
         return sum([row for row in self.grid])
     
-    def __contains__(self, item: typing.Tuple[int, int] | typing.List[int] | T) -> bool:
+    def __contains__(self, item: typing.Union[typing.Tuple[int, int], typing.List[int], T]) -> bool:
         if isinstance(item, T):
             return any([item in row for row in self.grid])
         else:
             return self.in_bounds(*item)
     
-    def __getitem__(self, coord: typing.Tuple[int, int] | typing.List[int]) -> T:
+    def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> T:
         return self.grid[coord[0]][coord[1]]
     
     def print(self, sep=""):
