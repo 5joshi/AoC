@@ -340,7 +340,6 @@ def dijkstra(
         if to_node is not None and node == to_node:
             break
         seen.add(node)
-
         for cost, new_node in expand(node):
             new_g = g + cost
             if new_node not in g_values or new_g < g_values[new_node]:
@@ -699,6 +698,14 @@ def turn_left(drowcol):
     return [-dcol, drow]
 
 
+def dimensions(grid: typing.List) -> typing.List[int]:
+    out = []
+    while isinstance(grid, list):
+        out.append(len(grid))
+        grid = grid[0]
+    return out
+
+
 def get_neighbors_coords(grid, row, col, deltas):
     n, m = len(grid), len(grid[0])
     out = []
@@ -877,6 +884,24 @@ class Grid(typing.Generic[T]):
         for p in points:
             assert self.in_bounds(*p), f"cannot map point {p} as it is not in the grid"
             self.grid[p] = func(self.grid[p])
+            
+    def get_neighbors_coords(self, coord, deltas):
+        out = []
+        for delta in deltas:
+            p_row, p_col = padd(coord, delta)
+            if self.in_bounds(p_row, p_col):
+                out.append((p_row, p_col))
+        return out
+
+    def get_neighbors(self, coord, deltas, fill=None):
+        out = []
+        for delta in deltas:
+            p_row, p_col = padd(coord, delta)
+            if self.in_bounds(p_row, p_col):
+                out.append(self[(p_row, p_col)])
+            elif fill is not None:
+                out.append(fill)
+        return out
     
     def map(self, func):
         self.grid = [lmap(func, row) for row in self.grid]
@@ -937,7 +962,7 @@ import re
 import sys
 import typing
 """
-def time(day, part):
-    time = timeit.timeit(stmt=f"solve{part}(inp)", setup=f"{imports}\nfrom day{day} import solve{part}, inp\n", number=100) / 100
+def time(day, part, amount=100):
+    time = timeit.timeit(stmt=f"solve{part}(inp)", setup=f"{imports}\nfrom day{day} import solve{part}, inp\n", number=amount) / amount
     print(f"Time taken: {time}s -- {time * 1000}ms -- {time * 1000 * 1000}µs")
     
