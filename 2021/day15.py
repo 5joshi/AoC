@@ -30,13 +30,6 @@ def solve2(d):
     def expand(coord):
         return modified_neighbors(grid, coord[0], coord[1], GRID_DELTA)
     
-    # def expand(coord):
-    #     result = []
-    #     for (x, y) in neighbors((rows*5, cols*5), coord, GRID_DELTA):
-    #         value = (((grid[x % rows][y % cols] + (x // rows) + (y // cols)) - 1) % 9) + 1
-    #         result.append((value, (x, y)))
-    #     return result
-    
     path = a_star((0, 0), (rows*5 - 1, cols*5 - 1), expand)
     return path[0]
 
