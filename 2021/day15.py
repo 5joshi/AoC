@@ -48,14 +48,12 @@ s = """1163751742
 s2 = """8
 """
 
-# print("PART 1")
-# print("Example Solution:", solve1(s))
-# # print("Example 2 Solution:", solve1(s2))
-# print("Actual Solution:", solve1(inp))
+print("PART 1")
+print("Example Solution:", solve1(s))
+# print("Example 2 Solution:", solve1(s2))
+print("Actual Solution:", solve1(inp))
 
-# print("PART 2")
-# print("Example Solution:", solve2(s))
-# # print("Example 2 Solution:", solve2(s2))
-# print("Actual Solution:", solve2(inp))
-if __name__ == "__main__":
-    time(15, 2, amount=1)
+print("PART 2")
+print("Example Solution:", solve2(s))
+# print("Example 2 Solution:", solve2(s2))
+print("Actual Solution:", solve2(inp))
