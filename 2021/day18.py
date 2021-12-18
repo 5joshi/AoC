@@ -1,5 +1,4 @@
 from utils import *
-import ast
 
 inp = get_data(year=2021)
 
