@@ -780,29 +780,35 @@ def snd(x):
     return x[1]
 
 
+def psum(*iterables):
+    return [sum(elems) for elems in zip(*iterables)]
+
+def tsum(*iterables):
+    return tuple(sum(elems) for elems in zip(*iterables))
+
 def padd(x, y):
-    if isinstance(x, tuple) and isinstance(y, tuple):
-        return (a+b for a, b in zip(x, y))
     return [a+b for a, b in zip(x, y)]
 
+def tadd(x, y) -> typing.Tuple[T]:
+    return tuple(a+b for a, b in zip(x, y))
 
 def pneg(v):
-    if isinstance(v, tuple):
-        return (-i for i in v)
     return [-i for i in v]
 
+def tneg(v) -> typing.Tuple[T]:
+    return tuple(-i for i in v)
 
 def psub(x, y):
-    if isinstance(x, tuple) and isinstance(y, tuple):
-        return (a-b for a, b in zip(x, y))
     return [a-b for a, b in zip(x, y)]
 
+def tsub(x, y) -> typing.Tuple[T]:
+    return tuple(a-b for a, b in zip(x, y))
 
 def pmul(m: int, v):
-    if isinstance(v, tuple):
-        return (m * i for i in v)
     return [m * i for i in v]
 
+def tmul(m: int, v) -> typing.Tuple[T]:
+    return tuple(m * i for i in v)
 
 def pdot(x, y):
     return sum(a*b for a, b in zip(x, y))

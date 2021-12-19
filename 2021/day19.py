@@ -5,9 +5,8 @@ inp = get_data(year=2021, day=19)
 
 def solve1(d):
     inp = d.split("\n\n")
-    result = 0
     scanners = dict()
-    positions = {0: (0, 0, 0)}
+    scanner_positions = {0: (0, 0, 0)}
     
     for section in inp:
         section = section.splitlines()
@@ -22,31 +21,26 @@ def solve1(d):
         for signs in it.product([-1, 1], [-1, 1], [-1, 1]):
             for combination in it.permutations(range(3)):
                 rotated_beacons = {tuple(sign * beacon[idx] for sign, idx in zip(signs, combination)) for beacon in beacons}
-                for beacon1 in rotated_beacons:
-                    for beacon2 in scanners[ref]:
-                        position = tuple(psub(beacon2, beacon1))
-                        absolute_positions = {tuple(padd(beacon, position)) for beacon in rotated_beacons}
-                        matches = len(absolute_positions & scanners[ref])
-                        if matches >= 12: 
-                            all_beacons |= {tuple(padd(pos, positions[ref])) for pos in absolute_positions}
-                            scanners[scanner] = rotated_beacons
-                            return tuple(padd(position, positions[ref]))
-        return None   
-    
+                positions = Counter(tsub(beacon2, beacon1) for beacon1 in rotated_beacons for beacon2 in scanners[ref])
+                position, matches = positions.most_common(1)[0]
+                if matches >= 12:
+                    all_beacons |= {tsum(beacon, position, scanner_positions[ref]) for beacon in rotated_beacons}
+                    scanners[scanner] = rotated_beacons
+                    scanner_positions[scanner] = tadd(position, scanner_positions[ref])
+                    return True
+        return False   
     
     checked = defaultdict(set)
-    while len(positions.keys()) != len(scanners.keys()):
+    while len(scanner_positions.keys()) != len(scanners.keys()):
         for scanner in scanners.keys():
-            if scanner in positions.keys(): continue
-            for ref in positions.keys():
+            if scanner in scanner_positions.keys(): continue
+            for ref in scanner_positions.keys():
                 if ref in checked[scanner]: continue
                 pos = find_position(scanner, ref)
                 checked[scanner].add(ref)
-                if pos: 
-                    positions[scanner] = pos
-                    break
+                if pos: break    
                 
-    return len(all_beacons), positions
+    return len(all_beacons), scanner_positions
 
 def solve2(scanners):
     return max(pdist1(scanners[x], scanners[y]) for x, y in it.combinations(scanners, 2))     
