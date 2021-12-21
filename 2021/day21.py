@@ -1,6 +1,6 @@
 from utils import *
 
-inp = get_data(year=2021)
+inp = get_data(year=2021, day=21)
 
 
 def solve1(d):

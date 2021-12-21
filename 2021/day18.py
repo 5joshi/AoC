@@ -1,6 +1,6 @@
 from utils import *
 
-inp = get_data(year=2021)
+inp = get_data(year=2021, day=18)
 
 def explode(l, parents=[]):
     if isinstance(l, int):
