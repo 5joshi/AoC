@@ -29,7 +29,7 @@ def solve1(d):
                     if cell > 9:
                         new_grid[x][y] = 0
                         
-                        for (nx, ny) in get_neighbors_coords(grid, x, y, OCT_DELTA):
+                        for (nx, ny) in grid_neighbors(grid, x, y, OCT_DELTA):
                             if new_grid[nx][ny] != 0:
                                 new_grid[nx][ny] += 1
                                 
@@ -58,7 +58,7 @@ def solve2(d):
                     if cell > 9:
                         new_grid[x][y] = 0
                         
-                        for (nx, ny) in get_neighbors_coords(grid, x, y, OCT_DELTA):
+                        for (nx, ny) in grid_neighbors(grid, x, y, OCT_DELTA):
                             if new_grid[nx][ny] != 0:
                                 new_grid[nx][ny] += 1
                                 
