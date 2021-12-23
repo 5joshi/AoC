@@ -3,10 +3,10 @@ from utils import *
 inp = get_data(year=2021)
 
 COSTS = {"A": 1, "B": 10, "C": 100, "D": 1000}
+TARGETS = {"A": 0, "B": 1, "C": 2, "D": 3}
 WAITING_SPOTS = [1, 2, 4, 6, 8, 10, 11]
-ROOMS = [((2, 3), (3, 3)), ((2, 5), (3, 5)), ((2, 7), (3, 7)), ((2, 9), (3, 9))]
-NEW_ROOMS = [((2, 3), (3, 3), (4, 3), (5, 3)), ((2, 5), (3, 5), (4, 5), (5, 5)), ((2, 7), (3, 7), (4, 7), (5, 7)), ((2, 9), (3, 9), (4, 9), (5, 9))]
-LETTER_GOAL = {"A": 0, "B": 1, "C": 2, "D": 3}
+ROOMS = [tuple((x, y) for x in range(2, 4)) for y in [3, 5, 7, 9]]
+NEW_ROOMS = [tuple((x, y) for x in range(2, 6)) for y in [3, 5, 7, 9]]
 GOAL = """#############
 #...........#
 ###A#B#C#D###
@@ -22,20 +22,21 @@ NEW_GOAL = """#############
   #########
 """
 
-def print_state(state):
-    print_out = defaultdict(lambda: "#")
-    for pos in [(1, x) for x in range(1, 12)]:
-        print_out[pos] = '.'
-    for top, bottom in ROOMS:
-        print_out[top] = "."
-        print_out[bottom] = "."
+def print_state(state, part=1):
+    grid = defaultdict(lambda: "#")
+    for pos in [(1, x) for x in range(1, 12)] + flatten(ROOMS if part == 1 else NEW_ROOMS):
+        grid[pos] = '.'
     for pos, letter in state:
-        print_out[pos] = letter
-    for x in range(7):
-        for y in range(13):
-            print(print_out[(x, y)], end="")
-        print()
+        grid[pos] = letter
+    for x in range(5 if part == 1 else 7):
+        for y in range(0 if x < 3 else 2, 13 if x < 3 else 11):
+            print(grid[(x, y)], end="")
+        print("\n" + ("  " if x >= 2 else ""), end="")
     
+def print_path(path, part=1):
+    for state in path[1]:
+        print_state(state, part)
+        print()
 
 def state_from_inp(inp):
     state = set()
@@ -55,12 +56,12 @@ def solve1(d):
         new_state.add((goal, letter))
         return frozenset(new_state)
     
-    def move_cost(letter, start, goal):
+    def cost(letter, start, goal):
         # print(start, goal)
         return pdist1(start, goal) * COSTS[letter]
     
     def expand(state):
-        nonlocal move_cost, new_state
+        nonlocal cost, new_state
         result = []
         
         occupied = {pos: letter for pos, letter in state}
@@ -70,40 +71,40 @@ def solve1(d):
                 for pos in WAITING_SPOTS:
                     if not any([(1, y) in occupied for y in range(min(pos, col), max(pos, col)+1)]):
                         letter = occupied[top]
-                        result.append((move_cost(letter, top, (1, pos)), new_state(state, letter, top, (1, pos))))
+                        result.append((cost(letter, top, (1, pos)), new_state(state, letter, top, (1, pos))))
             elif bottom in occupied:
                 for pos in WAITING_SPOTS:
                     if not any([(1, y) in occupied for y in range(min(pos, col), max(pos, col)+1)]):
                         letter = occupied[bottom]
-                        result.append((move_cost(letter, bottom, (1, pos)), new_state(state, letter, bottom, (1, pos))))   
+                        result.append((cost(letter, bottom, (1, pos)), new_state(state, letter, bottom, (1, pos))))   
             
         for pos, letter in occupied.items():
             if pos in [(1, y) for y in WAITING_SPOTS]:
-                top, bottom = ROOMS[LETTER_GOAL[letter]]
+                top, bottom = ROOMS[TARGETS[letter]]
                 col1 = pos[1]
                 col2 = top[1]
                 if sum([(1, y) in occupied for y in range(min(col1, col2), max(col1, col2)+1)]) == 1:
                     if top not in occupied and bottom not in occupied:
-                        result.append((move_cost(letter, pos, bottom), new_state(state, letter, pos, bottom)))
+                        result.append((cost(letter, pos, bottom), new_state(state, letter, pos, bottom)))
                     elif top not in occupied and occupied[bottom] == letter:
-                        result.append((move_cost(letter, pos, top), new_state(state, letter, pos, top)))
+                        result.append((cost(letter, pos, top), new_state(state, letter, pos, top)))
 
-        return result
-    
-    # for cost, state in expand(start):
-    #     print(cost)
-    #     print_state(state)        
+        return result   
             
-    path = a_star(start, goal, expand)        
-    print(path)
-    for state in path[1]:
-        print_state(state)
-        print()
+    def heuristic(state):
+        cost = 0
+        for pos, letter in state:
+            goal = NEW_ROOMS[TARGETS[letter]]
+            if pos not in goal:
+                cost += pdist1(pos, goal[0]) * COSTS[letter]
+        return cost
+            
+    path = a_star(start, goal, expand, heuristic)           
+    # print_path(path)
     return path[0]
 
 def solve2(d):
     d = "\n".join(d.splitlines()[:3] + ["  #D#C#B#A#  ", "  #D#B#A#C#  "] + d.splitlines()[3:])
-    print(d)
     start = state_from_inp(d)
     goal = state_from_inp(NEW_GOAL)
     
@@ -147,13 +148,9 @@ def solve2(d):
             
         for pos, letter in occupied.items():
             if pos in [(1, y) for y in WAITING_SPOTS]:
-                top, midtop, midbottom, bottom = NEW_ROOMS[LETTER_GOAL[letter]]
+                top, midtop, midbottom, bottom = NEW_ROOMS[TARGETS[letter]]
                 col1 = pos[1]
                 col2 = top[1]
-                # print(top, midtop, midbottom, bottom)
-                # print_state(state)
-                # print([cell not in occupied for cell in [top, midtop, midbottom, bottom]])
-                # print([occupied[cell] if cell in occupied else " - " for cell in [top, midtop, midbottom, bottom]])
                 if sum([(1, y) in occupied for y in range(min(col1, col2), max(col1, col2)+1)]) == 1:
                     if all([cell not in occupied for cell in [top, midtop, midbottom, bottom]]):
                         result.append((move_cost(letter, pos, bottom), new_state(state, letter, pos, bottom)))
@@ -167,17 +164,18 @@ def solve2(d):
                         if all([cell in occupied and occupied[cell] == letter for cell in [midtop, midbottom, bottom]]):
                             result.append((move_cost(letter, pos, top), new_state(state, letter, pos, top)))
 
-        return result
-    
-    # for cost, state in expand(start):
-    #     print(cost)
-    #     print_state(state)        
+        return result    
             
-    path = a_star(start, goal, expand)        
-    print(path)
-    for state in path[1]:
-        print_state(state)
-        print()
+    def heuristic(state):
+        cost = 0
+        for pos, letter in state:
+            goal = NEW_ROOMS[TARGETS[letter]]
+            if pos not in goal:
+                cost += pdist1(pos, goal[0]) * COSTS[letter]
+        return cost
+            
+    path = a_star(start, goal, expand, heuristic)        
+    # print_path(path, part=2)
     return path[0]
 
 
@@ -195,9 +193,9 @@ s2 = """#############
 """
 
 print("PART 1")
-# print("Example Solution:", solve1(s))
-# # print("Example 2 Solution:", solve1(s2))
-# print("Actual Solution:", solve1(inp))
+print("Example Solution:", solve1(s))
+# print("Example 2 Solution:", solve1(s2))
+print("Actual Solution:", solve1(inp))
 
 print("PART 2")
 print("Example Solution:", solve2(s))

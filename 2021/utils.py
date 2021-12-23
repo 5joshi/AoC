@@ -2,6 +2,7 @@
 #region Imports
 import collections
 import copy
+import datetime
 import functools as ft
 import heapq
 import itertools as it
@@ -978,6 +979,12 @@ import sys
 import typing
 """
 def time(day, part, amount=100):
+    print(f"TIMING DAY {day} PART {part}")
+    print("===============================")
+    print(f"Time started: {datetime.datetime.now()}")
+    print(f"Running solution {amount} times...")
     time = timeit.timeit(stmt=f"solve{part}(inp)", setup=f"{imports}\nfrom day{day} import solve{part}, inp\n", number=amount) / amount
-    print(f"Time taken: {time}s -- {time * 1000}ms -- {time * 1000 * 1000}µs")
+    print(f"Time stopped: {datetime.datetime.now()}")
+    print(f"Average time taken: {time}s -- {time * 1000}ms -- {time * 1000 * 1000}µs")
+    print()
     
