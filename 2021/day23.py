@@ -47,7 +47,7 @@ def state_from_inp(inp):
     return frozenset(state)
 
 
-def solve1(d, rooms=ROOMS, goal=GOAL):
+def solve1(d, rooms=ROOMS, goal=GOAL, part=1):
     start = state_from_inp(d)
     goal = state_from_inp(goal)
     
@@ -97,12 +97,12 @@ def solve1(d, rooms=ROOMS, goal=GOAL):
         return cost
             
     path = a_star(start, goal, expand, heuristic)           
-    # print_path(path)
+    # print_path(path, part)
     return path[0]
 
 def solve2(d):
     d = "\n".join(d.splitlines()[:3] + ["  #D#C#B#A#  ", "  #D#B#A#C#  "] + d.splitlines()[3:])
-    return solve1(d, NEW_ROOMS, NEW_GOAL)
+    return solve1(d, NEW_ROOMS, NEW_GOAL, part=2)
 
 
 s = """#############
