@@ -323,7 +323,7 @@ def dijkstra(
     seen = set()  # type: typing.Set[T]
     g_values = {from_node: 0}  # type: typing.Dict[T, int]
     parents = {}  # type: typing.Dict[T, T]
-
+    
     # (f, g, n)
     todo = [(0 + heuristic(from_node), 0, from_node)]  # type: typing.List[typing.Tuple[int, int, T]]
 
