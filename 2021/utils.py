@@ -1,5 +1,6 @@
 # Credits to mcpower for pretty much all of these utils
 #region Imports
+import abc
 import collections
 import copy
 import datetime
@@ -8,6 +9,7 @@ import heapq
 import itertools as it
 import math
 import operator
+import random
 import re
 import sys
 import timeit
@@ -966,6 +968,72 @@ def matexp(a, k):
         k //= 2
     return out
 # endregion
+
+class HillClimbingProblem(abc.ABC):
+    COUNT: int
+    TEMP: int
+    STEP: int
+    ciphertext: str
+    
+    def __init__(self, COUNT, TEMP, STEP):
+        self.COUNT = COUNT
+        self.TEMP = TEMP
+        self.STEP = STEP
+        self.best_solutions = None
+        
+    @abc.abstractmethod
+    def start_key(self, key=None):
+        pass
+    
+    @abc.abstractmethod
+    def mutate_key(self, key):
+        pass
+    
+    @abc.abstractmethod
+    def evaluation(self, key):
+        pass
+    
+    def report(self, *args):
+        print(args)
+
+def hill_climbing(problem, start_key=None):
+    parent = problem.start_key(start_key)
+    parent_score = problem.evaluation(parent)
+
+    best_solution = ([parent], parent_score)
+    
+    temp = problem.TEMP
+    while temp > 0:
+        for _ in range(0, problem.COUNT):
+            child = problem.mutate_key(parent)
+            child_score = problem.evaluation(child)
+
+            delta_score = child_score - parent_score
+            
+            if delta_score >= 0:
+                if child_score == best_solution[1]:
+                    best_solution[0].append(child)
+                elif child_score > best_solution[1]:
+                    best_solution = ([child], child_score)
+
+                parent = child
+                parent_score = child_score
+            else:
+                try:
+                    chance = 1/math.exp(-delta_score / temp)
+                except:
+                    chance = 0
+
+                # print(delta_score, chance)
+                
+                if random.random() < chance:
+                    parent = child
+                    parent_score = child_score
+                    
+        problem.report(parent, parent_score)
+        temp -= problem.STEP         
+
+    return best_solution
 
 
 imports = """import collections as coll

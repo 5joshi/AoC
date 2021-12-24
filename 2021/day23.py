@@ -1,6 +1,6 @@
 from utils import *
 
-inp = get_data(year=2021)
+inp = get_data(year=2021, day=23)
 
 COSTS = {"A": 1, "B": 10, "C": 100, "D": 1000}
 TARGETS = {"A": 0, "B": 1, "C": 2, "D": 3}
