@@ -5,7 +5,7 @@ inp = get_data(year=2022, day=4)
 
 def solve1(d):
     inp = lmap(positive_ints, d.splitlines())
-    return sum([(x1 <= y1 <= y2 <= x2) or (y1 <= x1 <= x2  <= y2) for x1, x2, y1, y2 in inp])
+    return sum([(x1 <= y1 <= y2 <= x2) or (y1 <= x1 <= x2 <= y2) for x1, x2, y1, y2 in inp])
 
 def solve2(d):
     inp = lmap(positive_ints, d.splitlines())
