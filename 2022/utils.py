@@ -872,7 +872,7 @@ class Grid(typing.Generic[T]):
         
     def get_col(self, col: int):
         assert 0 <= col < self.cols, f"row {col} is OOB"
-        return transpose(self.grid)[col]
+        return transpose(*self.grid)[col]
     
     def rows(self):
         return self.grid
