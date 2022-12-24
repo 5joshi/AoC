@@ -34,6 +34,8 @@ def transpose(*iterables):
 def lmap(func, *iterables):
     return list(map(func, *iterables))
 
+def tmap(func, *iterables):
+    return tuple(map(func, *iterables))
 
 def lfilter(func, *iterables):
     return list(filter(func, *iterables))
@@ -764,7 +766,7 @@ def points_to_grid(points, sub_min=True, flip=True):
         points = points_sub_min(points)
     if not flip:
         points = [(y, x) for x, y in points]
-    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, '.')
+    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill='.')
     for x, y in points:
         grid[y][x] = '#'
     return grid
@@ -806,6 +808,12 @@ def psub(x, y):
 
 def tsub(x, y) -> typing.Tuple[T]:
     return tuple(a-b for a, b in zip(x, y))
+
+def pnorm(v):
+    return [i//abs(i) if i != 0 else 0 for i in v]
+
+def tnorm(v):
+    return tuple(i//abs(i) if i != 0 else 0 for i in v)
 
 def pmul(m: int, v):
     return [m * i for i in v]
