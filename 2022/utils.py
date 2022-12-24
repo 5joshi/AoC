@@ -19,6 +19,7 @@ from copy import deepcopy
 from functools import reduce
 from pprint import pprint
 from aocd import get_data, submit
+from tqdm import tqdm
 #endregion
 
 sys.setrecursionlimit(100000)
