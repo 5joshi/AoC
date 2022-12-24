@@ -14,7 +14,6 @@ def solve1(d):
         dist = int(dist)
         
         for _ in range(dist):
-            # print(line[0], head, tail)
             head = tadd(head, direction)
             if any(x > 1 for x in map(abs, tsub(head, tail))):
                 tail_direction = tnorm(tsub(head, tail))
@@ -22,7 +21,6 @@ def solve1(d):
             visited.add(tail)
 
        
-    # print_grid(points_to_grid(list(visited), flip=False))   
     return len(visited)
 
 def solve2(d):
@@ -36,7 +34,6 @@ def solve2(d):
         dist = int(dist)
         
         for _ in range(dist):
-            # print(line[0], head, tail)
             rope[0] = tadd(rope[0], direction)
             for idx in range(1, 10):
                 if any(x > 1 for x in map(abs, tsub(rope[idx-1], rope[idx]))):
