@@ -945,6 +945,9 @@ class Grid(typing.Generic[T]):
     def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> T:
         return self.grid[coord[0]][coord[1]]
     
+    def __setitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]], value) -> T:
+        self.grid[coord[0]][coord[1]] = value
+    
     def print(self, sep=""):
         print("\n".join([sep.join([str(item) for item in line]) for line in self.grid]))
     
