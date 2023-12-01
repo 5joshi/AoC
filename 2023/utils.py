@@ -676,6 +676,18 @@ DELTA_TO_NESW = {
     (1, 0): "S",
     (0, -1): "W",
 }
+NUMS_TO_INTS = {
+    'zero': 0,
+    'one': 1,  
+    'two': 2,  
+    'three': 3,  
+    'four': 4,  
+    'five': 5, 
+    'six': 6,  
+    'seven': 7,  
+    'eight': 8,  
+    'nine': 9
+}
 
 # delta to go from p1 to p2
 def get_delta(p1, p2):

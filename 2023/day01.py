@@ -1004,37 +1004,21 @@ pxreightwo7
 
 
 def solve1(d):
-    inp = lmap(single_ints, d.splitlines())
-    result = 0
-    
-    for line in inp:
-        result += line[0] * 10 + line[-1]
-    
-    return result
+    return sum(nums[0] * 10 + nums[-1] for nums in map(single_ints, d.splitlines()))    
+
+def all_ints(s):
+    nums = []
+    for idx in range(len(s)):
+        if s[idx].isdigit():
+            nums.append(int(s[idx]))
+            continue
+        for num, value in NUMS_TO_INTS.items():
+            if s[idx:].startswith(num): 
+                nums.append(value)
+    return nums
 
 def solve2(d):
-    inp = d.splitlines()
-    nums = {
-        'one': 1,
-        'two': 2,
-        'three': 3,
-        'four': 4,
-        'five': 5,
-        'six': 6,
-        'seven': 7,
-        'eight': 8,
-        'nine': 9
-    }
-    result = 0
-    
-    for line in inp:    
-        for key, value in nums.items():
-            line = line.replace(key, key[:-1] + str(value) + key[1:])
-        line = single_ints(line)
-        if len(line) > 0:
-            result += line[0] * 10 + line[-1]
-    
-    return result
+    return sum(nums[0] * 10 + nums[-1] for nums in map(all_ints, d.splitlines()))
 
 
 s = """1abc2
