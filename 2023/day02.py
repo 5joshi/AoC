@@ -104,46 +104,30 @@ Game 100: 8 red, 3 green; 4 green, 1 blue, 15 red; 10 red, 8 green, 1 blue
 
 
 def solve1(d):
-    inp = d.splitlines()
+    inp = lmap(words_and_ints, d.splitlines())
     result = 0
     
-    for line in inp:
-        line = line.split()
-        game = int(line[1][:-1])
-        red = 0
-        green = 0
-        blue = 0
-        for pair in windows(line[2:], 2):
-            if pair[1].startswith("red"):
-                red = max(red, int(pair[0]))
-            elif pair[1].startswith("green"):
-                green = max(green, int(pair[0]))
-            elif pair[1].startswith("blue"):
-                blue = max(blue, int(pair[0]))
-        result += game if red <= 12 and green <= 13 and blue <= 14 else 0
+    for game in inp:
+        colors = defaultdict(int)
+        
+        for num, color in every_n(game[2:], 2):
+            colors[color] = max(colors[color], num)
+            
+        result += game[1] if (colors['red'] <= 12 and colors['green'] <= 13 and colors['blue'] <= 14) else 0
     
     return result
 
 def solve2(d):
-    inp = d.splitlines()
+    inp = lmap(words_and_ints, d.splitlines())
     result = 0
     
-    for line in inp:
-        line = line.split()
-        game = int(line[1][:-1])
-        red = 0
-        green = 0
-        blue = 0
-        for pair in windows(line[2:], 2):
-            if pair[1].startswith("red"):
-                red = max(red, int(pair[0]))
-            elif pair[1].startswith("green"):
-                green = max(green, int(pair[0]))
-            elif pair[1].startswith("blue"):
-                blue = max(blue, int(pair[0]))
-        result += red * green * blue
-    
-    
+    for game in inp:
+        colors = defaultdict(int)
+        
+        for num, color in every_n(game[2:], 2):
+            colors[color] = max(colors[color], num)
+            
+        result += reduce(operator.mul, colors.values(), 1)
     
     return result
 

@@ -35,6 +35,9 @@ def transpose(*iterables):
 def lmap(func, *iterables):
     return list(map(func, *iterables))
 
+def lzip(*iterables):
+    return list(zip(*iterables))
+
 def tmap(func, *iterables):
     return tuple(map(func, *iterables))
 
@@ -149,6 +152,11 @@ def positive_floats(s: str) -> typing.List[float]:
 def words(s: str) -> typing.List[str]:
     return re.findall(r"[a-zA-Z]+", s)
 
+def alphanumerics(s: str) -> typing.List[str]:
+    return re.findall(r"[a-zA-Z0-9]+", s)
+
+def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
+    return lmap(lambda x: int(x) if x.isnumeric() else x, re.findall(r"[a-zA-Z]+|\d+", s))
 
 def keyvalues(d):
     return list(d.items())  # keep on forgetting this...
