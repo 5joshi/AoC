@@ -2,7 +2,6 @@ from utils import *
 
 # inp = get_data(year=2022, day=12)
 
-
 def solve1(d):
     grid = Grid(lmap(lambda x: list(x), d.splitlines()))
     start = grid.find('S')
