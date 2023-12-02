@@ -95,6 +95,10 @@ def gauss_sum(n):
     return (n * (n + 1)) // 2
 
 
+def product(l):
+    return reduce(operator.mul, l, 1)
+
+
 def min_max(l):
     return min(l), max(l)
 
