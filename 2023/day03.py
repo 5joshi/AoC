@@ -163,9 +163,9 @@ def solve2(d):
     
     for idx, coord in zip(indices, grid.findall_regex(r"\d")):
         for gear_coord in filter(lambda x: grid[x] == '*', grid.get_neighbors_coords(coord, OCT_DELTA)):
-            gears[gear_coord] |= {nums[idx]}
+            gears[gear_coord] |= {idx}
     
-    return sum([product(nums) for nums in gears.values() if len(nums) > 1])
+    return sum([product([nums[idx] for idx in indices]) for indices in gears.values() if len(nums) > 1])
 
 
 s = """467..114..
