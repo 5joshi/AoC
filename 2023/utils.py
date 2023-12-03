@@ -930,6 +930,20 @@ class Grid(typing.Generic[T]):
                 result.append(c)
         return result
     
+    def findall_regex(self, regex) -> typing.Tuple[int, int]:
+        result = []
+        for c in self.coords():
+            if re.match(regex, self[c]):
+                result.append(c)
+        return result
+    
+    def findall_func(self, func) -> typing.Tuple[int, int]:
+        result = []
+        for c in self.coords():
+            if func(self[c]):
+                result.append(c)
+        return result
+    
     def count(self, item: T) -> int:
         return sum([row.count(item) for row in self.grid])
     

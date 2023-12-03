@@ -144,55 +144,28 @@ inp = """...788.............................54.........501...........555........
 
 
 def solve1(d):
-    inp = d.splitlines()
-    result = 0
+    grid = Grid(lmap(list, d.splitlines()))
+    nums = positive_ints(d)
+    indices = flatten([[idx] * len(str(num)) for idx, num in enumerate(nums)])
+    valid_indices = set()
     
-    for idx, line in enumerate(inp):
-        matches = re.finditer(r"\d+", line)
-        for match in matches:
-            start = match.start(0)
-            end = match.end(0)
-            
-            num = int(match.group(0))
-            
-            check = inp[max(idx-1, 0)][max(start-1, 0):min(end+1,len(line)-1)]
-            check += inp[idx][max(start-1, 0):min(end+1,len(line)-1)] 
-            check += inp[min(idx+1, len(inp)-1)][max(start-1, 0):min(end+1,len(line)-1)]
-            if len(re.sub(r"[\d\.]", "", check)) > 0:
-                result += num
+    for idx, coord in zip(indices, grid.findall_regex(r"\d")):
+        if any(map(lambda x: x not in '.0123456789', grid.get_neighbors(coord, OCT_DELTA))):
+            valid_indices.add(idx)
     
-    return result
+    return sum([nums[idx] for idx in valid_indices])
 
 def solve2(d):
-    inp = d.splitlines()
-    result = 0
+    grid = Grid(lmap(list, d.splitlines()))
+    nums = positive_ints(d)
+    indices = flatten([[idx] * len(str(num)) for idx, num in enumerate(nums)])
+    gears = defaultdict(set)
     
-    gears = defaultdict(lambda: (0, 1))
+    for idx, coord in zip(indices, grid.findall_regex(r"\d")):
+        for gear_coord in filter(lambda x: grid[x] == '*', grid.get_neighbors_coords(coord, OCT_DELTA)):
+            gears[gear_coord] |= {nums[idx]}
     
-    for idx, line in enumerate(inp):
-        matches = re.finditer(r"\d+", line)
-        for match in matches:
-            start = match.start(0)
-            end = match.end(0)
-            
-            num = int(match.group(0))
-            
-            check = [inp[max(idx-1, 0)][max(start-1, 0):min(end+1,len(line)-1)]]
-            check += [inp[idx][max(start-1, 0):min(end+1,len(line)-1)] ]
-            check += [inp[min(idx+1, len(inp)-1)][max(start-1, 0):min(end+1,len(line)-1)]]
-            for row_idx, row in enumerate(check):
-                matches_gears = re.finditer("\*", row)
-                for gear in matches_gears:
-                    gear_start = gear.start(0)
-                    
-                    curr = gears[(max(idx + row_idx - 1, 0), max(start + gear_start - (1 if start > 0 else 0), 0))]
-                    gears[(max(idx + row_idx - 1, 0), max(start + gear_start - (1 if start > 0 else 0), 0))] = (curr[0] + 1, curr[1] * num)
-                
-    for key, value in gears.items():
-        if value[0] > 1:
-            result += value[1]
-    
-    return result
+    return sum([product(nums) for nums in gears.values() if len(nums) > 1])
 
 
 s = """467..114..
