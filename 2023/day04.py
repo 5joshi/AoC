@@ -215,46 +215,25 @@ Card 211: 64 96 60 28 57 95 52 85 61 24 | 72 81 21 30 10 77 97 69 68 34 83 33 42
 
 
 def solve1(d):
-    inp = d.splitlines()
+    inp = lmap(lambda line: lmap(lambda group: set(ints(group)), re.split(r'[:|]', line)), d.splitlines())
     result = 0
     
-    for line in inp:
-        line = line.split('|')
-        winning = set(ints(line[0])[1:])
-        owned = set(ints(line[1]))
-        matching = winning.intersection(owned)
-        tmp = len(matching) 
-        if tmp >= 1:
-            print(tmp, matching, 2 ** (tmp - 1))
-
-            result += 2 ** (tmp - 1)
-                
+    for _, winning, owned in inp:
+        matching = len(winning.intersection(owned))
+        result += (2 ** (matching - 1)) if matching else 0
     
     return result
 
 def solve2(d):
-    inp = lmap(lambda line: line.split('|'), d.splitlines())
+    inp = lmap(lambda line: lmap(lambda group: set(ints(group)), re.split(r'[:|]', line)), d.splitlines())
+    copies = defaultdict(int)
     
-    matches = dict()
-    scratchcards = defaultdict(lambda: 1)
-    
-    
-    for idx, line in enumerate(inp):
-        winning = set(ints(line[0])[1:])
-        owned = set(ints(line[1]))
-        matching = winning.intersection(owned)
-        matches[idx] = len(matching)
-                
-                
-    for idx, matchcount in matches.items():
-        for i in range(matchcount):
-            for _ in range(scratchcards[idx]):
-                scratchcards[idx+i+1] += 1
-        if matchcount == 0:
-            scratchcards[idx] = scratchcards[idx] 
-    
-    print(scratchcards.items())
-    return sum(scratchcards.values())
+    for (idx, (_, winning, owned)) in enumerate(inp):
+        copies[idx] += 1
+        for match in range(len(winning.intersection(owned))):
+            copies[idx + match + 1] += copies[idx]
+
+    return sum(copies.values())
 
 
 s = """Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
