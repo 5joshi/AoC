@@ -222,14 +222,14 @@ def solve1(d):
 def solve2(d):
     inp = lmap(lambda split: len(set(ints(split[1])).intersection(set(ints(split[2])))), 
                map(lambda line: re.split(r'[:|]', line), d.splitlines())) 
-    copies = defaultdict(int)
+    copies = [0] * len(inp)
     
     for idx, matches in enumerate(inp):
         copies[idx] += 1
         for match in range(matches):
             copies[idx + match + 1] += copies[idx]
 
-    return sum(copies.values())
+    return sum(copies)
 
 
 s = """Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
