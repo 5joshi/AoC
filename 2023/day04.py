@@ -215,22 +215,18 @@ Card 211: 64 96 60 28 57 95 52 85 61 24 | 72 81 21 30 10 77 97 69 68 34 83 33 42
 
 
 def solve1(d):
-    inp = lmap(lambda line: lmap(lambda group: set(ints(group)), re.split(r'[:|]', line)), d.splitlines())
-    result = 0
-    
-    for _, winning, owned in inp:
-        matching = len(winning.intersection(owned))
-        result += (2 ** (matching - 1)) if matching else 0
-    
-    return result
+    inp = lmap(lambda split: len(set(ints(split[1])).intersection(set(ints(split[2])))), 
+               map(lambda line: re.split(r'[:|]', line), d.splitlines())) 
+    return sum([(2 ** (matching - 1)) if matching else 0 for matching in inp])
 
 def solve2(d):
-    inp = lmap(lambda line: lmap(lambda group: set(ints(group)), re.split(r'[:|]', line)), d.splitlines())
+    inp = lmap(lambda split: len(set(ints(split[1])).intersection(set(ints(split[2])))), 
+               map(lambda line: re.split(r'[:|]', line), d.splitlines())) 
     copies = defaultdict(int)
     
-    for (idx, (_, winning, owned)) in enumerate(inp):
+    for idx, matches in enumerate(inp):
         copies[idx] += 1
-        for match in range(len(winning.intersection(owned))):
+        for match in range(matches):
             copies[idx + match + 1] += copies[idx]
 
     return sum(copies.values())
