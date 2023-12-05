@@ -270,7 +270,7 @@ def solve2(d):
     inp = d.split('\n\n')
     seeds = every_n(ints(inp[0]), 2)
     seeds = [(seed, seed+length) for (seed, length) in seeds]
-    min_result = 500000000000000000
+    min_result = math.inf
 
     for min_seed, max_seed in seeds:
         seed_ranges = [(min_seed, max_seed)]
