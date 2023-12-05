@@ -252,13 +252,10 @@ humidity-to-location map:
 
 def solve1(d):
     inp = d.split('\n\n')
-    result = 0
     seeds = ints(inp[0])
     
     for conversion in inp[1:]:
         conversion = conversion.splitlines()
-        frm, _, to, _ = words(conversion[0])
-        convert = dict()
         new_seeds = seeds.copy()
         for line in conversion[1:]:
             source, destination, length = ints(line)
@@ -266,7 +263,6 @@ def solve1(d):
                 if destination <= seed < destination + length:
                     new_seeds[idx] = source + seed - destination
         seeds = new_seeds
-                    
         
     return min(seeds)
 
