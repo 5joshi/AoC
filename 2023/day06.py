@@ -4,57 +4,19 @@ inp = """Time:        40     92     97     90
 Distance:   215   1064   1505   1100
 """
 
+def hold_time(time, dist):
+    for hold in range(time):
+        remaining = time - hold
+        if hold * remaining > dist:
+            return hold
 
 def solve1(d):
-    times, distances = lmap(ints, d.splitlines())
-    result = 1
-    
-    for time, dist in zip(times, distances):
-        left = 0
-        right = 0
-        for i in range(time):
-            speed = i
-            left = time - i
-            if speed * left > dist:
-                left = i
-                break
-        for i in range(time, 0, -1):
-            speed = i
-            right = time - i
-            if speed * right > dist:
-                right = i
-                break
-        print(left, right)
-        result *= right - left + 1
-    
-    return result
+    return product([time - 2 * hold_time(time, dist) + 1 for time, dist in zip(*map(ints, d.splitlines()))])
 
 def solve2(d):
-    times, distances = lmap(ints, d.splitlines())
-    times = [str(x) for x in times]
-    distances = [str(x) for x in distances]
-    time = int("".join(times))
-    dist = int("".join(distances))
-    result = 1
-    
-    left = 0
-    right = 0
-    for i in range(time):
-        speed = i
-        left = time - i
-        if speed * left > dist:
-            left = i
-            break
-    for i in range(time, 0, -1):
-        speed = i
-        right = time - i
-        if speed * right > dist:
-            right = i
-            break
-    print(left, right)
-    result *= right - left + 1
-    
-    return result
+    time, dist = lmap(lambda line: int("".join(line[1:])), map(alphanumerics, d.splitlines()))
+    return time - 2 * hold_time(time, dist) + 1
+
 
 
 s = """Time:      7  15   30
