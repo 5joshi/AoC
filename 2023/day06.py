@@ -5,10 +5,7 @@ Distance:   215   1064   1505   1100
 """
 
 def hold_time(time, dist):
-    for hold in range(time):
-        remaining = time - hold
-        if hold * remaining > dist:
-            return hold
+    return binary_search(lambda x: x * (time - x) > dist, lo=0, hi=time // 2)
 
 def solve1(d):
     return product([time - 2 * hold_time(time, dist) + 1 for time, dist in zip(*map(ints, d.splitlines()))])
