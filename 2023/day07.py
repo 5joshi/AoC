@@ -1005,51 +1005,30 @@ TA4Q3 723
 
 
 def hand_tier(hand):
-    counts = list(Counter(hand).values())
-    if 5 in counts:
-        return 1
-    elif 4 in counts:
-        return 2
-    elif ((3 in counts and 2 in counts) or counts.count(3) == 2) and counts.count(2) < 2:
-        return 3
-    elif 3 in counts:
-        return 4
-    elif counts.count(2) == 2:
-        return 5
-    elif 2 in counts:
-        return 6
-    else:
-        return 7
+    counter = Counter(hand)
+    counts = [counter[x] for x in counter if x != 1]
+    if counts.count(2) == 2:
+        return 2.5 + counter[1]
+    if (3 in counts and 2 in counts):
+        return 3.5
+    return max(counts + [0]) + counter[1]
         
+CARDS_TO_NUMS = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
 
-def solve1(d):
+def solve1(d, cards_to_nums=CARDS_TO_NUMS):
     inp = lmap(lambda l: l.split(), d.splitlines())
-    CARDS_TO_NUMS = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
     ranks = []
     
     for hand, bid in inp:
-        hand = [int(x) if x.isdigit() else CARDS_TO_NUMS[x] for x in hand]
+        hand = [int(x) if x.isdigit() else cards_to_nums[x] for x in hand]
         value = "".join(map(lambda num: str(num).zfill(2), hand))
         tier = hand_tier(hand)
-        ranks.append((tier, value, int(bid)))
+        ranks.append((tier, int(value), int(bid)))
     
-    ranks.sort(key=lambda x: (-x[0], int(x[1])))
-    return sum([(rank + 1) * bid for rank, (_, _, bid) in enumerate(ranks)])
+    return sum([(rank + 1) * bid for rank, (_, _, bid) in enumerate(sorted(ranks))])
 
 def solve2(d):
-    inp = lmap(lambda l: l.split(), d.splitlines())
-    CARDS_TO_NUMS = {"T": 10, "J": 1, "Q": 12, "K": 13, "A": 14}
-    ranks = []
-    
-    for hand, bid in inp:
-        hand = [int(x) if x.isdigit() else CARDS_TO_NUMS[x] for x in hand]
-        value = "".join(map(lambda num: str(num).zfill(2), hand))
-        hand = flatten([list(range(1, 15)) if x == 1 else [x] for x in hand])
-        tier = hand_tier(hand)
-        ranks.append((tier, value, int(bid)))
-    
-    ranks.sort(key=lambda x: (-x[0], int(x[1])))
-    return sum([(rank + 1) * bid for rank, (_, _, bid) in enumerate(ranks)])
+    return solve1(d, cards_to_nums={"T": 10, "J": 1, "Q": 12, "K": 13, "A": 14})
 
 
 s = """32T3K 765
@@ -1058,7 +1037,7 @@ KK677 28
 KTJJT 220
 QQQJA 483
 """
-s2 = """32JJ1 1
+s2 = """32JJ4 1
 32J22 1
 33J22 1
 JJ332 1
