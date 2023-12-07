@@ -1,8 +1,6 @@
 from utils import *
 
-inp = """Time:        40     92     97     90
-Distance:   215   1064   1505   1100
-"""
+inp = get_data(year=2023, day=6)
 
 def hold_time(time, dist):
     return binary_search(lambda x: x * (time - x) > dist, lo=0, hi=time // 2)

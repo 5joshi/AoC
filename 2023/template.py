@@ -1,8 +1,6 @@
 from utils import *
 
-inp = """
-"""
-
+inp = get_data(year=2023)
 
 def solve1(d):
     inp = d.splitlines()
