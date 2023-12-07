@@ -28,24 +28,29 @@ def solve2(d):
     return solve1(d, cards_to_nums={"T": 10, "J": 1, "Q": 12, "K": 13, "A": 14})
 
 
-s = """32T3K 765
+s = """
+32T3K 765
 T55J5 684
 KK677 28
 KTJJT 220
 QQQJA 483
-"""
-s2 = """32JJ4 1
+""".strip()
+s2 = """
+32JJ4 1
 32J22 1
 33J22 1
 JJ332 1
-"""
+""".strip()
 
-print("PART 1")
-print("Example Solution:", solve1(s))
-# print("Example 2 Solution:", solve1(s2))
-print("Actual Solution:", solve1(inp))
+if __name__ == '__main__':
+    e1, e2, ex1, ex2, r1, r2 = get_solution_booleans(sys.argv)
+            
+    if e1 or ex1 or r1: print("PART 1")
+    if e1: print("Example Solution:", solve1(s))
+    if ex1: print("Example 2 Solution:", solve1(s2))
+    if r1: print("Actual Solution:", solve1(inp))
 
-print("PART 2")
-print("Example Solution:", solve2(s))
-# print("Example 2 Solution:", solve2(s2))
-print("Actual Solution:", solve2(inp))
+    if e2 or ex2 or r2: print("PART 2")
+    if e2: print("Example Solution:", solve2(s))
+    if ex2: print("Example 2 Solution:", solve2(s2))
+    if r2: print("Actual Solution:", solve2(inp))
