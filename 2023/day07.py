@@ -1004,10 +1004,8 @@ TA4Q3 723
 
 
 
-def hand_rank(hand):
-    hand_dict = Counter(hand)
-    counts = list(hand_dict.values())
-    print(hand_dict)
+def hand_tier(hand):
+    counts = list(Counter(hand).values())
     if 5 in counts:
         return 1
     elif 4 in counts:
@@ -1025,79 +1023,33 @@ def hand_rank(hand):
         
 
 def solve1(d):
-    inp = d.splitlines()
-    result = 0
-    hand_dict = {}
+    inp = lmap(lambda l: l.split(), d.splitlines())
+    CARDS_TO_NUMS = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
+    ranks = []
     
-    for line in inp:
-        hand, bid = line.split()
-        hand = list(hand)
-        new_hand = []
-        for elem in hand:
-            if elem.isdigit():
-                new_hand.append(int(elem))
-            elif elem == "T":
-                new_hand.append(10)
-            elif elem == "J":
-                new_hand.append(11)
-            elif elem == "Q":
-                new_hand.append(12)
-            elif elem == "K":
-                new_hand.append(13)
-            elif elem == "A":
-                new_hand.append(14)
-                new_hand.append(1)
-        rank = hand_rank(hand)
-        num = ""
-        for elem in new_hand:
-            if elem != 1:
-                num += str(elem).zfill(2)
-        hand_dict[(rank, num)] = bid
+    for hand, bid in inp:
+        hand = [int(x) if x.isdigit() else CARDS_TO_NUMS[x] for x in hand]
+        value = "".join(map(lambda num: str(num).zfill(2), hand))
+        tier = hand_tier(hand)
+        ranks.append((tier, value, int(bid)))
     
-    for idx, key in enumerate(sorted(hand_dict.keys())):
-        result += (len(hand_dict) - idx) * int(hand_dict[key])
-        
-    return result
+    ranks.sort(key=lambda x: (-x[0], int(x[1])))
+    return sum([(rank + 1) * bid for rank, (_, _, bid) in enumerate(ranks)])
 
 def solve2(d):
-    inp = d.splitlines()
-    result = 0
-    hand_dict = {}
+    inp = lmap(lambda l: l.split(), d.splitlines())
+    CARDS_TO_NUMS = {"T": 10, "J": 1, "Q": 12, "K": 13, "A": 14}
+    ranks = []
     
-    for line in inp:
-        hand, bid = line.split()
-        hand = list(hand)
-        new_hand = []
-        tmp = []
-        for elem in hand:
-            if elem.isdigit():
-                new_hand.append(int(elem))
-                tmp.append(int(elem))
-            elif elem == "T":
-                new_hand.append(10)
-                tmp.append(10)
-            elif elem == "J":
-                new_hand.extend(range(2, 15))
-                tmp.append(1)
-            elif elem == "Q":
-                new_hand.append(12)
-                tmp.append(12)
-            elif elem == "K":
-                new_hand.append(13)
-                tmp.append(13)
-            elif elem == "A":
-                new_hand.append(14)
-                tmp.append(14)
-        rank = hand_rank(new_hand)
-        num = ""
-        for elem in tmp:
-            num += str(elem).zfill(2)
-        hand_dict[(rank, -int(num))] = (bid, hand, rank)
+    for hand, bid in inp:
+        hand = [int(x) if x.isdigit() else CARDS_TO_NUMS[x] for x in hand]
+        value = "".join(map(lambda num: str(num).zfill(2), hand))
+        hand = flatten([list(range(1, 15)) if x == 1 else [x] for x in hand])
+        tier = hand_tier(hand)
+        ranks.append((tier, value, int(bid)))
     
-    for idx, key in enumerate(sorted(hand_dict.keys())):
-        result += (len(hand_dict) - idx) * int(hand_dict[key][0])
-    # print(sorted(hand_dict))
-    return result
+    ranks.sort(key=lambda x: (-x[0], int(x[1])))
+    return sum([(rank + 1) * bid for rank, (_, _, bid) in enumerate(ranks)])
 
 
 s = """32T3K 765
@@ -1113,11 +1065,11 @@ JJ332 1
 """
 
 print("PART 1")
-# print("Example Solution:", solve1(s))
+print("Example Solution:", solve1(s))
 # print("Example 2 Solution:", solve1(s2))
-# print("Actual Solution:", solve1(inp))
+print("Actual Solution:", solve1(inp))
 
 print("PART 2")
 print("Example Solution:", solve2(s))
-print("Example 2 Solution:", solve2(s2))
+# print("Example 2 Solution:", solve2(s2))
 print("Actual Solution:", solve2(inp))

@@ -44,7 +44,6 @@ def tmap(func, *iterables):
 def lfilter(func, *iterables):
     return list(filter(func, *iterables))
 
-
 def make_grid(*dimensions: typing.List[int], fill=None):
     "Returns a grid such that 'dimensions' is juuust out of bounds."
     if len(dimensions) == 1:
