@@ -4,6 +4,7 @@ import abc
 import collections
 import copy
 import datetime
+from enum import Enum
 import functools as ft
 import heapq
 import itertools as it
@@ -19,6 +20,7 @@ from copy import deepcopy
 from functools import reduce
 from pprint import pprint
 from aocd import get_data, submit
+from tqdm import tqdm
 #endregion
 
 sys.setrecursionlimit(100000)
@@ -30,14 +32,22 @@ T = typing.TypeVar("T")
 def transpose(*iterables):
     return list(zip(*iterables))
 
-
 def lmap(func, *iterables):
     return list(map(func, *iterables))
 
+def lzip(*iterables):
+    return list(zip(*iterables))
+
+def tmap(func, *iterables):
+    return tuple(map(func, *iterables))
 
 def lfilter(func, *iterables):
     return list(filter(func, *iterables))
 
+def multi_replace(s, replacements):
+    for old, new in replacements:
+        s = s.replace(old, new)
+    return s
 
 def make_grid(*dimensions: typing.List[int], fill=None):
     "Returns a grid such that 'dimensions' is juuust out of bounds."
@@ -89,6 +99,10 @@ def gauss_sum(n):
     return (n * (n + 1)) // 2
 
 
+def product(l):
+    return reduce(operator.mul, l, 1)
+
+
 def min_max(l):
     return min(l), max(l)
 
@@ -128,6 +142,8 @@ def windows(l, n):
 def ints(s: str) -> typing.List[int]:
     return lmap(int, re.findall(r"-?\d+", s))  # thanks mserrano!
 
+def single_ints(s: str) -> typing.List[int]:
+    return lmap(int, re.findall(r"\d", s))
 
 def positive_ints(s: str) -> typing.List[int]:
     return lmap(int, re.findall(r"\d+", s))  # thanks mserrano!
@@ -144,6 +160,11 @@ def positive_floats(s: str) -> typing.List[float]:
 def words(s: str) -> typing.List[str]:
     return re.findall(r"[a-zA-Z]+", s)
 
+def alphanumerics(s: str) -> typing.List[str]:
+    return re.findall(r"[a-zA-Z0-9]+", s)
+
+def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
+    return lmap(lambda x: int(x) if x.isnumeric() else x, re.findall(r"[a-zA-Z]+|\d+", s))
 
 def keyvalues(d):
     return list(d.items())  # keep on forgetting this...
@@ -671,6 +692,18 @@ DELTA_TO_NESW = {
     (1, 0): "S",
     (0, -1): "W",
 }
+NUMS_TO_INTS = {
+    'zero': 0,
+    'one': 1,  
+    'two': 2,  
+    'three': 3,  
+    'four': 4,  
+    'five': 5, 
+    'six': 6,  
+    'seven': 7,  
+    'eight': 8,  
+    'nine': 9
+}
 
 # delta to go from p1 to p2
 def get_delta(p1, p2):
@@ -764,7 +797,7 @@ def points_to_grid(points, sub_min=True, flip=True):
         points = points_sub_min(points)
     if not flip:
         points = [(y, x) for x, y in points]
-    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, '.')
+    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill='.')
     for x, y in points:
         grid[y][x] = '#'
     return grid
@@ -806,6 +839,12 @@ def psub(x, y):
 
 def tsub(x, y) -> typing.Tuple[T]:
     return tuple(a-b for a, b in zip(x, y))
+
+def pnorm(v):
+    return [i//abs(i) if i != 0 else 0 for i in v]
+
+def tnorm(v):
+    return tuple(i//abs(i) if i != 0 else 0 for i in v)
 
 def pmul(m: int, v):
     return [m * i for i in v]
@@ -872,7 +911,7 @@ class Grid(typing.Generic[T]):
         
     def get_col(self, col: int):
         assert 0 <= col < self.cols, f"row {col} is OOB"
-        return transpose(self.grid)[col]
+        return transpose(*self.grid)[col]
     
     def rows(self):
         return self.grid
@@ -892,6 +931,20 @@ class Grid(typing.Generic[T]):
         result = []
         for c in self.coords():
             if self[c] == item:
+                result.append(c)
+        return result
+    
+    def findall_regex(self, regex) -> typing.Tuple[int, int]:
+        result = []
+        for c in self.coords():
+            if re.match(regex, self[c]):
+                result.append(c)
+        return result
+    
+    def findall_func(self, func) -> typing.Tuple[int, int]:
+        result = []
+        for c in self.coords():
+            if func(self[c]):
                 result.append(c)
         return result
     
@@ -935,6 +988,9 @@ class Grid(typing.Generic[T]):
     
     def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> T:
         return self.grid[coord[0]][coord[1]]
+    
+    def __setitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]], value) -> T:
+        self.grid[coord[0]][coord[1]] = value
     
     def print(self, sep=""):
         print("\n".join([sep.join([str(item) for item in line]) for line in self.grid]))
@@ -1056,3 +1112,22 @@ def time(day, part, amount=100):
     print(f"Average time taken: {time}s -- {time * 1000}ms -- {time * 1000 * 1000}µs")
     print()
     
+    
+def get_solution_booleans(argv):
+    e1 = e2 = ex1 = ex2 = r1 = r2 = True
+    ex1 = ex2 = False
+    if len(argv) > 1:
+        e1 = e2 = ex1 = ex2 = r1 = r2 = False
+        if '1' in argv[1]: 
+            if '1' == argv[1]: e1 = r1 = True
+            if 'a' in argv[1]: e1 = ex1 = r1 = True
+            if 'r' in argv[1] or 's' in argv[1]: r1 = True
+            if 'e' in argv[1]: e1 = True
+            if 'x' in argv[1]: ex1 = True
+        elif '2' in argv[1]:
+            if '2' == argv[1]: e2 = r2 = True
+            if 'a' in argv[1]: e2 = ex2 = r2 = True
+            if 'r' in argv[1] or 's' in argv[1]: r2 = True
+            if 'e' in argv[1]: e2 = True
+            if 'x' in argv[1]: ex2 = True
+    return e1, e2, ex1, ex2, r1, r2

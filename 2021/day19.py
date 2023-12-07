@@ -42,7 +42,8 @@ def solve1(d):
                 
     return len(all_beacons), scanner_positions
 
-def solve2(scanners):
+def solve2(d):
+    scanners = solve1(d)[1]
     return max(pdist1(scanners[x], scanners[y]) for x, y in it.combinations(scanners, 2))     
 
 
@@ -189,12 +190,15 @@ s2 = """
 result_s, positions_s = solve1(s)
 result_inp, positions_inp = solve1(inp)
 
-print("PART 1")
-print("Example Solution:", result_s)
-# print("Example 2 Solution:", solve1(s2))
-print("Actual Solution:", result_inp)
+if __name__ == '__main__':
+    e1, e2, ex1, ex2, r1, r2 = get_solution_booleans(sys.argv)
+            
+    if e1 or ex1 or r1: print("PART 1")
+    if e1: print("Example Solution:", solve1(s))
+    if ex1: print("Example 2 Solution:", solve1(s2))
+    if r1: print("Actual Solution:", solve1(inp))
 
-print("PART 2")
-print("Example Solution:", solve2(positions_s))
-# print("Example 2 Solution:", solve2(s2))
-print("Actual Solution:", solve2(positions_inp))
+    if e2 or ex2 or r2: print("PART 2")
+    if e2: print("Example Solution:", solve2(s))
+    if ex2: print("Example 2 Solution:", solve2(s2))
+    if r2: print("Actual Solution:", solve2(inp))

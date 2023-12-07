@@ -15,29 +15,28 @@ inp = get_data(year=2021, day=9)
 
 
 def solve1(d):
-    grid = lmap(lambda l: [int(x) for x in l], d.splitlines())
+    grid = Grid(lmap(lambda l: [int(x) for x in l], d.splitlines()))
     result = 0
-    for x, row in enumerate(grid):
-        for y, val in enumerate(row):
-            if all([val < neighbor for neighbor in get_neighbors(grid, x, y, GRID_DELTA)]):
-                result += val + 1
+    for curr in grid.coords():
+        val = grid[curr]
+        if all([val < neighbor for neighbor in grid.get_neighbors(curr, GRID_DELTA)]):
+            result += val + 1
     return result
 
 def solve2(d):
-    grid = lmap(lambda l: [int(x) for x in l], d.splitlines())
+    grid = Grid(lmap(lambda l: [int(x) for x in l], d.splitlines()))
     basins = []
-    for i, row in enumerate(grid):
-        for j, val in enumerate(row):
-            if all([val < neighbor for neighbor in get_neighbors(grid, i, j, GRID_DELTA)]):
-                to_check = [(i, j)]
-                basin = {(i, j)}
-                while to_check:
-                    x, y = to_check[0]
-                    valid_neighbors = {(nx, ny) for (nx, ny) in get_neighbors_coords(grid, x, y, GRID_DELTA) if grid[nx][ny] != 9}
-                    to_check.extend([n for n in valid_neighbors if n not in basin])
-                    basin.update(valid_neighbors)
-                    to_check.pop(0)
-                basins.append(len(basin))
+    for curr in grid.coords():
+        val = grid[curr]
+        if all([val < neighbor for neighbor in grid.get_neighbors(curr, GRID_DELTA)]):
+            to_check = [curr]
+            basin = {curr}
+            while to_check:
+                valid_neighbors = {coord for coord in grid.get_neighbors_coords(to_check[0], GRID_DELTA) if grid[coord] != 9}
+                to_check.extend([n for n in valid_neighbors if n not in basin])
+                basin.update(valid_neighbors)
+                to_check.pop(0)
+            basins.append(len(basin))
     result = math.prod(sorted(basins)[-3:])       
     return result           
 
@@ -51,12 +50,15 @@ s = """2199943210
 s2 = """
 """
 
-print("PART 1")
-print("Example Solution:", solve1(s))
-# print("Example 2 Solution:", solve1(s2))
-print("Actual Solution:", solve1(inp))
+if __name__ == '__main__':
+    e1, e2, ex1, ex2, r1, r2 = get_solution_booleans(sys.argv)
+            
+    if e1 or ex1 or r1: print("PART 1")
+    if e1: print("Example Solution:", solve1(s))
+    if ex1: print("Example 2 Solution:", solve1(s2))
+    if r1: print("Actual Solution:", solve1(inp))
 
-print("PART 2")
-print("Example Solution:", solve2(s))
-# print("Example 2 Solution:", solve2(s2))
-print("Actual Solution:", solve2(inp))
+    if e2 or ex2 or r2: print("PART 2")
+    if e2: print("Example Solution:", solve2(s))
+    if ex2: print("Example 2 Solution:", solve2(s2))
+    if r2: print("Actual Solution:", solve2(inp))
