@@ -1021,9 +1021,8 @@ def solve1(d, cards_to_nums=CARDS_TO_NUMS):
     
     for hand, bid in inp:
         hand = [int(x) if x.isdigit() else cards_to_nums[x] for x in hand]
-        value = "".join(map(lambda num: str(num).zfill(2), hand))
-        tier = hand_tier(hand)
-        ranks.append((tier, int(value), int(bid)))
+        value = "".join([f"{x:>02}" for x in hand])
+        ranks.append((hand_tier(hand), int(value), int(bid)))
     
     return sum([(rank + 1) * bid for rank, (_, _, bid) in enumerate(sorted(ranks))])
 
