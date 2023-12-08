@@ -2,7 +2,7 @@ from utils import *
 
 inp = get_data(year=2023)
 
-def route_length(route, m, curr = 'AAA', ends = ['ZZZ']):
+def route_length(route, m, curr, ends):
     for i in it.count(0):
         direction = route[i % len(route)]
         curr = m[curr][direction]
@@ -12,7 +12,7 @@ def solve1(d):
     route, maps = d.split('\n\n')
     m = {frm: {'L': left, 'R': right} for frm, left, right in lmap(alphanumerics, maps.splitlines())}
     
-    return route_length(route, m)
+    return route_length(route, m, 'AAA', ['ZZZ'])
     
 def solve2(d):
     route, maps = d.split('\n\n')
