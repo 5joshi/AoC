@@ -2,71 +2,25 @@ from utils import *
 
 inp = get_data(year=2023)
 
+def route_length(route, m, curr = 'AAA', ends = ['ZZZ']):
+    for i in it.count(0):
+        direction = route[i % len(route)]
+        curr = m[curr][direction]
+        if curr in ends: return i + 1
+
 def solve1(d):
-    instr, dirs = d.split('\n\n')
-    dirs = lmap(words, dirs.splitlines())
-    m = dict()
-    result = 0
+    route, maps = d.split('\n\n')
+    m = {frm: {'L': left, 'R': right} for frm, left, right in lmap(alphanumerics, maps.splitlines())}
     
-    for frm, left, right in dirs:
-        m[(frm, 'L')] = left
-        m[(frm, 'R')] = right
+    return route_length(route, m)
     
-    i = 0
-    curr = 'AAA'
-    while True:
-        curr_i = instr[i % len(instr)]
-        curr = m[(curr, curr_i)]
-        if curr == 'ZZZ':
-            break
-        i += 1 
-    
-    return i + 1
-
 def solve2(d):
-    instr, dirs = d.split('\n\n')
-    dirs = lmap(alphanumerics, dirs.splitlines())
-    m = dict()
+    route, maps = d.split('\n\n')
+    m = {frm: {'L': left, 'R': right} for frm, left, right in lmap(alphanumerics, maps.splitlines())}
+    starts, ends = [node for node in m.keys() if re.match('..A', node)], [node for node in m.keys() if re.match('..Z', node)]
     
+    return math.lcm(*[route_length(route, m, start, ends) for start in starts])
     
-
-def solve2(d):
-    instr, dirs = d.split('\n\n')
-    dirs = lmap(alphanumerics, dirs.splitlines())
-    m = dict()
-    result = 0
-    
-    for frm, left, right in dirs:
-        m[(frm, 'L')] = left
-        m[(frm, 'R')] = right
-    
-    i = 0
-    curr = []
-    converges = []
-    for key in m:
-        # print(key)
-        if key[0][2] == 'A':
-            curr.append(key)
-    while curr:
-        new_curr = []
-        curr_i = instr[i % len(instr)]
-        
-        for item in curr:
-            if len(item) == 2: item = item[0]
-            new = m[(item, curr_i)]
-            new_curr.append((new, curr_i))
-        bs = lmap(lambda x: x[0][2] == 'Z', new_curr)
-        pop_indices = []
-        for idx, b in enumerate(bs):
-            if b: converges.append(i+1)
-            if b: pop_indices.append(idx)
-        for elem in reversed(pop_indices):
-            new_curr.pop(elem)
-        curr = new_curr
-        i += 1 
-    
-    print(converges)
-    return math.lcm(*converges)
 
 
 s = """
