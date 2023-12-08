@@ -17,7 +17,7 @@ def solve1(d):
 def solve2(d):
     route, maps = d.split('\n\n')
     m = {frm: {'L': left, 'R': right} for frm, left, right in lmap(alphanumerics, maps.splitlines())}
-    starts, ends = [node for node in m.keys() if re.match('..A', node)], [node for node in m.keys() if re.match('..Z', node)]
+    starts, ends = [node for node in m.keys() if node.endswith('A')], [node for node in m.keys() if node.endswith('Z')]
     
     return math.lcm(*[route_length(route, m, start, ends) for start in starts])
     
