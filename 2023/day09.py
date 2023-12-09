@@ -10,22 +10,12 @@ def tails(nums):
     return tails
 
 def solve1(d):
-    inp = lmap(ints, d.splitlines())
-    result = 0
-    
-    for nums in inp:
-        result += sum(tails(nums))
-        
-    return result
+    return sum(map(lambda line: sum(tails(ints(line))), d.splitlines()))
+
 
 def solve2(d):
-    inp = lmap(ints, d.splitlines())
-    result = 0
-    
-    for nums in inp:
-        result += sum(tails(nums[::-1]))
-        
-    return result
+    return sum(map(lambda line: sum(tails(ints(line)[::-1])), d.splitlines()))
+
 
 
 s = """
