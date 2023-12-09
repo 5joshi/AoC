@@ -2,16 +2,19 @@ from utils import *
 
 inp = get_data(year=2023)
 
+def tails(nums):
+    tails = [nums[-1]]
+    while any(nums):
+        nums = list_diff(nums)
+        tails.append(nums[-1])
+    return tails
+
 def solve1(d):
     inp = lmap(ints, d.splitlines())
     result = 0
     
     for nums in inp:
-        tails = [nums[-1]]
-        while any(nums):
-            nums = list_diff(nums)
-            tails.append(nums[-1])
-        result += sum(tails)
+        result += sum(tails(nums))
         
     return result
 
@@ -20,16 +23,7 @@ def solve2(d):
     result = 0
     
     for nums in inp:
-        starts = [nums[0]]
-        while any(nums):
-            nums = list_diff(nums)
-            starts.append(nums[0])
-        
-        new = [0]
-        for start in reversed(starts[:-1]):
-            new.append(start - new[-1])
-        
-        result += new[-1]
+        result += sum(tails(nums[::-1]))
         
     return result
 
