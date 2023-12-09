@@ -2,19 +2,14 @@ from utils import *
 
 inp = get_data(year=2023, day=1)
 
+NUMS_TO_INTS = {num: idx for idx, num in enumerate('zero one two three four five six seven eight nine'.split())}
+
 def solve1(d):
     return sum(nums[0] * 10 + nums[-1] for nums in map(single_ints, d.splitlines()))    
 
 def all_ints(s):
-    nums = []
-    for idx in range(len(s)):
-        if s[idx].isdigit():
-            nums.append(int(s[idx]))
-            continue
-        for num, value in NUMS_TO_INTS.items():
-            if s[idx:].startswith(num): 
-                nums.append(value)
-    return nums
+    matches = re.findall(f'(?=(\d|{"|".join(NUMS_TO_INTS.keys())}))', s)
+    return [int(NUMS_TO_INTS.get(match, match)) for match in matches]
 
 def solve2(d):
     return sum(nums[0] * 10 + nums[-1] for nums in map(all_ints, d.splitlines()))
