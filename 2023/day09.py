@@ -2,53 +2,35 @@ from utils import *
 
 inp = get_data(year=2023)
 
-def diff_list(l):
-    return [l[i] - l[i-1] for i in range(1, len(l))]
-
 def solve1(d):
-    inp = d.splitlines()
+    inp = lmap(ints, d.splitlines())
     result = 0
     
-    for line in inp:
-        line = ints(line)
-        all_diffs = [line]
-        diffs = line
-        zeros = []
-        while not all(map(lambda x: x == 0, diffs)):
-            diffs = diff_list(diffs)
-            all_diffs.append(diffs)
+    for nums in inp:
+        tails = [nums[-1]]
+        while any(nums):
+            nums = list_diff(nums)
+            tails.append(nums[-1])
+        result += sum(tails)
         
-        p = 0
-        for idx, l in enumerate(all_diffs[::-1]):
-            idx = len(all_diffs) - idx - 1
-            p = all_diffs[idx][-1]
-            prev = all_diffs[idx-1]
-            all_diffs[idx-1].append(prev[-1] + p)
-    
-        result += all_diffs[0][-1]
     return result
 
 def solve2(d):
-    inp = d.splitlines()
+    inp = lmap(ints, d.splitlines())
     result = 0
     
-    for line in inp:
-        line = ints(line)
-        all_diffs = [line]
-        diffs = line
-        zeros = []
-        while not all(map(lambda x: x == 0, diffs)):
-            diffs = diff_list(diffs)
-            all_diffs.append(diffs)
+    for nums in inp:
+        starts = [nums[0]]
+        while any(nums):
+            nums = list_diff(nums)
+            starts.append(nums[0])
         
-        p = 0
-        for idx, l in enumerate(all_diffs[::-1]):
-            idx = len(all_diffs) - idx - 1
-            p = all_diffs[idx][0]
-            prev = all_diffs[idx-1]
-            all_diffs[idx-1].insert(0, prev[0] - p)
-    
-        result += all_diffs[0][0]
+        new = [0]
+        for start in reversed(starts[:-1]):
+            new.append(start - new[-1])
+        
+        result += new[-1]
+        
     return result
 
 
