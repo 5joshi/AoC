@@ -1,6 +1,6 @@
 from utils import *
 
-inp = get_data(year=2023)
+inp = get_data(year=2023, day=10)
 
 def solve1(d):
     grid = Grid(lmap(list, d.splitlines()))
@@ -16,7 +16,6 @@ def solve1(d):
         return grid.get_neighbors_coords(coords, deltas=deltas)
         
     dists, _ = bfs(START, expand)
-    print(max(dists, key=lambda x: x[1]))
     return max(dists.values())
 
 
@@ -42,6 +41,7 @@ def solve2(d):
     for direction, opposite in zip('UDLR', 'DURL'):
         if opposite in directions[grid[tadd(START, CHAR_TO_DELTA[direction])]]:
             directions['S'] += direction
+    grid[START] = [key for key in '|-7LJF' if directions[key] == directions['S']][0]
         
     def expand(coords):
         node = grid[coords]
@@ -63,7 +63,7 @@ def solve2(d):
                     
                     
                     
-            if any(possibly_inside(direction, found_pipes) for direction in 'UDLR'):
+            if all(possibly_inside(direction, found_pipes) for direction in 'UDLR'):
                 result += 1
                 new_grid[coord] = 'X'
     new_grid.print()

@@ -1,6 +1,6 @@
 from utils import *
 
-inp = get_data(year=2023)
+inp = get_data(year=2023, day=8)
 
 def route_length(route, m, curr, ends):
     for i in it.count(0):

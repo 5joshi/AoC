@@ -1,6 +1,6 @@
 from utils import *
 
-inp = get_data(year=2023)
+inp = get_data(year=2023, day=9)
 
 def next_num(nums):
     result = nums[-1]
@@ -15,7 +15,6 @@ def solve1(d):
 
 def solve2(d):
     return sum(map(lambda line: next_num(ints(line)[::-1]), d.splitlines()))
-
 
 
 s = """
