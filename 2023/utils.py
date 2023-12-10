@@ -899,18 +899,18 @@ class Grid(typing.Generic[T]):
     """2D only!!!"""
     def __init__(self, grid: typing.List[typing.List[T]]) -> None:
         self.grid = grid
-        self.rows = len(self.grid)
-        self.cols = len(self.grid[0])
+        self.width = self.nrows = len(self.grid)
+        self.height = self.ncols = len(self.grid[0])
     
     def coords(self) -> typing.List[typing.List[int]]:
-        return [(r, c) for r in range(self.rows) for c in range(self.cols)]
+        return [(r, c) for r in range(self.nrows) for c in range(self.ncols)]
     
     def get_row(self, row: int):
-        assert 0 <= row < self.rows, f"row {row} is OOB"
+        assert 0 <= row < self.nrows, f"row {row} is OOB"
         return self.grid[row]
         
     def get_col(self, col: int):
-        assert 0 <= col < self.cols, f"row {col} is OOB"
+        assert 0 <= col < self.ncols, f"row {col} is OOB"
         return transpose(*self.grid)[col]
     
     def rows(self):
@@ -920,7 +920,7 @@ class Grid(typing.Generic[T]):
         return transpose(self.grid)
     
     def in_bounds(self, row: int, col: int) -> bool:
-        return 0 <= row < self.rows and 0 <= col < self.cols
+        return 0 <= row < self.nrows and 0 <= col < self.ncols
     
     def find(self, item: T) -> typing.Tuple[int, int]:
         for c in self.coords():
