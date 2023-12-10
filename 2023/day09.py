@@ -2,19 +2,19 @@ from utils import *
 
 inp = get_data(year=2023)
 
-def tails(nums):
-    tails = [nums[-1]]
+def next_num(nums):
+    result = nums[-1]
     while any(nums):
         nums = list_diff(nums)
-        tails.append(nums[-1])
-    return tails
+        result += nums[-1]
+    return result
 
 def solve1(d):
-    return sum(map(lambda line: sum(tails(ints(line))), d.splitlines()))
+    return sum(map(lambda line: next_num(ints(line)), d.splitlines()))
 
 
 def solve2(d):
-    return sum(map(lambda line: sum(tails(ints(line)[::-1])), d.splitlines()))
+    return sum(map(lambda line: next_num(ints(line)[::-1]), d.splitlines()))
 
 
 
