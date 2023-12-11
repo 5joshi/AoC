@@ -54,6 +54,11 @@ def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
 #region Strings, lists, dicts
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
+def multi_replace(s, replacements):
+    for old, new in replacements:
+        s = s.replace(old, new)
+    return s
+
 def fst(x):
     return x[0]
 
