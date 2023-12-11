@@ -49,7 +49,7 @@ def alphanumerics(s: str) -> typing.List[str]:
     return re.findall(r"[a-zA-Z0-9]+", s)
 
 def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
-    return lmap(lambda x: int(x) if x.isnumeric() else x, re.findall(r"[a-zA-Z]+|\d+", s))
+    return lmap(lambda x: int(x) if (x.isnumeric() or x[0] == '-' and x[1:].isnumeric()) else x, re.findall(r"[a-zA-Z]+|-?\d+", s))
 #endregion
 #region Strings, lists, dicts
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
