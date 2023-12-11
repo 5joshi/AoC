@@ -4,34 +4,24 @@ inp = get_data(year=2023)
 
 def solve1(d):
     grid = Grid(lmap(list, d.splitlines()))    
-    empty_rows = []
-    empty_cols = []
-    for idx in range(grid.nrows):
-        if all([elem == '.' for elem in grid.cols()[idx]]):
-            empty_cols.append(idx)
-        if all([elem == '.' for elem in grid.rows()[idx]]):
-            empty_rows.append(idx)
+    empty_rows = {idx for idx in range(grid.nrows) if all([elem == '.' for elem in grid.cols()[idx]])}
+    empty_cols = {idx for idx in range(grid.ncols) if all([elem == '.' for elem in grid.rows()[idx]])}
+    
+    def dist(g1, g2):
+        return pdist1(g1, g2) + len({*range(*sorted((g1[0], g2[0])))} & empty_rows) + len({*range(*sorted((g1[1], g2[1])))} & empty_cols)
     
     galaxies = grid.findall('#')
-    def dist(g1, g2):
-        return pdist1(g1, g2) + len(set(range(*sorted((g1[0], g2[0])))) & set(empty_rows)) + len(set(range(*sorted((g1[1], g2[1])))) & set(empty_cols))
-    
     return sum([dist(g1, g2) for g1, g2 in it.combinations(galaxies, 2)])
 
 def solve2(d):
     grid = Grid(lmap(list, d.splitlines()))    
-    empty_rows = []
-    empty_cols = []
-    for idx in range(grid.nrows):
-        if all([elem == '.' for elem in grid.cols()[idx]]):
-            empty_cols.append(idx)
-        if all([elem == '.' for elem in grid.rows()[idx]]):
-            empty_rows.append(idx)
+    empty_rows = {idx for idx in range(grid.nrows) if all([elem == '.' for elem in grid.cols()[idx]])}
+    empty_cols = {idx for idx in range(grid.ncols) if all([elem == '.' for elem in grid.rows()[idx]])}
     
-    galaxies = grid.findall('#')
     def dist(g1, g2):
-        return pdist1(g1, g2) + 999999 * (len(set(range(*sorted((g1[0], g2[0])))) & set(empty_rows)) + len(set(range(*sorted((g1[1], g2[1])))) & set(empty_cols)))
-    
+        return pdist1(g1, g2) + 999999 * (len({*range(*sorted((g1[0], g2[0])))} & empty_rows) + len({*range(*sorted((g1[1], g2[1])))} & empty_cols))
+
+    galaxies = grid.findall('#')    
     return sum([dist(g1, g2) for g1, g2 in it.combinations(galaxies, 2)])
 
 
