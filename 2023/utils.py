@@ -917,7 +917,7 @@ class Grid(typing.Generic[T]):
         return self.grid
     
     def cols(self):
-        return transpose(self.grid)
+        return transpose(*self.grid)
     
     def in_bounds(self, row: int, col: int) -> bool:
         return 0 <= row < self.nrows and 0 <= col < self.ncols

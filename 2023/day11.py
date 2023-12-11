@@ -3,54 +3,36 @@ from utils import *
 inp = get_data(year=2023)
 
 def solve1(d):
-    grid = Grid(lmap(list, d.splitlines()))
-    result = 0
-    
-    col_indices = []
-    for col in range(grid.ncols):
-        if all([row[col] == '.' for row in grid.rows()]):
-            col_indices.append(col)
-            
-    row_indices = []
-    for idx, row in enumerate(grid.rows()):
-        if all([elem == '.' for elem in row]):
-            row_indices.append(idx)
+    grid = Grid(lmap(list, d.splitlines()))    
+    empty_rows = []
+    empty_cols = []
+    for idx in range(grid.nrows):
+        if all([elem == '.' for elem in grid.cols()[idx]]):
+            empty_cols.append(idx)
+        if all([elem == '.' for elem in grid.rows()[idx]]):
+            empty_rows.append(idx)
     
     galaxies = grid.findall('#')
-    for pair in it.combinations(galaxies, 2):
-        dist = pdist1(pair[0], pair[1]) + len([col for col in col_indices if (pair[0][1] < col < pair[1][1] or pair[1][1] < col < pair[0][1])]) +  len([row for row in row_indices if (pair[0][0] < row < pair[1][0] or pair[1][0] < row < pair[0][0])])
-        result += dist
-        # print(pair, dist)
-    # pair = galaxies[0], galaxies[6]
-    # dist = pdist1(pair[0], pair[1]) + len([col for col in col_indices if pair[0][1] < col < pair[1][1]]) + len([row for row in row_indices if pair[0][0] < row < pair[1][0]])
-    # print(row_indices, col_indices)
-    # print(dist,len([col for col in col_indices if pair[0][1] < col < pair[1][1]]), len([row for row in row_indices if pair[0][0] < row < pair[1][0]]) )
-    return result
+    def dist(g1, g2):
+        return pdist1(g1, g2) + len(set(range(*sorted((g1[0], g2[0])))) & set(empty_rows)) + len(set(range(*sorted((g1[1], g2[1])))) & set(empty_cols))
+    
+    return sum([dist(g1, g2) for g1, g2 in it.combinations(galaxies, 2)])
 
 def solve2(d):
-    grid = Grid(lmap(list, d.splitlines()))
-    result = 0
-    
-    col_indices = []
-    for col in range(grid.ncols):
-        if all([row[col] == '.' for row in grid.rows()]):
-            col_indices.append(col)
-            
-    row_indices = []
-    for idx, row in enumerate(grid.rows()):
-        if all([elem == '.' for elem in row]):
-            row_indices.append(idx)
+    grid = Grid(lmap(list, d.splitlines()))    
+    empty_rows = []
+    empty_cols = []
+    for idx in range(grid.nrows):
+        if all([elem == '.' for elem in grid.cols()[idx]]):
+            empty_cols.append(idx)
+        if all([elem == '.' for elem in grid.rows()[idx]]):
+            empty_rows.append(idx)
     
     galaxies = grid.findall('#')
-    for pair in it.combinations(galaxies, 2):
-        dist = pdist1(pair[0], pair[1]) + 999999 * len([col for col in col_indices if (pair[0][1] < col < pair[1][1] or pair[1][1] < col < pair[0][1])]) + 999999 * len([row for row in row_indices if (pair[0][0] < row < pair[1][0] or pair[1][0] < row < pair[0][0])])
-        result += dist
-        # print(pair, dist)
-    # pair = galaxies[0], galaxies[6]
-    # dist = pdist1(pair[0], pair[1]) + len([col for col in col_indices if pair[0][1] < col < pair[1][1]]) + len([row for row in row_indices if pair[0][0] < row < pair[1][0]])
-    # print(row_indices, col_indices)
-    # print(dist,len([col for col in col_indices if pair[0][1] < col < pair[1][1]]), len([row for row in row_indices if pair[0][0] < row < pair[1][0]]) )
-    return result
+    def dist(g1, g2):
+        return pdist1(g1, g2) + 999999 * (len(set(range(*sorted((g1[0], g2[0])))) & set(empty_rows)) + len(set(range(*sorted((g1[1], g2[1])))) & set(empty_cols)))
+    
+    return sum([dist(g1, g2) for g1, g2 in it.combinations(galaxies, 2)])
 
 
 s = """
