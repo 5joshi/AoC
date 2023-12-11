@@ -589,7 +589,7 @@ def points_sub_min(points):
     m = [min(p[i] for p in points) for i in range(len(points[0]))]
     return [tsub(p, m) for p in points]
 
-def points_to_grid(points, sub_min=True, flip=False, hit='#', fill='.'):
+def points_to_grid(points, sub_min=True, flip=False, hit='#', fill='.', dimensions=None):
     """
     Converts a list of points to a grid.
     """
@@ -599,7 +599,10 @@ def points_to_grid(points, sub_min=True, flip=False, hit='#', fill='.'):
         points = points_sub_min(points)
     if not flip:
         points = [(y, x) for x, y in points]
-    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill=fill)
+    if dimensions:
+        grid = make_grid(*dimensions, fill=fill)
+    else:
+        grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill=fill)
     for x, y in points:
         grid[(y, x)] = hit
     return grid
