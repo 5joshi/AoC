@@ -798,21 +798,24 @@ tdot = ldot
 #endregion
 #region running
 def get_solution_booleans(argv):
+    one = two = False
     e1 = e2 = ex1 = ex2 = r1 = r2 = True
     ex1 = ex2 = False
     if len(argv) > 1:
         e1 = e2 = ex1 = ex2 = r1 = r2 = False
         if '1' in argv[1]: 
+            one = True
             if '1' == argv[1]: e1 = r1 = True
             if 'a' in argv[1]: e1 = ex1 = r1 = True
             if 'r' in argv[1] or 's' in argv[1]: r1 = True
             if 'e' in argv[1]: e1 = True
             if 'x' in argv[1]: ex1 = True
         elif '2' in argv[1]:
+            two = True
             if '2' == argv[1]: e2 = r2 = True
             if 'a' in argv[1]: e2 = ex2 = r2 = True
             if 'r' in argv[1] or 's' in argv[1]: r2 = True
             if 'e' in argv[1]: e2 = True
             if 'x' in argv[1]: ex2 = True
-    return e1, e2, ex1, ex2, r1, r2
+    return one, two, e1, e2, ex1, ex2, r1, r2
 #endregion
