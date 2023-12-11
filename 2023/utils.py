@@ -511,21 +511,21 @@ def turn_180(drowcol):
     Given a delta, returns the delta that is 180 degrees rotated.
     """
     drow, dcol = drowcol
-    return [-drow, -dcol]
+    return (-drow, -dcol)
 
 def turn_right(drowcol):
     """
     Given a delta, returns the delta that is 90 degrees rotated clockwise.
     """
     drow, dcol = drowcol
-    return [dcol, -drow]
+    return (dcol, -drow)
 
 def turn_left(drowcol):
     """
     Given a delta, returns the delta that is 90 degrees rotated counterclockwise.
     """
     drow, dcol = drowcol
-    return [-dcol, drow]
+    return (-dcol, drow)
 
 def dimensions(grid):
     """

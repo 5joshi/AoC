@@ -4,69 +4,51 @@ inp = get_data(year=2023, day=10)
 
 def solve1(d):
     grid = Grid(lmap(list, d.splitlines()))
-    START = grid.find("S")
+    start = grid.find("S")
     directions = {pipe: directions for pipe, directions in every_n('S  .  - LR | UD F DR L UR J UL 7 DL'.split(' '), 2)}
     for direction, opposite in zip('UDLR', 'DURL'):
-        if opposite in directions[grid[tadd(START, CHAR_TO_DELTA[direction])]]:
+        if opposite in directions[grid[tadd(start, CHAR_TO_DELTA[direction])]]:
             directions['S'] += direction
         
     def expand(coords):
         node = grid[coords]
         deltas = [CHAR_TO_DELTA[direction] for direction in directions[node]]
-        return grid.get_neighbors_coords(coords, deltas=deltas)
+        return grid.get_neighbors(coords, deltas=deltas)
         
-    dists, _ = bfs(START, expand)
+    dists, _ = bfs(start, expand)
     return max(dists.values())
-
-
-def possibly_inside(direction, found_pipes):
-    num_pipes = 0
-    found_pipes = found_pipes[direction]
-    if direction in 'LR':
-        num_pipes += found_pipes['|']
-        num_pipes += 0.5 * abs(found_pipes['F'] - found_pipes['7'])
-        num_pipes += 0.5 * abs(found_pipes['J'] - found_pipes['L'])
-    elif direction in 'UD':
-        num_pipes += found_pipes['-']
-        num_pipes += 0.5 * abs(found_pipes['J'] - found_pipes['7'])
-        num_pipes += 0.5 * abs(found_pipes['F'] - found_pipes['L'])
-        
-    return (num_pipes % 2) == 1
 
 def solve2(d):
     grid = Grid(lmap(list, d.splitlines()))
+    start = grid.find("S")
     result = 0
-    START = grid.find("S")
-    directions = {pipe: directions for pipe, directions in every_n('S  .  - LR | UD F DR L UR J UL 7 DL'.split(' '), 2)}
-    for direction, opposite in zip('UDLR', 'DURL'):
-        if opposite in directions[grid[tadd(START, CHAR_TO_DELTA[direction])]]:
+    
+    directions = defaultdict(str, {pipe: directions for pipe, directions in every_n('- LR | UD F DR L UR J UL 7 DL'.split(' '), 2)})
+    pipes = invert_dict(directions)
+    for direction in 'UDLR':
+        delta = CHAR_TO_DELTA[direction]
+        if DELTA_TO_UDLR[turn_180(delta)] in directions[grid[tadd(start, delta)]]:
             directions['S'] += direction
-    grid[START] = [key for key in '|-7LJF' if directions[key] == directions['S']][0]
+    grid[start] = pipes[directions['S']]
         
     def expand(coords):
         node = grid[coords]
         deltas = [CHAR_TO_DELTA[direction] for direction in directions[node]]
-        return grid.get_neighbors_coords(coords, deltas=deltas)
+        return grid.get_neighbors(coords, deltas=deltas)
         
-    dists, _ = bfs(START, expand)
+    dists, _ = bfs(start, expand)
     
-    new_grid = Grid(make_grid(grid.width, grid.height, fill='.'))
     for coord in grid.coords():
         if coord not in dists:
-            found_pipes = dict({direction: defaultdict(int) for direction in 'UDLR'})
-            for direction in 'UDLR':
-                curr = tadd(coord, CHAR_TO_DELTA[direction])    
-                while grid.in_bounds(*curr):
-                    if curr in dists:
-                        found_pipes[direction][grid[curr]] += 1
-                    curr = tadd(curr, CHAR_TO_DELTA[direction])
-                    
-                    
-                    
-            if all(possibly_inside(direction, found_pipes) for direction in 'UDLR'):
-                result += 1
-                new_grid[coord] = 'X'
-    new_grid.print()
+            curr = tadd(coord, CHAR_TO_DELTA['R'])    
+            num_pipes = 0
+            while grid.in_bounds(*curr):
+                if curr in dists:
+                    num_pipes += int(grid[curr] == '|')
+                    num_pipes += 0.5 * int(grid[curr] in 'FJ')
+                    num_pipes -= 0.5 * int(grid[curr] in '7L') 
+                curr = tadd(curr, CHAR_TO_DELTA[direction])
+            result += (num_pipes % 2) == 1 
             
     return result
 
