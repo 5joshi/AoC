@@ -5,7 +5,7 @@ inp = get_data(year=2023, day=1)
 NUMS_TO_INTS = {num: idx for idx, num in enumerate('zero one two three four five six seven eight nine'.split())}
 
 def solve1(d):
-    return sum(nums[0] * 10 + nums[-1] for nums in map(single_ints, d.splitlines()))    
+    return sum(nums[0] * 10 + nums[-1] for nums in map(digits, d.splitlines()))    
 
 def all_ints(s):
     matches = re.findall(f'(?=(\d|{"|".join(NUMS_TO_INTS.keys())}))', s)

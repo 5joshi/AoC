@@ -4,7 +4,7 @@ from time import time
 from utils import avg
 import sys
 
-CURR_DAY = 7
+CURR_DAY = 11
 
 if __name__ == '__main__':
     solutions = []
@@ -33,7 +33,7 @@ if __name__ == '__main__':
                 pt2_times.append(end - mid)
             solutions.append((day, f"{avg(pt1_times) * 1000:0.3f}ms", f"{avg(pt2_times) * 1000:0.3f}ms"))
         
-    print(f"{'Part 1':>18}{'Part 2':>12}")
-    print("-" * 30)
+    print(f"{'Part 1':>23}{'Part 2':>17}")
+    print("-" * 40)
     for day, pt1, pt2 in solutions:
-        print(f"Day {day:02}: {pt1:>10} |{pt2:>10}")
+        print(f"Day {day:02}: {pt1:>15} |{pt2:>15}")
