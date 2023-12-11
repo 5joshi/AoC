@@ -52,6 +52,8 @@ def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
     return lmap(lambda x: int(x) if x.isnumeric() else x, re.findall(r"[a-zA-Z]+|\d+", s))
 #endregion
 #region Strings, lists, dicts
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+
 def fst(x):
     return x[0]
 
