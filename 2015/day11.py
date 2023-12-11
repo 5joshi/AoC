@@ -15,7 +15,6 @@ def valid(s):
     if any(window == (1, 1) for window in windows(diffs, 2)) and diffs.count(0) >= 2 and (idx := diffs.index(0)) != (diffs.index(0, idx+1) - 1):     
         return True
     return False
-    
 
 def solve1(d):
     password = incr(lmap(ord, list(d)))
