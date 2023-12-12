@@ -207,6 +207,57 @@ def signum(n: int) -> int:
         return 0
     else:
         return -1
+    
+def get_primes(n, frm=2):
+    """Returns a set of primes from frm (default = 2) to n (inclusive)"""
+    sieve = set(range(frm, n+1))
+    while sieve:
+        prime = min(sieve)
+        sieve -= set(range(prime, n+1, prime))
+    return sieve
+
+def is_prime(n):
+    """Checks if n is prime."""
+    if n == 2 or n == 3: return True
+    if n < 2 or n%2 == 0: return False
+    if n < 9: return True
+    if n%3 == 0: return False
+    r = int(n**0.5)
+    # since all primes > 3 are of the form 6n ± 1
+    # start with f=5 (which is prime)
+    # and test f, f+2 for being prime
+    # then loop by 6. 
+    f = 5
+    while f <= r:
+        if n % f == 0: return False
+        if n % (f+2) == 0: return False
+        f += 6
+    return True   
+
+def divisors(n, prime=False):
+    """
+    Returns a set of (optionally prime) divisors of n
+    """
+    result = set()
+    for i in range(1, int(n ** 0.5) + 1):
+        if n % i == 0 and (not prime or is_prime(i)):
+            result.add(i)
+            if not prime:
+                result.add(n//i)
+    if prime and is_prime(n): 
+        result.add(n)
+    return result
+
+def prime_factors(n):
+    """
+    Returns a list of prime factors of n (with repetitions)
+    """
+    factors = []
+    for factor in divisors(n, prime=True):
+        while n % factor == 0:
+            factors.append(factor)
+            n //= factor
+    return factors
 #endregion
 #region algorithms
 def bisect(f, lo=0, hi=None, eps=1e-9):
