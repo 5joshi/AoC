@@ -17,7 +17,7 @@ import timeit
 import typing
 from collections import Counter, defaultdict, deque
 from copy import deepcopy
-from functools import reduce
+from functools import reduce, lru_cache
 from pprint import pprint
 from aocd import get_data, submit
 from tqdm import tqdm
