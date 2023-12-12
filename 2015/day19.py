@@ -14,21 +14,10 @@ def solve1(d):
         
     return len(molecules)
 
+# https://www.reddit.com/r/adventofcode/comments/3xflz8/comment/cy4etju
 def solve2(d):
-    *rules, _, goal = map(words, d.splitlines())
-    goal = goal[0]
-    def expand(s):
-        molecules = set()
-        # print(s)
-        for to, frm in rules:
-            for idx in range(len(s)):
-                if s[idx:idx+len(frm)] == frm:
-                    molecules.add(s[:idx] + to + s[idx+len(frm):])
-        return {(1, m) for m in molecules}
-    
-    dist, _ = a_star(goal, 'e', expand, heuristic=len)
-    return dist
-
+    *_, goal = d.splitlines()
+    return len(re.findall(r"[A-Z]", goal)) - 2 * len(re.findall(r"Rn", goal)) - 2 * len(re.findall(r"Y", goal)) - 1
 
 s = """
 e => H
