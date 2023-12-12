@@ -4,7 +4,7 @@ from time import time
 from utils import avg
 import sys
 
-CURR_DAY = 11
+CURR_DAY = 12
 
 if __name__ == '__main__':
     solutions = []
