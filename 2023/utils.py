@@ -516,6 +516,49 @@ def dist2(x, y=None):
     """
     return math.sqrt(dist2sq(x, y))
 #endregion
+#region Data structures
+class UnionFind:
+    # n: int
+    # parents: List[Optional[int]]
+    # ranks: List[int]
+    # num_sets: int
+
+    def __init__(self, n: int) -> None:
+        self.n = n
+        self.parents = [None] * n
+        self.ranks = [1] * n
+        self.num_sets = n
+    
+    def find(self, i: int) -> int:
+        p = self.parents[i]
+        if p is None:
+            return i
+        p = self.find(p)
+        self.parents[i] = p
+        return p
+    
+    def in_same_set(self, i: int, j: int) -> bool:
+        return self.find(i) == self.find(j)
+    
+    def merge(self, i: int, j: int) -> None:
+        i = self.find(i)
+        j = self.find(j)
+
+        if i == j:
+            return
+        
+        i_rank = self.ranks[i]
+        j_rank = self.ranks[j]
+
+        if i_rank < j_rank:
+            self.parents[i] = j
+        elif i_rank > j_rank:
+            self.parents[j] = i
+        else:
+            self.parents[j] = i
+            self.ranks[i] += 1
+        self.num_sets -= 1
+#endregion
 #region matrices
 GRID_DELTA = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
