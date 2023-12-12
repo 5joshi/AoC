@@ -208,13 +208,13 @@ def signum(n: int) -> int:
     else:
         return -1
     
-def get_primes(n, frm=2):
-    """Returns a set of primes from frm (default = 2) to n (inclusive)"""
-    sieve = set(range(frm, n+1))
+def primes(n):
+    """Returns a set of primes from 2 to n (inclusive)"""
+    sieve = set(range(2, n+1))
     while sieve:
         prime = min(sieve)
+        yield prime
         sieve -= set(range(prime, n+1, prime))
-    return sieve
 
 def is_prime(n):
     """Checks if n is prime."""
