@@ -65,6 +65,10 @@ def fst(x):
 def snd(x):
     return x[1]
 
+def only(x):
+    assert len(x) == 1
+    return x[0]
+
 def transpose(*iterables):
     return list(zip(*iterables))
 
@@ -714,6 +718,14 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
     for x, y in points:
         grid[(y, x)] = d[(y, x)]
     return grid
+
+def s_to_grid(s, flip=False):
+    """
+    Converts a string to a grid.
+    """
+    grid = map(list, s.splitlines())
+    if flip: grid = transpose(*grid)
+    return Grid([grid])
 
 class Grid(typing.Generic[T]):
     """2D only!!!"""
