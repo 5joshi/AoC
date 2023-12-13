@@ -675,6 +675,33 @@ def lset(l, i, v):
     for index in i[:-1]: l = l[index]
     l[i[-1]] = v
     
+def spiral(size=None, start=(0, 0)):
+    """
+    Get coordinates of spiral of given size. (size = number of points including origin)
+    """
+    curr = start
+    directions = it.cycle(CHAR_TO_DELTA[d] for d in 'RULD')
+    steps = map(lambda c: c//2, it.count(2))
+    curr_dir = next(directions)
+    curr_steps = next(steps)
+
+    def step():
+        nonlocal curr, curr_dir, curr_steps
+        if curr_steps == 0:
+            curr_dir = next(directions)
+            curr_steps = next(steps)
+        curr = tadd(curr, curr_dir)
+        curr_steps -= 1
+
+    yield start
+    while size is None:
+        step()
+        yield curr    
+    else:
+        for _ in range(size-1):
+            step()
+            yield curr    
+    
 def make_grid(*dimensions: typing.List[int], fill=None):
     "Returns a grid such that 'dimensions' is juuust out of bounds."
     if len(dimensions) == 1:
@@ -695,14 +722,14 @@ def points_to_grid(points, sub_min=True, flip=False, hit='#', fill='.', dimensio
         points = list(points)
     if sub_min:
         points = points_sub_min(points)
-    if not flip:
+    if flip:
         points = [(y, x) for x, y in points]
     if dimensions:
         grid = make_grid(*dimensions, fill=fill)
     else:
-        grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill=fill)
+        grid = make_grid(max(map(fst, points))+1, max(map(snd, points))+1, fill=fill)
     for x, y in points:
-        grid[(y, x)] = hit
+        grid[(x, y)] = hit
     return grid
 
 def map_to_grid(d, sub_min=True, flip=False, fill='.'):
@@ -711,12 +738,15 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
     """
     points = [*d.keys()]
     if sub_min:
-        points = points_sub_min(points)
-    if not flip:
+        new_points = points_sub_min(points)
+        d = {new: d[old] for old, new in zip(points, new_points)}
+        points = new_points
+    if flip:
+        d = {(y, x): v for (x, y), v in d.items()}
         points = [(y, x) for x, y in points]
-    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill=fill)
+    grid = make_grid(max(map(fst, points))+1, max(map(snd, points))+1, fill=fill)
     for x, y in points:
-        grid[(y, x)] = d[(y, x)]
+        grid[(x, y)] = d[(x, y)]
     return grid
 
 def s_to_grid(s, flip=False):
