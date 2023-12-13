@@ -65,6 +65,10 @@ def fst(x):
 def snd(x):
     return x[1]
 
+def only(x):
+    assert len(x) == 1
+    return x[0]
+
 def transpose(*iterables):
     return list(zip(*iterables))
 
