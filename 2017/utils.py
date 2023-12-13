@@ -691,14 +691,14 @@ def points_to_grid(points, sub_min=True, flip=False, hit='#', fill='.', dimensio
         points = list(points)
     if sub_min:
         points = points_sub_min(points)
-    if not flip:
+    if flip:
         points = [(y, x) for x, y in points]
     if dimensions:
         grid = make_grid(*dimensions, fill=fill)
     else:
-        grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill=fill)
+        grid = make_grid(max(map(fst, points))+1, max(map(snd, points))+1, fill=fill)
     for x, y in points:
-        grid[(y, x)] = hit
+        grid[(x, y)] = hit
     return grid
 
 def map_to_grid(d, sub_min=True, flip=False, fill='.'):
@@ -707,12 +707,15 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
     """
     points = [*d.keys()]
     if sub_min:
-        points = points_sub_min(points)
-    if not flip:
+        new_points = points_sub_min(points)
+        d = {new: d[old] for old, new in zip(points, new_points)}
+        points = new_points
+    if flip:
+        d = {(y, x): v for (x, y), v in d.items()}
         points = [(y, x) for x, y in points]
-    grid = make_grid(max(map(snd, points))+1, max(map(fst, points))+1, fill=fill)
+    grid = make_grid(max(map(fst, points))+1, max(map(snd, points))+1, fill=fill)
     for x, y in points:
-        grid[(y, x)] = d[(y, x)]
+        grid[(x, y)] = d[(x, y)]
     return grid
 
 class Grid(typing.Generic[T]):
@@ -856,7 +859,9 @@ class Grid(typing.Generic[T]):
         for coord in self.coords():
             yield coord, self[coord]
     
-    def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]]) -> T:
+    def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int], int]) -> T:
+        if isinstance(coord, int):
+            return self.grid[coord]
         return self.grid[coord[0]][coord[1]]
     
     def __setitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]], value) -> T:
@@ -864,13 +869,10 @@ class Grid(typing.Generic[T]):
         
     def __len__(self):
         return self.nrows
-                
-    def pprint(self, sep="", fill=" "):
+    
+    def print(self, sep="", fill=" "):
         max_len = len(str(self.max(key=lambda x: len(str(x)))))
         print("\n".join([sep.join([str(item).rjust(max_len, fill) for item in line]) for line in self.grid]))
-    
-    def print(self, sep=""):
-        print("\n".join([sep.join([str(item) for item in line]) for line in self.grid]))
     
     def __repr__(self):
         max_len = len(str(self.max(key=lambda x: len(str(x)))))
@@ -903,6 +905,9 @@ def matexp(a, k):
 Matrix = Grid
 cumsum = partial_sum
 tdot = ldot
+pdist1 = dist1
+pdist2 = dist2
+pdist2sq = dist2sq
 #endregion
 #region running
 def get_solution_booleans(argv):
