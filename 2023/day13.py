@@ -3,43 +3,21 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def solve1(d):
-    grids = lmap(lambda section: Grid(lmap(list, section.splitlines())), d.split('\n\n'))
+def diffs(ls, idx):
+    return sum(sum(x != y for x, y in lzip(a, b)) for a, b in zip(ls[idx:], ls[:idx][::-1]))
+
+def solve1(d, num_diffs=0):
+    grids = lmap(s_to_grid, d.split('\n\n'))
     result = 0
     
     for grid in grids:
-        rows = grid.rows()
-        cols = grid.cols()
-        for idx in range(1, grid.ncols):
-            if all(a == b for a, b in zip(cols[idx:], cols[:idx][::-1])): 
-                result += idx
-                break
-        else:
-            for idx in range(1, grid.nrows):
-                if all(a == b for a, b in zip(rows[idx:], rows[:idx][::-1])): 
-                    result += 100 * idx
-                    break
+        result += 100 * (row := next(filter(lambda idx: diffs(grid.rows(), idx) == num_diffs, range(1, grid.nrows)), 0))
+        if not row: result += next(filter(lambda idx: diffs(grid.cols(), idx) == num_diffs, range(1, grid.ncols)))
     
     return result
 
 def solve2(d):
-    grids = lmap(lambda section: Grid(lmap(list, section.splitlines())), d.split('\n\n'))
-    result = 0
-    
-    for grid in grids:
-        rows = grid.rows()
-        cols = grid.cols()
-        for idx in range(1, grid.ncols):
-            if sum(sum(x != y for x, y in lzip(a, b)) for a, b in zip(cols[idx:], cols[:idx][::-1])) == 1: 
-                result += idx
-                break
-        else:
-            for idx in range(1, grid.nrows):
-                if sum(sum(x != y for x, y in lzip(a, b)) for a, b in zip(rows[idx:], rows[:idx][::-1])) == 1: 
-                    result += 100 * idx
-                    break
-    
-    return result
+    return solve1(d, num_diffs=1)
 
 
 s = """

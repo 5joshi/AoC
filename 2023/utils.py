@@ -725,7 +725,7 @@ def s_to_grid(s, flip=False):
     """
     grid = map(list, s.splitlines())
     if flip: grid = transpose(*grid)
-    return Grid([grid])
+    return Grid([*grid])
 
 class Grid(typing.Generic[T]):
     """2D only!!!"""
