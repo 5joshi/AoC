@@ -5,62 +5,41 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     grids = lmap(lambda section: Grid(lmap(list, section.splitlines())), d.split('\n\n'))
-    mirr_rows = mirr_cols = 0
+    result = 0
     
     for grid in grids:
+        rows = grid.rows()
         cols = grid.cols()
-        for idx in range(grid.ncols):
-            col_found = False
-            # length = min(idx, grid.nrows-idx)
-            after = cols[idx:]
-            before = cols[:idx][::-1]
-            if len(before) and all(a == b for a, b in lzip(before, after)): 
-                col_found = True
-                mirr_cols += idx
+        for idx in range(1, grid.ncols):
+            if all(a == b for a, b in zip(cols[idx:], cols[:idx][::-1])): 
+                result += idx
                 break
-        if not col_found:
-            rows = grid.rows()
-            for idx in range(grid.nrows):
-                after = rows[idx:]
-                before = rows[:idx][::-1]
-                if len(before) and all(a == b for a, b in lzip(before, after)): 
-                    row_found = True
-                    mirr_rows += idx
+        else:
+            for idx in range(1, grid.nrows):
+                if all(a == b for a, b in zip(rows[idx:], rows[:idx][::-1])): 
+                    result += 100 * idx
                     break
-        if not col_found and not row_found:     
-            print(grid, idx, col_found)
-
     
-    return mirr_cols + 100 * mirr_rows
+    return result
 
 def solve2(d):
     grids = lmap(lambda section: Grid(lmap(list, section.splitlines())), d.split('\n\n'))
-    mirr_rows = mirr_cols = 0
+    result = 0
     
     for grid in grids:
+        rows = grid.rows()
         cols = grid.cols()
-        for idx in range(grid.ncols):
-            col_found = False
-            # length = min(idx, grid.nrows-idx)
-            after = cols[idx:]
-            before = cols[:idx][::-1]
-            if len(before) and sum(sum(x != y for x, y in lzip(a, b)) for a, b in lzip(before, after)) == 1: 
-                col_found = True
-                mirr_cols += idx
+        for idx in range(1, grid.ncols):
+            if sum(sum(x != y for x, y in lzip(a, b)) for a, b in zip(cols[idx:], cols[:idx][::-1])) == 1: 
+                result += idx
                 break
-        if not col_found:
-            rows = grid.rows()
-            for idx in range(grid.nrows):
-                after = rows[idx:]
-                before = rows[:idx][::-1]
-                if len(before) and sum(sum(x != y for x, y in lzip(a, b)) for a, b in lzip(before, after)) == 1: 
-                    row_found = True
-                    mirr_rows += idx
+        else:
+            for idx in range(1, grid.nrows):
+                if sum(sum(x != y for x, y in lzip(a, b)) for a, b in zip(rows[idx:], rows[:idx][::-1])) == 1: 
+                    result += 100 * idx
                     break
-        print(grid, idx, col_found)
-
     
-    return mirr_cols + 100 * mirr_rows
+    return result
 
 
 s = """
