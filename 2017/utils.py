@@ -705,6 +705,7 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
     """
     Converts a dictionary of points to a grid.
     """
+    if isinstance(d, MapGrid): d = d.grid
     points = [*d.keys()]
     if sub_min:
         new_points = points_sub_min(points)
@@ -717,6 +718,164 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
     for x, y in points:
         grid[(x, y)] = d[(x, y)]
     return grid
+
+def grid_to_map(grid):
+    """
+    Converts a grid to a dictionary of points.
+    """
+    return MapGrid({(x, y): grid[(x, y)] for x, y in grid.coords()})
+
+def spiral(size=None, start=(0, 0)):
+    """
+    Get coordinates of spiral of given size. (size = number of points including origin)
+    """
+    curr = start
+    directions = it.cycle(CHAR_TO_DELTA[d] for d in 'RULD')
+    steps = map(lambda c: c//2, it.count(2))
+    curr_dir = next(directions)
+    curr_steps = next(steps)
+
+    def step():
+        nonlocal curr, curr_dir, curr_steps
+        if curr_steps == 0:
+            curr_dir = next(directions)
+            curr_steps = next(steps)
+        curr = tadd(curr, curr_dir)
+        curr_steps -= 1
+
+    yield start
+    while size is None:
+        step()
+        yield curr    
+    else:
+        for _ in range(size-1):
+            step()
+            yield curr
+    
+            
+def make_spiral(size, func=lambda c, points: len(points) + 1):   
+    """
+    func = function that takes coordinate & points of the current spiral
+    Creates a spiral of given size in which each cell is the result of func applied to the cell's coordinates and the previous cells.
+    """
+    points = {}
+    for coord in spiral(size):
+        points[coord] = func(coord, points)
+    return MapGrid(points)
+
+class MapGrid(typing.Generic[T]):
+    def __init__(self, grid: typing.Dict[typing.Tuple[int], T]) -> None:
+        self.grid = grid
+        self.inverted_grid = invert_dict(grid, single=False)
+        
+    def to_grid(self, fill='.'):
+        return map_to_grid(self, fill=fill)
+        
+    def keys(self) -> typing.List[typing.Tuple[int]]:
+        return [*self.grid.keys()]
+    
+    def values(self) -> typing.List[T]:
+        return [*self.grid.values()]
+    
+    def items(self) -> typing.List[typing.Tuple[typing.Tuple[int], T]]:
+        return [*self.grid.items()]
+
+    def coords(self) -> typing.List[typing.Tuple[int]]:
+        return [*self.grid.keys()]
+    
+    def find(self, item: T) -> typing.Tuple[int, int]:
+        assert item in self.inverted_grid, f"item {item} not in grid"
+        return self.inverted_grid[item][0]
+    
+    def findall(self, item: T) -> typing.Tuple[int, int]:
+        return self.inverted_grid.get(item, [])
+    
+    def findall_regex(self, regex) -> typing.Tuple[int, int]:
+        return [c for c in self.coords() if re.match(regex, self[c])]
+    
+    def findall_func(self, func) -> typing.Tuple[int, int]:
+        return [c for c in self.coords() if func(self[c])]
+    
+    def count(self, item: T) -> int:
+        return len(self.inverted_grid.get(item, []))
+    
+    def points_map(self, func, points: typing.List[typing.Tuple[int, int]]):
+        for p in points:
+            assert p in self.grid, f"cannot map point {p} as it is not in the grid"
+            self.grid[p] = func(self.grid[p])
+            
+    def get_neighbors(self, coord, deltas):
+        return [new for delta in deltas if (new := tadd(coord, delta)) in self.grid]
+    
+    def get_neighbors_items(self, coord, deltas, fill=None):
+        out = []
+        for delta in deltas:
+            new = tadd(coord, delta)
+            if new in self.grid:
+                out.append((new, self.grid[new]))
+            elif fill is not None:
+                out.append((new, fill))
+        return out
+
+    def get_neighbors_values(self, coord, deltas, fill=None):
+        out = []
+        for delta in deltas:
+            new = tadd(coord, delta)
+            if new in self.grid:
+                out.append(self.grid[new])
+            elif fill is not None:
+                out.append(fill)
+        return out
+    
+    def map(self, func, inplace=False):
+        if inplace:
+            self.grid = {coord: func(value) for coord, value in self.grid.items()}
+        else:
+            return MapGrid({coord: func(value) for coord, value in self.grid.items()})
+        
+    def sum(self):
+        return sum(self.grid.values())
+    
+    def max(self, key=None):
+        return max(self.grid.values(), key=key)
+    
+    def min(self, key=None):
+        return min(self.grid.values(), key=key)
+    
+    def join(self, other):
+        return MapGrid({**self.grid, **other.grid})
+            
+    def __contains__(self, item: typing.Union[typing.Tuple[int, int], typing.List[int], T]) -> bool:
+        if isinstance(item, tuple):
+            return item in self.grid
+        else:
+            return item in self.inverted_grid
+        
+    def __iter__(self):
+        """
+        Iterating over a grid gives you (coord, value) pairs.
+        """
+        for coord in self.coords():
+            yield coord, self[coord]
+    
+    def __getitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int], int]) -> T:
+        if isinstance(coord, int):
+            return self.grid[coord]
+        return self.grid[coord[0]][coord[1]]
+    
+    def __setitem__(self, coord: typing.Union[typing.Tuple[int, int], typing.List[int]], value) -> T:
+        self.grid[coord[0]][coord[1]] = value
+        
+    def __len__(self):
+        return self.nrows
+    
+    def print(self, sep="", fill=" "):
+        max_len = len(str(self.max(key=lambda x: len(str(x)))))
+        print("\n".join([sep.join([str(item).rjust(max_len, fill) for item in line]) for line in self.grid]))
+    
+    def __repr__(self):
+        max_len = len(str(self.max(key=lambda x: len(str(x)))))
+        return "\n".join([''.join([str(item).rjust(max_len, ' ') for item in line]) for line in self.grid]) 
 
 class Grid(typing.Generic[T]):
     """2D only!!!"""

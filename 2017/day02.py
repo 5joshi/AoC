@@ -32,7 +32,7 @@ if __name__ == '__main__':
     if r1: print("Actual Solution:", sol1 := solve1(inp))
 
     if e2 or ex2 or r2: print("PART 2")
-    if e2 and s2 != "": print("Example Solution:", solve2(s))
+    if e2 and s != "": print("Example Solution:", solve2(s))
     if ex2: print("Example 2 Solution:", solve2(s2))
     if r2: print("Actual Solution:", sol2 := solve2(inp))
     
