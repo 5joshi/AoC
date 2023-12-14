@@ -10,15 +10,11 @@ def solve1(d):
     
     idx = 0
     ones = set()
-    # print(state, steps)
-    for _ in tqdm(range(steps)):
-        # print(ones, state, idx)
+    for _ in range(steps):
         instr = rest[ord(state) - ord('A')]
         write, delta, state = lmap(words_and_ints, instr[2:5] if idx not in ones else instr[6:])
-        if write[-1] == 1:
-            ones |= {idx}
-        else:
-            ones -= {idx}
+        if write[-1] == 1: ones |= {idx}
+        else: ones -= {idx}
         idx += 1 if delta[-1] == 'right' else -1
         state = state[-1]
     
