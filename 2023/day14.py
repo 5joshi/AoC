@@ -16,49 +16,20 @@ def solve1(d):
                 row -= 1
             elif elem == '#':
                 row = len(col) - idx - 1
-    
-    # def roll(grid, direction):
-    #     new_grid = grid
-    #     for c in grid.findall('O'):
-    #         if grid[c] in '.#': continue
-    #         new = tadd(c, direction)
-    #         if grid[new] == '.':
-    #             new_grid[new] = 'O'
-    #             new_grid[c] == '.'
-    #         else:
-    #             new_grid[c] = 'O'
-    #     return new_grid
-    
-    
-    # while grid != (new_grid := roll(grid, CHAR_TO_DELTA['U'])):
-    #     grid = new_grid
-    #     print(new_grid, "\n")
-
-        
         
     return result
 
 def solve2(d):
     grid = Grid(lmap(list, d.splitlines()))
-    length = grid.nrows
-    print(grid, grid.ncols, grid.nrows)
     cycle = []
     seen = set()
-    d = it.cycle('NWSE')
+    dirs = it.cycle('NWSE')
     
     def roll(grid, direction):
         new_grid = grid
-        if direction == 'N':
-            order = grid.findall('O')
-        if direction == 'S':
-            order = reversed(grid.findall('O'))
-        if direction == 'W':
-            order = sorted(grid.findall('O'), key=snd)
-        if direction == 'E':
-            order = sorted(grid.findall('O'), key=snd, reverse=True)
-        for c in order:
-            old = c
-            new = tadd(c, CHAR_TO_DELTA[direction])
+        order = grid.findall('O')
+        for old in order if direction in 'NW' else reversed(order):
+            new = tadd(old, CHAR_TO_DELTA[direction])
             while new in grid and grid[new] == '.':
                 new_grid[new] = 'O'
                 new_grid[old] = '.'
@@ -67,21 +38,14 @@ def solve2(d):
         return new_grid
                
     while str(grid) not in seen:
-    # for _ in range(12):
         seen.add(str(grid))
         cycle.append(str(grid))
-        grid = roll(grid, (curr :=next(d)))  
-        # if curr == 'E':
-        #     print(grid, '\n')       
+        grid = roll(grid, next(dirs))        
     
     frm = cycle.index(str(grid))
     length = len(cycle) - frm
-    end = cycle[frm + (4000000000 - frm) % length]
-    end = Grid(lmap(list, end.splitlines())) 
-    result = 0
-    for c in end.findall('O'):
-        result += grid.nrows - c[0]
-    return result
+    end = s_to_grid(cycle[frm + (4000000000 - frm) % length])
+    return sum([grid.nrows - r for r, c in end.findall('O')])
     # print(grid, "\n")
     # print(roll(grid, CHAR_TO_DELTA['U']), "\n")
     # return result
