@@ -5,28 +5,45 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     lines = d.splitlines()
-    result = 0
     
-    for line in lines:
-        line = line.split()
+    def dist(idx, t=50_000_000):
+        p, v, a = every_n(ints(lines[idx]), 3)
+        return pdist1(tadd(tadd(p, tmul(v, t)), tmul(a, t ** 2)))
     
-    return result
+    return min(range(len(lines)), key=dist)
 
 def solve2(d):
     lines = d.splitlines()
-    result = 0
+    particles = {}
+    positions = {}
         
-    for line in lines:
-        line = line.split()
+    for idx, line in enumerate(lines):
+        p, v, a = every_n(ints(line), 3)
+        particles[idx] = (p, v, a)
+        positions[p] = idx
     
-    return result
+    for _ in range(100):
+        for particle, (p, v, a) in particles.items():
+            v = tadd(v, a)
+            p = tadd(p, v)
+            particles[particle] = (p, v, a)
+               
+        counts = Counter(p for p, v, a in particles.values())
+        positions = {p: idx for idx, (p, v, a) in particles.items() if counts[p] == 1}
+        particles = {idx: (p, v, a) for idx, (p, v, a) in particles.items() if counts[p] == 1}
+            
+    return len(particles.keys())
 
 
 s = """
-
+p=< 3,0,0>, v=< 2,0,0>, a=<-1,0,0>
+p=< 4,0,0>, v=< 0,0,0>, a=<-2,0,0>
 """.strip()
 s2 = """
-
+p=<-6,0,0>, v=< 3,0,0>, a=< 0,0,0>
+p=<-4,0,0>, v=< 2,0,0>, a=< 0,0,0>
+p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
+p=<-2,0,0>, v=< 1,0,0>, a=< 0,0,0>
 """.strip()
 
 if __name__ == '__main__':
