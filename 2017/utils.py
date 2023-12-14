@@ -898,6 +898,14 @@ def grid_to_map(grid):
     """
     return MapGrid({(x, y): grid[(x, y)] for x, y in grid.coords()})
 
+def s_to_grid(s, flip=False):
+    """
+    Converts a string to a grid.
+    """
+    grid = map(list, s.splitlines())
+    if flip: grid = transpose(*grid)
+    return Grid([*grid])
+
 def spiral(size=None, start=(0, 0)):
     """
     Get coordinates of spiral of given size. (size = number of points including origin)
