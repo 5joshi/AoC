@@ -1,10 +1,10 @@
 from utils import Grid
 from pprint import pprint
-from time import time
+from time import perf_counter
 from utils import avg
 import sys
 
-CURR_DAY = 12
+CURR_DAY = 14
 
 if __name__ == '__main__':
     solutions = []
@@ -24,11 +24,11 @@ if __name__ == '__main__':
             pt2_times = []
             for _ in range(samples):
                 exec(f"from day{day:02} import {inp_name}, solve1, solve2")
-                start = time()
+                start = perf_counter()
                 exec(f"solve1({inp_name})")
-                mid = time()
+                mid = perf_counter()
                 exec(f"solve2({inp_name})")
-                end = time()
+                end = perf_counter()
                 pt1_times.append(mid - start)
                 pt2_times.append(end - mid)
             solutions.append((day, f"{avg(pt1_times) * 1000:0.3f}ms", f"{avg(pt2_times) * 1000:0.3f}ms"))

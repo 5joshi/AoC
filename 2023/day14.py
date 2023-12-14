@@ -46,9 +46,6 @@ def solve2(d):
     length = len(cycle) - frm
     end = s_to_grid(cycle[frm + (4000000000 - frm) % length])
     return sum([grid.nrows - r for r, c in end.findall('O')])
-    # print(grid, "\n")
-    # print(roll(grid, CHAR_TO_DELTA['U']), "\n")
-    # return result
 
 
 s = """
