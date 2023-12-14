@@ -1147,6 +1147,67 @@ class Grid(typing.Generic[T]):
                 out.append(fill)
         return out
     
+    def middle(self):
+        assert self.nrows % 2 == 1 and self.ncols % 2 == 1, "grid is not odd dimensions"
+        return (self.nrows//2, self.ncols//2)
+    
+    def join(self, other, right=True):
+        if right:
+            return Grid([row + other_row for row, other_row in zip(self.grid, other.grid)])
+        else:
+            return Grid([*self.grid, *other.grid])
+    
+    def section(self, top_left, bottom_right):
+        return Grid([row[top_left[1]:bottom_right[1]+1] for row in self.grid[top_left[0]:bottom_right[0]+1]])
+    
+    def split(self, n_rows, n_cols=None):
+        if n_cols is None: n_cols = n_rows
+        assert self.nrows % n_rows == 0
+        assert self.ncols % n_cols == 0
+        return [self.section((r*n_rows, c*n_cols), ((r+1)*n_rows-1, (c+1)*n_cols-1)) for r in range(self.nrows//n_rows) for c in range(self.ncols//n_cols)]
+    
+    def rotations(self):
+        return [self, self.rotate_right(), self.rotate_180(), self.rotate_left()]
+    
+    def flips(self):
+        return [self, self.flip_horizontal(), self.flip_vertical()]
+    
+    def transformations(self):
+        return [self, self.rotate_right(), self.rotate_180(), self.rotate_left(), (flipped := self.flip_horizontal()), flipped.rotate_right(), flipped.rotate_180(), flipped.rotate_left()]
+    
+    def rotate(self, inplace=False):
+        self.rotate_right(inplace=inplace)
+    
+    def rotate_right(self, inplace=False):
+        if inplace:
+            self.grid = list(zip(*self.grid[::-1]))
+        else:
+            return Grid(list(zip(*self.grid[::-1])))
+    
+    def rotate_left(self, inplace=False):
+        if inplace:
+            self.grid = list(zip(*self.grid))[::-1]
+        else:
+            return Grid(list(zip(*self.grid))[::-1])
+        
+    def rotate_180(self, inplace=False):
+        if inplace:
+            self.grid = [row[::-1] for row in self.grid[::-1]]
+        else:
+            return Grid([row[::-1] for row in self.grid[::-1]])
+        
+    def flip_horizontal(self, inplace=False):
+        if inplace:
+            self.grid = [row[::-1] for row in self.grid]
+        else:
+            return Grid([row[::-1] for row in self.grid])
+        
+    def flip_vertical(self, inplace=False):
+        if inplace:
+            self.grid = self.grid[::-1]
+        else:
+            return Grid(self.grid[::-1])
+    
     def map(self, func, inplace=False):
         if inplace:
             self.grid = [lmap(func, row) for row in self.grid]
@@ -1161,6 +1222,12 @@ class Grid(typing.Generic[T]):
     
     def min(self, key=None):
         return min([min(row, key=key) for row in self.grid], key=key)
+    
+    def __eq__(self, other):
+        if isinstance(other, Grid):
+            return self.grid == other.grid
+        else:
+            return self.grid == other
     
     def __add__(self, other):
         if isinstance(other, Grid):
