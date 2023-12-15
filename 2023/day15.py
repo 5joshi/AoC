@@ -4,61 +4,30 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def h(s):
-    start = 0
-    for c in s:
-        start += ord(c)
-        start *= 17
-        start %= 256
-    return start
+    return reduce(lambda acc, c: ((acc + ord(c)) * 17) % 256, s, 0)
 
 def solve1(d):
-    lines = d.split(",")
-    result = 0
-    
-    for line in lines:
-        result += h(line)
-    
-    
-    return result
-
-        
+    return sum(map(h, d.split(',')))
 
 def solve2(d):
-    lines = d.split(",")
-    boxes = defaultdict(list)
-    result = 0
+    boxes = {i: [] for i in range(256)}
     
-
-    
-    for line in lines:
-        s=line
-        print(s.split('='))
+    for s in d.split(","):
         if '=' in s:
-            b, n = s.split('=')
-            hsh = h(b)
-            if not any(elem[0] == b for elem in boxes[hsh]):
-                boxes[hsh].append((b, int(n)))
+            label, n = s.split('=')
+            box = h(label)
+            for idx, (l2, _) in enumerate(boxes[box]):
+                if label == l2:
+                    boxes[box][idx] = (label, int(n))
+                    break
             else:
-                for idx, elem in enumerate(boxes[hsh]):
-                    if elem[0] == b:
-                        boxes[hsh][idx] = (b, int(n))
-        if '-' in s:
-            b = s[:-1]
-            hsh = h(b)
-            pop_idx = []
-            for elem in boxes[hsh]:
-                if elem[0] == b:
-                    pop_idx.append(elem)
+                boxes[box].append((label, int(n)))
+        else:
+            label = s[:-1]
+            box = h(label)
+            boxes[box] = lfilter(lambda v: v[0] != label, boxes[box])
                     
-            for elem in reversed(pop_idx):
-                boxes[hsh].remove(elem)
-        # print(b, line, boxes)
-                    
-    for i in range(256):
-        # print([((i+1), (idx + 1), val[1]) for idx, val in enumerate(boxes[i])])
-        result += sum((i+1) * (idx + 1) * val[1] for idx, val in enumerate(boxes[i]))
-    print(h('cm'), h('rn'))
-    return result
+    return sum(sum((box + 1) * (idx + 1) * n for idx, (_, n) in enumerate(boxes[box])) for box in range(256))
 
 
 s = """
