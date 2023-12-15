@@ -784,6 +784,27 @@ class Grid(typing.Generic[T]):
         assert 0 <= col < self.ncols, f"row {col} is OOB"
         return transpose(*self.grid)[col]
     
+    def set_row(self, row: int, new_row: typing.List[T]):
+        assert 0 <= row < self.nrows, f"row {row} is OOB"
+        assert len(new_row) == self.ncols, f"new_row {new_row} is wrong length"
+        self.grid[row] = new_row
+        
+    def set_col(self, col: int, new_col: typing.List[T]):
+        assert 0 <= col < self.ncols, f"col {col} is OOB"
+        assert len(new_col) == self.nrows, f"new_col {new_col} is wrong length"
+        for r in range(self.nrows):
+            self.grid[r][col] = new_col[r]
+            
+    def shift_row(self, row: int, amount: int):
+        assert 0 <= row < self.nrows, f"row {row} is OOB"
+        self.grid[row] = self.grid[row][amount:] + self.grid[row][:amount]
+        
+    def shift_col(self, col: int, amount: int):
+        assert 0 <= col < self.ncols, f"col {col} is OOB"
+        new_col = self.get_col(col)
+        new_col = new_col[amount:] + new_col[:amount]
+        self.set_col(col, new_col)
+    
     def rows(self):
         return self.grid
     
@@ -867,6 +888,14 @@ class Grid(typing.Generic[T]):
     
     def section(self, top_left, bottom_right):
         return Grid([row[top_left[1]:bottom_right[1]+1] for row in self.grid[top_left[0]:bottom_right[0]+1]])
+    
+    def set_section(self, top_left, bottom_right, new_grid):
+        assert len(new_grid) == bottom_right[0] - top_left[0] + 1, "new_grid has wrong number of rows"
+        assert len(new_grid[0]) == bottom_right[1] - top_left[1] + 1, "new_grid has wrong number of cols"
+        for r in range(top_left[0], bottom_right[0]+1):
+            for c in range(top_left[1], bottom_right[1]+1):
+                self.grid[r][c] = new_grid[r-top_left[0]][c-top_left[1]]
+    
     
     def split(self, n_rows, n_cols=None):
         if n_cols is None: n_cols = n_rows
