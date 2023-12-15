@@ -4,27 +4,34 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    lines = d.splitlines()
-    result = 0
-    
-    for line in lines:
-        line = line.split()
-    
-    return result
-
-def solve2(d):
-    lines = d.splitlines()
-    result = 0
+    def decompress(s):
+        if s == '':
+            return 0
         
-    for line in lines:
-        line = line.split()
+        match = re.match(r'\((\d+)x(\d+)\)', s)
+        if match:
+            substr = s[match.end():match.end() + int(match.group(1))]
+            return len(substr) * int(match.group(2)) + decompress(s[match.end() + int(match.group(1)):])
+        return 1 + decompress(s[1:])
     
-    return result
+    return sum(map(decompress, d.splitlines()))
+
+def solve2(d):   
+    def decompress(s):
+        if s == '':
+            return 0
+        
+        match = re.match(r'\((\d+)x(\d+)\)', s)
+        if match:
+            substr = s[match.end():match.end() + int(match.group(1))]
+            return decompress(substr) * int(match.group(2)) + decompress(s[match.end() + int(match.group(1)):])
+        return 1 + decompress(s[1:])
+    
+    return sum(map(decompress, d.splitlines()))
 
 
 s = """
-
-""".strip()
+(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN""".strip()
 s2 = """
 
 """.strip()
