@@ -10,10 +10,7 @@ def solve1(d):
     for line in lines:
         abbas = re.findall('(\w)(\w)\\2\\1', line)
         bad = re.findall('\[\w*(\w)(\w)\\2\\1\w*\]', line)
-        print(bad, [a == b for a, b in bad], line)
-        print(abbas, [a != b for a, b in abbas])
         if (not bad or all(a == b for a, b in bad)) and any(a != b for a, b in abbas):
-            print(line, bad)
             result += 1
     
     return result
@@ -23,13 +20,20 @@ def solve2(d):
     result = 0
         
     for line in lines:
-        line = line.split()
+        ababab = re.findall('(?=(\w)(?!\\1)(\w)\\1(?:\w|\[\w*\])*\[\w*\\2\\1\\2\w*\])', line)
+        bababa = re.findall('(?=\[\w*(\w)(?!\\1)(\w)\\1\w*\](?:\w|\[\w*\])*\\2\\1\\2)', line)
+        if len(ababab) + len(bababa) > 0:
+            result += 1
     
     return result
 
 
 s = """
-ioxxoj[asdfgh]zxcvbn""".strip()
+aba[bab]xyz
+xyx[xyx]xyx
+aaa[kek]eke
+zazbz[bzb]cdb
+""".strip()
 s2 = """
 
 """.strip()
