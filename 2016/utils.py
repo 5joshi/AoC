@@ -421,7 +421,8 @@ def a_star(
 def bfs(
     from_node: T,
     expand: typing.Callable[[T], typing.Iterable[T]],
-    to_node: typing.Optional[T] = None
+    to_node: typing.Optional[T] = None,
+    max_dist: typing.Optional[int] = None,
 ) -> typing.Tuple[typing.Dict[T, int], typing.Dict[T, T]]:
     """
     Returns (distances, parents).
@@ -444,6 +445,8 @@ def bfs(
                     g_values[new_node] = dist
         todo = new_todo
         if to_node is not None and to_node in g_values:
+            break
+        if max_dist is not None and dist >= max_dist:
             break
     
     return (g_values, parents)

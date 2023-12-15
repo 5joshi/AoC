@@ -11,10 +11,8 @@ class State:
         
     def expand(self):
         for i in range(1, min(len(self.floors[self.elevator]) + 1, 3)):
-            # print(i, self.floors)
             for c in it.combinations(self.floors[self.elevator], i):
                 for d in [-1, 1]:
-                    # print(self.elevator, d)
                     if (self.elevator + d) < 0 or (self.elevator + d) >= len(self.floors):
                         continue
                     new_floors = deepcopy(self.floors)
