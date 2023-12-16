@@ -21,15 +21,19 @@ def new_hash(s):
     return s
 
 def solve2(d):
-    keys = 0
+    keys = set()
+    threes = {}
+    fives = {}
     for i in it.count(0):
         h = new_hash(d + str(i))
         match = re.search(r'(.)\1\1', h)
-        if match:
-            for j in range(i + 1, i + 1001):
-                if re.search(match.group(1) * 5, new_hash(d + str(j))):
-                    keys += 1
-                    if keys == 64: return i
+        threes[i] = match.group(1) if match else None
+        fives[i] = set(re.findall(r'(.)\1\1\1\1', h))
+        if fives[i]:
+            for j in range(max(0, i - 1000), i):
+                if threes[j] and threes[j] in fives[i]:
+                    keys.add(j)
+                    if len(keys) == 64: return j
 
 
 s = """

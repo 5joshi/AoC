@@ -4,7 +4,7 @@ from time import perf_counter
 from utils import avg
 import sys
 
-CURR_DAY = 14
+CURR_DAY = 16
 
 if __name__ == '__main__':
     solutions = []
