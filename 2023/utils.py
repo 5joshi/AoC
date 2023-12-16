@@ -1044,6 +1044,9 @@ def matexp(a, k):
 Matrix = Grid
 cumsum = partial_sum
 tdot = ldot
+CTD = CHAR_TO_DELTA
+GD = GRID_DELTA
+OD = OCT_DELTA
 #endregion
 #region running
 def get_solution_booleans(argv):
