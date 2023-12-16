@@ -1351,6 +1351,9 @@ tdot = ldot
 pdist1 = dist1
 pdist2 = dist2
 pdist2sq = dist2sq
+CTD = CHAR_TO_DELTA
+GD = GRID_DELTA
+OD = OCT_DELTA
 #endregion
 #region running
 def get_solution_booleans(argv):
