@@ -628,6 +628,11 @@ def turn_180(drowcol):
     """
     Given a delta, returns the delta that is 180 degrees rotated.
     """
+    if isinstance(drowcol, str):
+        delta = CHAR_TO_DELTA[drowcol]
+        if drowcol in 'UDLR': return DELTA_TO_UDLR[turn_180(delta)]
+        if drowcol in 'NESW': return DELTA_TO_NESW[turn_180(delta)]
+        assert False, f'unknown direction passed ({drowcol})'
     drow, dcol = drowcol
     return (-drow, -dcol)
 
@@ -635,6 +640,11 @@ def turn_right(drowcol):
     """
     Given a delta, returns the delta that is 90 degrees rotated clockwise.
     """
+    if isinstance(drowcol, str):
+        delta = CHAR_TO_DELTA[drowcol]
+        if drowcol in 'UDLR': return DELTA_TO_UDLR[turn_right(delta)]
+        if drowcol in 'NESW': return DELTA_TO_NESW[turn_right(delta)]
+        assert False, f'unknown direction passed ({drowcol})'
     drow, dcol = drowcol
     return (dcol, -drow)
 
@@ -642,6 +652,11 @@ def turn_left(drowcol):
     """
     Given a delta, returns the delta that is 90 degrees rotated counterclockwise.
     """
+    if isinstance(drowcol, str):
+        delta = CHAR_TO_DELTA[drowcol]
+        if drowcol in 'UDLR': return DELTA_TO_UDLR[turn_left(delta)]
+        if drowcol in 'NESW': return DELTA_TO_NESW[turn_left(delta)]
+        assert False, f'unknown direction passed ({drowcol})'
     drow, dcol = drowcol
     return (-dcol, drow)
 

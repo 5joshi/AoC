@@ -3,56 +3,34 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def solve1(d, start=(0,-1), start_dir=CHAR_TO_DELTA['R']):
+def solve1(d, start=(0, -1), direction='R'):
     grid = Grid(lmap(list, d.splitlines()))
-    seen = set()
     
-    to_check = deque([(start, start_dir)])
-    while to_check:
-        coord, direction = to_check.popleft()
-        if (coord, direction) in seen: continue
-        seen.add((coord, direction))
-        # print(to_check)
-        nxt_c = tadd(coord, direction)
-        # print(nxt, nxt_c, "\n", grid)
-        if nxt_c not in grid: continue
-        nxt = grid[nxt_c]
+    def expand(node):
+        coord, direction = node
+        nxt = tadd(coord, CTD[direction])
+        if nxt not in grid: return []
+        val = grid[nxt]
+        if (val == '|' and direction in 'LR') or (val == '-' and direction in 'UD'):
+            return [(nxt, turn_left(direction)), (nxt, turn_right(direction))]
+        if (val == '/' and direction in 'LR') or (val == '\\' and direction in 'UD'):
+            return [(nxt, turn_left(direction))]
+        if val == '/' or val == '\\':
+            return [(nxt, turn_right(direction))]
+        return [(nxt, direction)]
 
-        if nxt == '|' and direction in (CHAR_TO_DELTA['E'], CHAR_TO_DELTA['W']):
-            to_check.append((nxt_c, CHAR_TO_DELTA['N']))
-            to_check.append((nxt_c, CHAR_TO_DELTA['S']))
-        elif nxt == '-' and direction in (CHAR_TO_DELTA['N'], CHAR_TO_DELTA['S']):
-            to_check.append((nxt_c, CHAR_TO_DELTA['E']))
-            to_check.append((nxt_c, CHAR_TO_DELTA['W']))
-        elif nxt == '/' and direction in (CHAR_TO_DELTA['L'], CHAR_TO_DELTA['R']):
-            to_check.append((nxt_c, turn_left(direction)))
-        elif nxt == '/':
-            to_check.append((nxt_c, turn_right(direction)))
-        elif nxt == '\\' and direction in (CHAR_TO_DELTA['L'], CHAR_TO_DELTA['R']):
-            to_check.append((nxt_c, turn_right(direction)))
-        elif nxt == '\\':
-            to_check.append((nxt_c, turn_left(direction)))
-        else:
-            to_check.append((nxt_c, direction))
-    
-    # for c in {c for c, d in seen}:
-    #     # print(c)
-    #     grid[c] = '#'    
-    # print(grid)
-    return len({c for c, d in seen}) - 1
-    # return len(grid.findall('#')) - 1
+    dists, _ = bfs((start, direction), expand)
+    return len({c for c, d in dists.keys()}) - 1
 
 def solve2(d):
     grid = Grid(lmap(list, d.splitlines()))
     result = 0
+    for r in range(grid.nrows):
+        result = max(result, solve1(d, start=(r, -1), direction='R'))
+        result = max(result, solve1(d, start=(r, grid.ncols), direction='L'))
     for c in range(grid.ncols):
-        result = max(result, solve1(d, start=(-1, c), start_dir=CHAR_TO_DELTA['S']))
-    for c in range(grid.ncols):
-        result = max(result, solve1(d, start=(grid.nrows, c), start_dir=CHAR_TO_DELTA['N']))
-    for c in range(grid.nrows):
-        result = max(result, solve1(d, start=(c, -1), start_dir=CHAR_TO_DELTA['E']))
-    for c in range(grid.nrows):
-        result = max(result, solve1(d, start=(c, grid.ncols), start_dir=CHAR_TO_DELTA['W']))
+        result = max(result, solve1(d, start=(-1, c), direction='D'))
+        result = max(result, solve1(d, start=(grid.nrows, c), direction='U'))
     return result
     
 
