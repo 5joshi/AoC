@@ -361,6 +361,7 @@ def dijkstra(
     expand: typing.Callable[[T], typing.Iterable[typing.Tuple[int, T]]],
     heuristic: typing.Optional[typing.Callable[[T], int]] = None,
     to_node: typing.Optional[T] = None,
+    to_func: typing.Optional[typing.Callable[[T], bool]] = None,
 ) -> typing.Tuple[typing.Dict[T, int], typing.Dict[T, T]]:
     """
     Returns (distances, parents).
@@ -380,8 +381,6 @@ def dijkstra(
 
     while todo:
         f, g, node = heapq.heappop(todo)
-        if node[0] == to_node:
-            break
 
         assert node in g_values
         assert g_values[node] <= g
@@ -390,7 +389,7 @@ def dijkstra(
             continue
 
         assert g_values[node] == g
-        if to_node is not None and node == to_node:
+        if to_node is not None and node == to_node or to_func is not None and to_func(node):
             break
         seen.add(node)
         for cost, new_node in expand(node):
@@ -404,9 +403,10 @@ def dijkstra(
 
 def a_star(
     from_node: T,
-    to_node: T,
     expand: typing.Callable[[T], typing.Iterable[typing.Tuple[int, T]]],
     heuristic: typing.Optional[typing.Callable[[T], int]] = None,
+    to_node: typing.Optional[T] = None,
+    to_func: typing.Optional[typing.Callable[[T], bool]] = None,
 ) -> typing.Tuple[int, typing.List[T]]:
     """
     Returns the (distance, path) from from_node to to_node using dijkstra.
@@ -414,10 +414,19 @@ def a_star(
     heuristic is an optional function that takes a node and returns an estimate of the distance to to_node.
     heuristic should never overestimate the cost (heuristic = lower bound).
     """
-    g_values, parents = dijkstra(from_node, to_node=to_node, expand=expand, heuristic=heuristic)
-    if to_node not in g_values:
-        raise Exception("couldn't reach to_node")
-    return (g_values[to_node], path_from_parents(parents, to_node))
+    g_values, parents = dijkstra(from_node, to_node=to_node, expand=expand, heuristic=heuristic, to_func=to_func)
+    if to_node is None and to_func is None: 
+        raise Exception("must specify to_node or to_func")
+    if to_node:
+        if to_node not in g_values:
+            raise Exception("couldn't reach to_node")
+        return (g_values[to_node], path_from_parents(parents, to_node))
+    else:
+        check = [(g, n) for n, g in g_values.items() if to_func(n)]
+        if not check:
+            raise Exception("couldn't reach to_node")
+        best = check[0]
+        return (best[0], path_from_parents(parents, best[1]))
 
 
 def bfs(
@@ -874,6 +883,9 @@ class Grid(typing.Generic[T]):
         return out
     
     def get_neighbors_items(self, coord, deltas, fill=None):
+        """
+        coord, value
+        """
         out = []
         for delta in deltas:
             p_row, p_col = tadd(coord, delta)

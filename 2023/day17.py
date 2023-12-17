@@ -4,70 +4,44 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    grid = s_to_grid(d)
-    result = 0
-    start = ((0, 0), '')
-    goal = (grid.nrows - 1, grid.ncols - 1)
-    print(grid)
-    def expand(node):
-        coord, path = node
-        result = []
-        # print(coord, path)
-        for direction in [turn_left(path[-1]), path[-1], turn_right(path[-1])] if path else 'DR':
-            if path == direction * 3: continue
-            nxt = tadd(coord, CTD[direction])
-            if nxt not in grid: continue
-            result.append((int(grid[nxt]), (nxt, path[-2:] + direction)))
-        # print(result)
-        return result
+    grid = s_to_grid(d).map(int)
+    start = ((0, 0), 'DR', 0)
+    goal = lambda node: node[0] == (grid.nrows - 1, grid.ncols - 1)
 
-    # def heuristic(node):
-    #     coord, path = node
-    #     return dist1(coord, goal)
-    
-    
-    dists, _ = dijkstra(start, to_node=goal, expand=expand)
-        
-        
-    # print(dists)
-    
-    return min([dist for val, dist in dists.items() if val[0] == goal])
-
-def solve2(d):
-    grid = s_to_grid(d)
-    result = 0
-    start = ((0, 0), '')
-    goal = (grid.nrows - 1, grid.ncols - 1)
-    print(grid)
     def expand(node):
-        coord, path = node
-        result = []
-        # print(coord, path)
-        dirs = path[-1] if path else 'DR'
-        if path and path[-4:] == path[-1] * 4:
-            # print('hi')
-            dirs+=turn_left(path[-1])
-            dirs+=turn_right(path[-1])
-            # print(dirs)
-        for direction in dirs:
-            if path and direction == path[-1] and path == direction * 10: continue
-            nxt = tadd(coord, CTD[direction])
-            if nxt not in grid: continue
-            result.append((int(grid[nxt]), (nxt, path[-9:] + direction)))
-        # print(result)
-        return result
+        coord, direction, length = node
+        
+        dirs = direction if length < 2 else ''
+        if len(direction) == 1: dirs += (turn_left(direction) + turn_right(direction))
+        
+        return [(grid[newc], (newc, newd, length + 1 if newd == direction else 0)) \
+            for newd in dirs if (newc := tadd(coord, CTD[newd])) in grid]
 
     def heuristic(node):
-        coord, path = node
-        return dist1(coord, goal)
+        return dist1(node[0], (grid.nrows - 1, grid.ncols - 1))
     
-    
-    dists, _ = dijkstra(start, to_node=goal, expand=expand, heuristic=heuristic)
-    # print(dists)
+    dist, _ = a_star(start, to_func=goal, expand=expand, heuristic=heuristic)
+    return dist
+
+def solve2(d):
+    grid = s_to_grid(d).map(int)
+    start = ((0, 0), 'DR', 0)
+    goal = lambda node: node[0] == (grid.nrows - 1, grid.ncols - 1)
+
+    def expand(node):
+        coord, direction, length = node
         
-    # print(dists)
+        dirs = direction if length < 9 else ''
+        if len(direction) == 1 and length >= 3: dirs += (turn_left(direction) + turn_right(direction))
+        
+        return [(grid[newc], (newc, newd, length + 1 if newd == direction else 0)) \
+            for newd in dirs if (newc := tadd(coord, CTD[newd])) in grid]
+
+    def heuristic(node):
+        return dist1(node[0], (grid.nrows - 1, grid.ncols - 1))
     
-    return min([(dist, val) for val, dist in dists.items() if val[0] == goal])
+    dist, _ = a_star(start, to_func=goal, expand=expand, heuristic=heuristic)
+    return dist
 
 
 s = """
