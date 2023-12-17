@@ -888,6 +888,12 @@ class Grid(typing.Generic[T]):
             assert self.in_bounds(*p), f"cannot map point {p} as it is not in the grid"
             self.grid[p] = func(self.grid[p])
             
+    def section_map(self, func, top_left: typing.Tuple[int, int], bottom_right: typing.Tuple[int, int]):
+        for r in range(top_left[0], bottom_right[0]+1):
+            for c in range(top_left[1], bottom_right[1]+1):
+                self.grid[r][c] = func(self.grid[r][c])
+            
+            
     def get_neighbors(self, coord, deltas):
         out = []
         for delta in deltas:
