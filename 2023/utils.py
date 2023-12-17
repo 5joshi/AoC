@@ -380,6 +380,8 @@ def dijkstra(
 
     while todo:
         f, g, node = heapq.heappop(todo)
+        if node[0] == to_node:
+            break
 
         assert node in g_values
         assert g_values[node] <= g
