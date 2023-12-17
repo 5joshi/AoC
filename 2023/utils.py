@@ -425,7 +425,7 @@ def a_star(
         check = [(g, n) for n, g in g_values.items() if to_func(n)]
         if not check:
             raise Exception("couldn't reach to_node")
-        best = check[0]
+        best = min(check)
         return (best[0], path_from_parents(parents, best[1]))
 
 
@@ -481,7 +481,7 @@ def bfs_single(
         check = [(g, n) for n, g in g_values.items() if to_func(n)]
         if not check:
             raise Exception("couldn't reach to_node")
-        best = check[0]
+        best = min(check)
         return (best[0], path_from_parents(parents, best[1]))
 #endregion
 #region distances

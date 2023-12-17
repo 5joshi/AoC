@@ -3,45 +3,39 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def solve1(d):
+def solve1(d, minlen=1, maxlen=3):
     grid = s_to_grid(d).map(int)
-    start = ((0, 0), 'DR', 0)
     goal = lambda node: node[0] == (grid.nrows - 1, grid.ncols - 1)
 
     def expand(node):
-        coord, direction, length = node
+        (x, y), axis = node
         
-        dirs = direction if length < 2 else ''
-        if len(direction) == 1: dirs += (turn_left(direction) + turn_right(direction))
-        
-        return [(grid[newc], (newc, newd, length + 1 if newd == direction else 0)) \
-            for newd in dirs if (newc := tadd(coord, CTD[newd])) in grid]
+        result = []
+        upcost = downcost = leftcost = rightcost = 0
+        for c in range(1, maxlen + 1):
+            if axis == 'horizontal' or axis == 'both':
+                if (upc := (x, y - c)) in grid: 
+                    upcost += grid[upc]
+                    if c >= minlen: result += [(upcost, (upc, 'vertical'))]
+                if (downc := (x, y + c)) in grid:
+                    downcost += grid[downc]
+                    if c >= minlen: result += [(downcost, (downc, 'vertical'))]
+            if axis == 'vertical' or axis == 'both':
+                if (leftc := (x - c, y)) in grid:
+                    leftcost += grid[leftc]
+                    if c >= minlen: result += [(leftcost, (leftc, 'horizontal'))]
+                if (rightc := (x + c, y)) in grid:
+                    rightcost += grid[rightc]
+                    if c >= minlen: result += [(rightcost, (rightc, 'horizontal'))]
+        return result
 
     def heuristic(node):
         return dist1(node[0], (grid.nrows - 1, grid.ncols - 1))
     
-    dist, _ = a_star(start, to_func=goal, expand=expand, heuristic=heuristic)
-    return dist
-
+    return a_star(((0, 0), 'both'), to_func=goal, expand=expand, heuristic=heuristic)[0]
+    
 def solve2(d):
-    grid = s_to_grid(d).map(int)
-    start = ((0, 0), 'DR', 0)
-    goal = lambda node: node[0] == (grid.nrows - 1, grid.ncols - 1)
-
-    def expand(node):
-        coord, direction, length = node
-        
-        dirs = direction if length < 9 else ''
-        if len(direction) == 1 and length >= 3: dirs += (turn_left(direction) + turn_right(direction))
-        
-        return [(grid[newc], (newc, newd, length + 1 if newd == direction else 0)) \
-            for newd in dirs if (newc := tadd(coord, CTD[newd])) in grid]
-
-    def heuristic(node):
-        return dist1(node[0], (grid.nrows - 1, grid.ncols - 1))
-    
-    dist, _ = a_star(start, to_func=goal, expand=expand, heuristic=heuristic)
-    return dist
+    return solve1(d, minlen=4, maxlen=10)
 
 
 s = """
@@ -62,6 +56,12 @@ s = """
 
 """.strip()
 s2 = """
+111111111111
+999999999991
+999999999991
+999999999991
+999999999991
+
 
 """.strip()
 
