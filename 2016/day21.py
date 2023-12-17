@@ -3,13 +3,12 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def solve1(d):
+def solve1(d, start='abcdefgh'):
     lines = d.splitlines()
-    curr = list('abcdefgh')
+    curr = list(start)
     
     for line in lines:
         instruction, *rest = line.split()
-        print(instruction, rest)
         if instruction == 'swap':
             if rest[0] == 'position':
                 x, y = int(rest[1]), int(rest[4])
@@ -19,15 +18,12 @@ def solve1(d):
         elif instruction == 'rotate':
             if rest[0] == 'left':
                 x = int(rest[1])
-                curr = curr[x:] + curr[:x]
             elif rest[0] == 'right':
-                x = int(rest[1])
-                curr = curr[-x:] + curr[:-x]
+                x = -int(rest[1])
             elif rest[0] == 'based':
-                x = rest[-1]
-                i = curr.index(x)
-                x = (1 + i + (1 if i >= 4 else 0)) % len(curr)
-                curr = curr[-x:] + curr[:-x]
+                i = curr.index(rest[-1])
+                x = -((1 + i + (1 if i >= 4 else 0)) % len(curr))
+            curr = curr[x:] + curr[:x]    
         elif instruction == 'reverse':
             x, y = min_max([int(rest[1]), int(rest[-1])])
             curr = curr[:x] + curr[x:y+1][::-1] + curr[y+1:]
@@ -35,45 +31,13 @@ def solve1(d):
             x, y = int(rest[1]), int(rest[-1])
             val = curr.pop(x)
             curr.insert(y, val)
-        print(curr)
     
     return ''.join(curr)
 
 def solve2(d):
-    lines = d.splitlines()
-    curr = list('decab')
-    
-    for line in reversed(lines):
-        instruction, *rest = line.split()
-        print(instruction, rest)
-        if instruction == 'swap':
-            if rest[0] == 'position':
-                x, y = int(rest[1]), int(rest[4])
-            elif rest[0] == 'letter':
-                x, y = curr.index(rest[1]), curr.index(rest[4])
-            curr[x], curr[y] = curr[y], curr[x]
-        elif instruction == 'rotate':
-            if rest[0] == 'left':
-                x = int(rest[1])
-                curr = curr[-x:] + curr[:-x]
-            elif rest[0] == 'right':
-                x = int(rest[1])
-                curr = curr[x:] + curr[:x]
-            elif rest[0] == 'based':
-                x = rest[-1]
-                i = curr.index(x)
-                x = (1 + i + (1 if i >= 4 else 0)) % len(curr)
-                curr = curr[x:] + curr[:x]
-        elif instruction == 'reverse':
-            x, y = min_max([int(rest[1]), int(rest[-1])])
-            curr = curr[:x] + curr[x:y+1][::-1] + curr[y+1:]
-        else:
-            x, y = int(rest[1]), int(rest[-1])
-            val = curr.pop(x)
-            curr.insert(y, val)
-        print(curr)
-    
-    return ''.join(curr)
+    for perm in it.permutations('abcdefgh'):
+        if solve1(d, start=perm) == 'fbgdceah':
+            return ''.join(perm)
 
 
 s = """
