@@ -4,69 +4,39 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    lines = d.splitlines()
+    lines = lmap(alphanumerics, d.splitlines())
+    area = border = 0
     curr = (0, 0)
-    border_points = set()
     
-    for line in lines:
-        direction, length, color = line.split()
+    for direction, length, _ in lines:        
+        x1, y1 = curr
+        x2, y2 = tadd(curr, tmul(CTD[direction], int(length)))
         
-        for _ in range(int(length)):
-            curr = tadd(curr, CTD[direction])
-            border_points.add(curr)
+        area += (y1 + y2) * (x1 - x2)
+        border += int(length) 
+        curr = (x2, y2)
     
-    grid = points_to_grid(border_points)
-    start = tadd(grid.find('#'), (1, 1))
-    
-    seen = set()
-    q = deque((start,))
-    while q:
-        # print(q)
-        node = q.popleft()
-        if node in seen: continue
-        seen.add(node)
-        if node not in grid or grid[node] == '#': continue
-        grid[node] = '#'
-        for n in grid.get_neighbors(node, GRID_DELTA):
-            q.append(n)
-     
-    print(start)
-    # flood(start)   
-    print(start)
-    print(border_points)
-    print(grid)
-    
-    # Write grid to file
-    # with open('grid.txt', 'w') as file:
-    #     file.write(str(grid))
-    
-    return grid.count('#')
+    inside = (abs(area) - border) // 2 + 1
+    return border + inside
 
 def solve2(d):
-    lines = d.splitlines()
-    l = r = result =0 
-    border = 0
+    lines = lmap(alphanumerics, d.splitlines())
+    area = border = 0
     curr = (0, 0)
     
-    for line in reversed(lines):
-        direction, length, color = line.split()
-        length = int(length)
-        color = color[2:-1]
+    for _, _, color in lines:
         length = int(color[:-1], 16)
-        direction = ['R', 'D', 'L', 'U'][int(color[-1])]
+        direction = "RDLU"[int(color[-1])]
+        
         x1, y1 = curr
         x2, y2 = tadd(curr, tmul(CTD[direction], length))
-        l += x1 * y2
-        r += x2 * y1
-        # result += dist1(curr, nxt)
-        # result += (curr[0] * nxt[1]) - (nxt[0] * curr[1])
+        
+        area += (y1 + y2) * (x1 - x2)
         border += length 
         curr = (x2, y2)
     
-    
-    interior = abs(r - l) // 2 - border // 2 + 1
-    
-    return border + interior
+    inside = (abs(area) - border) // 2 + 1
+    return border + inside
 
 
 s = """
