@@ -3,6 +3,7 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
+# TODO: cleanup
 def solve1(d):
     start, end = d.split('\n\n')
     workflows = {}
@@ -56,7 +57,6 @@ def solve2(d):
             var, sign, *rest = condition
             rest = ''.join(rest)
             curr_min, curr_max = ranges[var]
-            # s>100   ranges[s] = (20, 500)
             if (int(rest) <= curr_min and sign == '<') or (int(rest) >= curr_max and sign == '>'):
                 return 0
             elif curr_min < int(rest) < curr_max:
