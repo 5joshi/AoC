@@ -993,6 +993,15 @@ class Grid(typing.Generic[T]):
             self.grid = self.grid[::-1]
         else:
             return Grid(self.grid[::-1])
+        
+    def surround(self, fill=None):
+        return Grid([fill] * (self.ncols + 2) + [[fill] + row + [fill] for row in self.grid] + [fill] * (self.ncols + 2))
+    
+    def corners(self):
+        return [(0, 0), (0, self.ncols-1), (self.nrows-1, 0), (self.nrows-1, self.ncols-1)]
+    
+    def central_edges(self):
+        return [(0, self.ncols//2), (self.nrows//2, 0), (self.nrows-1, self.ncols//2), (self.nrows//2, self.ncols-1)]
     
     def map(self, func, inplace=False):
         if inplace:
