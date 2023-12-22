@@ -15,6 +15,7 @@ import re
 import sys
 import timeit
 import typing
+import numpy as np
 from collections import Counter, defaultdict, deque
 from copy import deepcopy
 from functools import reduce, lru_cache
@@ -105,6 +106,9 @@ def lmul(l, c):
 def ldot(x, y):
     return sum(a * b for a, b in zip(x, y))
 
+def lmod(l, c):
+    return [i % c for i in l]
+
 def tmap(func, *iterables):
     return tuple(map(func, *iterables))
 
@@ -134,6 +138,9 @@ def tnorm(l):
 
 def tmul(l, c):
     return tuple(c * i for i in l)
+
+def tmod(l, c):
+    return tuple(i % c for i in l)
 
 def avg(l):
     return sum(l) / len(l)
@@ -201,6 +208,13 @@ def invert_dict(d, single=True):
     return out
 #endregion
 #region numbers
+def seq_next(seq):
+    result = seq[-1]
+    while any(seq):
+        seq = list_diff(seq)
+        result += seq[-1]
+    return result
+
 def gauss_sum(n):
     return (n * (n + 1)) // 2
 

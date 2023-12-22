@@ -47,8 +47,7 @@ def solve2(d):
         
     result += num_reachable(start, 201) * ((GRIDS_WIDTH - 1) ** 2)
     result += num_reachable(start, 200) * (GRIDS_WIDTH ** 2)
-    # print(grid.find('S'))
-    # print(grid[grid.find('S')])
+
     return result
 
 
