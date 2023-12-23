@@ -3,6 +3,7 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
+# todo: cleanup this abomination
 def solve1(d):
     lines = lmap(ints, d.splitlines())
     bricks = []
@@ -17,7 +18,6 @@ def solve1(d):
     idx = 0
     for frm, to in sorted(bricks, key=lambda x: x[0][2]):
         diff = lsub(to, frm)
-        print(frm, to)
 
         delta = tuple(c // max(map(abs, diff + [1])) for c in diff)
         brick_coords = {frm, to}
@@ -39,8 +39,7 @@ def solve1(d):
     for i, brick in enumerate(bricks):
         under = {tadd(b, DOWN) for b in brick}
         above = {tadd(b, UP) for b in brick}
-        dep = 0
-        indep = 0
+
         for j, other in enumerate(bricks):
             if brick == other: continue
             if len(under & other) >= 1:
@@ -49,10 +48,7 @@ def solve1(d):
                 supports[i].add(j)
     
     for i in range(len(bricks)):
-        print(i, supports[i], supported_by[i])
-
         if len(supports[i]) == 0 or all(len(supported_by[j]) > 1 for j in supports[i]):
-
             result += 1
     return result
 
@@ -70,7 +66,6 @@ def solve2(d):
     idx = 0
     for frm, to in sorted(bricks, key=lambda x: x[0][2]):
         diff = lsub(to, frm)
-        print(frm, to)
 
         delta = tuple(c // max(map(abs, diff + [1])) for c in diff)
         brick_coords = {frm, to}
@@ -110,7 +105,6 @@ def solve2(d):
                 if all(k in supporting for k in supported_by[j]):
                     supporting.add(j)
                 to_check |= supports[j]
-            print(i, supporting)
             result += len(supporting)
     return result
 

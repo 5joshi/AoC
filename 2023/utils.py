@@ -15,7 +15,7 @@ import re
 import sys
 import timeit
 import typing
-import numpy as np
+# import numpy as np
 from collections import Counter, defaultdict, deque
 from copy import deepcopy
 from functools import reduce, lru_cache

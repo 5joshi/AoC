@@ -3,6 +3,7 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
+# TODO: cleanup, (maybe use the polynomial approach)
 def solve1(d):
     grid = s_to_grid(d)
     start = grid.find('S')
