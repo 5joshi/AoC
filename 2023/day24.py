@@ -6,95 +6,36 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    lines = d.splitlines()
-    points = []
-    # LO, HI = 7, 27
+    points = [eval(f'({line.replace(" @ ", "), (")})') for line in d.splitlines()]
     LO, HI = 200000000000000, 400000000000000
     result = 0
-    
-    for line in lines:
-        pos, vel = line.split('@')
-        points.append((ints(pos), ints(vel)))
 
-    for comb in it.combinations(points, 2):
-        (p1, v1), (p2, v2) = comb
-        p1 = p1[:2]
-        p2 = p2[:2]
-        v1 = v1[:2]
-        v2 = v2[:2]
-        # delta = best_delta(p1, p2)
-        # delta2 = best_delta((0, 0), v1)
-        # if delta == delta2:
-        x1, y1 = p1
-        x2, y2 = p2
-        vx1, vy1 = v1
-        vx2, vy2 = v2
-        A = np.array([[vx1, -vx2], [vy1, -vy2]])
-        b = np.array([x2 - x1, y2 - y1])
-        try:
-            x = np.linalg.solve(A, b)
-            if any(v < 0 for v in x):
-                continue
-        except np.linalg.LinAlgError:
-            continue
-        newx, newy = tadd(tmul(v1, x[0]), p1)
-        if LO <= newx <= HI and LO <= newy <= HI:
-            # print(x, p1, p2, v1, v2, (newx, newy))
-            result += 1
-            # mul1 = max(min(abs((LO - x1) / vx1), abs((LO - y1) / vy1)), 0)
-            # mul2 = max(min(abs((LO - x2) / vx2), abs((LO - y2) / vy2)), 0)
-            # new1 = tadd(tmul(v1, mul1), p1)
-            # new2 = tadd(tmul(v2, mul2), p2)
-            # print(mul1, mul2, new1, new2)
-            # bottom_delta = best_delta(new1, new2)
-            # mul1 = max(min((HI - x1) / vx1, (HI - y1) / vy1), 0)
-            # mul2 = max(min((HI - x2) / vx2, (HI - y2) / vy2), 0)
-            # new1 = tadd(tmul(v1, mul1), p1)
-            # new2 = tadd(tmul(v2, mul2), p2)
-            # print((HI - x2) / vx2, (HI - y2) / vy2)
-            # print(mul1, mul2, new1, new2)
-            # top_delta = best_delta(new1, new2)
-            # print(delta, bottom_delta, top_delta)
-            # if top_delta != bottom_delta:
-                # print(comb)
-                # print(delta, bottom_delta, top_delta)
-                # print(new1, new2)
-                # print()
-                # result += 1
-            
-        # x1, y1, z1 = p1
-        # x2, y2, z2 = p2
-        # vx1, vy1, vz1 = v1
-        # vx2, vy2, vz2 = v2
-        # time =  -(x1*vx1 - vx1*x2 - (x1 - x2)*vx2 + y1*vy1 - vy1*y2 - (y1 - y2)*vy2) / (vx1**2 - 2*vx1*vx2 + vx2**2 + vy1**2 - 2*vy1*vy2 + vy2**2)
-        # time = -((x1 - x2) * (vx1 - vx2) + (y1 - y2) * (vy1 - vy2)) / ((vx1 - vx2)**2 + (vy1 - vy2)**2)
-        # new1 = tadd(tmul(v1, time), p1)
-        # new2 = tadd(tmul(v2, time), p2)
-        # print(time, new1, new2)
+    for ((p1, v1), (p2, v2)) in it.combinations(points, 2):
+        if (v1[0] / v2[0]) == (v1[1] / v2[1]): continue
         
-    
+        A = np.array([[v1[0], -v2[0]], [v1[1], -v2[1]]])
+        b = np.array([p2[0] - p1[0], p2[1] - p1[1]])
+        x = np.linalg.solve(A, b)
+        if min(x) < 0: continue
+        
+        newx, newy, _ = tadd(tmul(v1, x[0]), p1)
+        if LO <= newx <= HI and LO <= newy <= HI:
+            result += 1
+
     return result
 
 def solve2(d):
-    lines = d.splitlines()
-    points = []
-    result = 0
-    
-    for line in lines:
-        pos, vel = line.split('@')
-        points.append((ints(pos), ints(vel)))
+    points = [eval(f'({line.replace(" @ ", "), (")})') for line in d.splitlines()]
 
     solver = z3.Solver()
-    X, Y, Z, VX, VY, VZ = z3.Reals('x y z vx vy vz')
-    times = z3.Reals('t1 t2 t3')
-    for t, point in zip(times, points[:3]):
-        (x, y, z), (vx, vy, vz) = point
+    X, Y, Z, VX, VY, VZ, *times = z3.Reals('x y z vx vy vz t1 t2 t3')
+    for t, ((x, y, z), (vx, vy, vz)) in zip(times, points[:3]):
         solver.add((t * (VX - vx)) == x - X)
         solver.add((t * (VY - vy)) == y - Y)
         solver.add((t * (VZ - vz)) == z - Z)
+        
     solver.check()
     solution = solver.model()
-    
     return eval(str(solution[X] + solution[Y] + solution[Z]))
 
 

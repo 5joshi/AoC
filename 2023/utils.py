@@ -103,6 +103,12 @@ def lnorm(l):
 def lmul(l, c):
     return [c * i for i in l]
 
+def ldiv(l, c):
+    return [i / c for i in l]
+
+def lidiv(l, c):
+    return [i // c for i in l]
+
 def ldot(x, y):
     return sum(a * b for a, b in zip(x, y))
 
@@ -138,6 +144,12 @@ def tnorm(l):
 
 def tmul(l, c):
     return tuple(c * i for i in l)
+
+def tdiv(l, c):
+    return tuple(i / c for i in l)
+
+def tidiv(l, c):
+    return tuple(i // c for i in l)
 
 def tmod(l, c):
     return tuple(i % c for i in l)
@@ -497,6 +509,26 @@ def bfs_single(
             raise Exception("couldn't reach to_node")
         best = min(check)
         return (best[0], path_from_parents(parents, best[1]))
+    
+def dfs(from_node: T, expand: typing.Callable[[T], typing.Iterable[T]]) -> typing.List[T]:
+    """
+    Returns a list containing dfs of the nodes.
+    expand is a function that takes a node and returns an iterable of new_nodes.
+    """
+    seen = set()  # type: typing.Set[T]
+    out = []  # type: typing.List[T]
+
+    def aux(node):
+        nonlocal seen, out
+        if node in seen:
+            return
+        seen.add(node)
+        out.append(node)
+        for new_node in expand(node):
+            aux(new_node)
+    
+    aux(from_node)
+    return out
 #endregion
 #region distances
 BLANK = object()
