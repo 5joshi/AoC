@@ -55,7 +55,7 @@ def solve2(d):
             graph[node].add((n, cost))
             q.append(n)
 
-    print(graph)
+    # print(graph)
         
     q = deque()
     q.append(((start, {start}), 0))
@@ -65,35 +65,12 @@ def solve2(d):
         if coord == (grid.nrows - 1, grid.ncols - 2):
             if length > result:
                 result = length
-                print(result)
+                # print(result)
             # result = max(result, length)
             # print(length, result)
             
         for cost, n in graph_expand((coord, seen)):
             q.append((n, length + cost))
-        
-    # dists, _ = dijkstra(start, graph_expand)
-    # print(dists)
-    # print(max(dists.items(), key=lambda x: x[1]))
-        
-    
-    # q = []
-    # q.append(start)
-    # sols = set()
-    # while q:
-    #     # q.sort(key=lambda x: len(x[1]), reverse=True)
-    #     # print(q)
-    #     coord, seen = q.pop(0)
-    #     result = 0
-    #     if coord == (grid.nrows - 1, grid.ncols - 2):
-    #         sols.add(len(seen))
-    #         print(len(seen), max(sols))
-    #     for n, item in grid.get_neighbors_items(coord, GRID_DELTA):
-    #         if item in '.>v^<' and n not in seen:
-    #             # result = max(result, try_paths((n, frozenset(seen | {n}))) + 1)
-    #             q.append((n, frozenset(seen | {n})))
-    #             # if res := try_paths((n, frozenset(seen | {n}))):
-    #             #     return res
     
     return result
 
