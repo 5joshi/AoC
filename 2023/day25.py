@@ -4,16 +4,48 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    lines = d.splitlines()
-    result = 0
+    lines = lmap(words, d.splitlines())
+    graph = defaultdict(list)
     
     for line in lines:
-        line = line.split()
+        for word in line[1:]:
+            graph[line[0]].append(word)
+            graph[word].append(line[0])
     
-    return result
+    while True:
+        new_g = {k: v.copy() for k, v in graph.items()}
+        size = {k: 1 for k in new_g}
+        while len(new_g) > 2:
+            new = random.choice(list(new_g.keys()))
+            old = random.choice(new_g[new])
 
+            size[new] += size[old]
+            for x in new_g[old]:
+                if x != new:
+                    new_g[x].append(new)
+                    new_g[new].append(x)
+                new_g[x].remove(old)
+            del new_g[old]
+            del size[old]
+            assert not any(old in v for v in new_g.values()), new_g
+
+        if any(len(v) == 3 for v in new_g.values()): 
+            return product(size.values())
 
 s = """
+jqt: rhn xhk nvd
+rsh: frs pzl lsr
+xhk: hfx
+cmg: qnr nvd lhk bvb
+rhn: xhk bvb hfx
+bvb: xhk hfx
+pzl: lsr hfx nvd
+qnr: nvd
+ntq: jqt hfx bvb xhk
+nvd: lhk
+lsr: lhk
+rzs: qnr cmg lsr rsh
+frs: qnr lhk lsr
 
 """.strip()
 s2 = """
