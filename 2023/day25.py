@@ -7,10 +7,10 @@ def solve1(d):
     lines = lmap(words, d.splitlines())
     graph = defaultdict(list)
     
-    for line in lines:
-        for word in line[1:]:
-            graph[line[0]].append(word)
-            graph[word].append(line[0])
+    for frm, *rest in lines:
+        for to in rest:
+            graph[frm].append(to)
+            graph[to].append(frm)
     
     while True:
         new_g = {k: v.copy() for k, v in graph.items()}
