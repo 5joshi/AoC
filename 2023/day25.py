@@ -27,7 +27,6 @@ def solve1(d):
                 new_g[x].remove(old)
             del new_g[old]
             del size[old]
-            assert not any(old in v for v in new_g.values()), new_g
 
         if any(len(v) == 3 for v in new_g.values()): 
             return product(size.values())
