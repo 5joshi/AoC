@@ -40,15 +40,11 @@ size route = b + (abs a - b) `div` 2 + 1
 part1 :: [String] -> Int
 part1 xs = size $ map (parse . words) xs
   where
-    parse [] = error "Invalid input"
-    parse [x] = error "Invalid input"
     parse [x, y, _] = (head x, read y)
 
 part2 :: [String] -> Int
 part2 xs = size $ map (parse . words) xs
   where
-    parse [] = error "Invalid input"
-    parse [x] = error "Invalid input"
     parse [_, _, color] = (dir color, amt color)
       where
         dir :: String -> Char
