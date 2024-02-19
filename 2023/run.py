@@ -4,7 +4,7 @@ from time import perf_counter
 from utils import avg
 import sys
 
-CURR_DAY = 24
+CURR_DAY = 25
 
 if __name__ == '__main__':
     solutions = []
@@ -16,18 +16,20 @@ if __name__ == '__main__':
     
     for day in days:
         if 'time' not in sys.argv:
-            exec(f"from day{day:02} import {inp_name}, solve1, solve2\npt1 = solve1({inp_name})\npt2 = solve2({inp_name})")
+            if day != 25: exec(f"from day{day:02} import {inp_name}, solve1, solve2\npt1 = solve1({inp_name})\npt2 = solve2({inp_name})")
+            else: exec(f"from day{day:02} import {inp_name}, solve1\npt1 = solve1({inp_name})\npt2 = 'N/A'")
             solutions.append((day, pt1, pt2))  
         elif 'time' in sys.argv:
             samples = 100 if len(sys.argv) == time_idx + 1 else int(sys.argv[-1])
             pt1_times = []
             pt2_times = []
             for _ in range(samples):
-                exec(f"from day{day:02} import {inp_name}, solve1, solve2")
+                if day != 25: exec(f"from day{day:02} import {inp_name}, solve1, solve2")
+                else: exec(f"from day{day:02} import {inp_name}, solve1")
                 start = perf_counter()
                 exec(f"solve1({inp_name})")
                 mid = perf_counter()
-                exec(f"solve2({inp_name})")
+                if day != 25: exec(f"solve2({inp_name})")
                 end = perf_counter()
                 pt1_times.append(mid - start)
                 pt2_times.append(end - mid)
