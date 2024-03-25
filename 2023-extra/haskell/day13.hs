@@ -1,33 +1,37 @@
 import Data.Char (isAlphaNum)
-import Data.List (words)
+import Data.List (groupBy, transpose)
 
-main = interact $ solve . lines
+main = interact $ solve . paragraphs
 
-solve :: [String] -> String
+solve :: [[String]] -> String
 solve xs = "Part 1: " ++ show s1 ++ "\nPart 2: " ++ show s2
   where
     s1 = sum $ map part1 xs
     s2 = sum $ map part2 xs
 
-pairs :: [String] -> [(Int, String)]
-pairs [] = []
-pairs [x] = error "Unreachable"
-pairs (x : y : xs) = (read x, y) : pairs xs
+paragraphs :: String -> [[String]]
+paragraphs input = filter (/= [""]) . groupBy (\a b -> a /= "" && b /= "") $ lines input
 
-balls :: String -> [(Int, String)] -> Int
-balls color = maximum . map fst . filter ((== color) . snd)
+listDiffs :: [Char] -> [Char] -> Int
+listDiffs l1 l2 = sum $ zipWith (\a b -> fromEnum (a /= b)) l1 l2
 
-part1 :: String -> Int
-part1 line
-  | balls "red" draws <= 12 && balls "green" draws <= 13 && balls "blue" draws <= 14 = read id
-  | otherwise = 0
+gridDiffs :: [String] -> Int -> Int
+gridDiffs grid idx = sum $ zipWith listDiffs (reverse (take idx grid)) (drop idx grid)
+
+part1 :: [String] -> Int
+part1 grid
+  | not (null rows) = 100 * head rows
+  | otherwise = head cols
   where
-    id = head $ parse line
-    draws = pairs $ tail $ parse line
-    parse = drop 1 . words . filter (\c -> isAlphaNum c || c == ' ')
+    lines grid = filter ((== 0) . gridDiffs grid) [1 .. length grid - 1]
+    rows = lines grid
+    cols = lines $ transpose grid
 
-part2 :: String -> Int
-part2 line = balls "red" draws * balls "green" draws * balls "blue" draws
+part2 :: [String] -> Int
+part2 grid
+  | not (null rows) = 100 * head rows
+  | otherwise = head cols
   where
-    draws = pairs $ parse line
-    parse = drop 2 . words . filter (\c -> isAlphaNum c || c == ' ')
+    lines grid = filter ((== 1) . gridDiffs grid) [1 .. length grid - 1]
+    rows = lines grid
+    cols = lines $ transpose grid
