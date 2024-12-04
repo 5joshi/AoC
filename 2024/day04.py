@@ -9,11 +9,7 @@ def solve1(d):
 
 def solve2(d):
     grid = s_to_grid(d)
-    result = 0
-    for a in grid.findall('A'):
-        neighbors = grid.get_neighbors_values(a, DIAG_DELTA)
-        result += len(neighbors) == 4 and "".join(neighbors) in ["SMSM", "SMMS", "MSSM", "MSMS"]
-    return result
+    return sum("".join(grid.get_neighbors_values(a, DIAG_DELTA)) in ["SMSM", "SMMS", "MSSM", "MSMS"] for a in grid.findall('A'))
 
 
 s = """
