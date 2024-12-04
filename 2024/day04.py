@@ -5,11 +5,7 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     grid = s_to_grid(d)
-    result = 0
-    for x in grid.findall('X'):
-        for delta in OCT_DELTA:
-            result += grid.read(x, delta, 4) == "XMAS"
-    return result
+    return sum(grid.read(x, delta, 4) == "XMAS" for x in grid.findall('X') for delta in OCT_DELTA)
 
 def solve2(d):
     grid = s_to_grid(d)
