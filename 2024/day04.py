@@ -8,12 +8,8 @@ def solve1(d):
     result = 0
     for x in grid.findall('X'):
         for delta in OCT_DELTA:
-            c2, c3, c4 = tadd(x, delta), tadd(x, tmul(delta, 2)), tadd(x, tmul(delta, 3))
-            if c2 in grid and c3 in grid and c4 in grid and grid[c2] + grid[c3] + grid[c4] == "MAS":
-                result += 1
+            result += grid.read(x, delta, 4) == "XMAS"
     return result
-
-DIAG_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
 
 def solve2(d):
     grid = s_to_grid(d)

@@ -1051,6 +1051,13 @@ class Grid(typing.Generic[T]):
     def central_edges(self):
         return [(0, self.ncols//2), (self.nrows//2, 0), (self.nrows-1, self.ncols//2), (self.nrows//2, self.ncols-1)]
     
+    def read(self, coord, delta, length):
+        out = []
+        for _ in range(length):
+            if coord in self: out.append(self[coord])
+            coord = tadd(coord, delta)
+        return "".join(out)
+    
     def map(self, func, inplace=False):
         if inplace:
             self.grid = [lmap(func, row) for row in self.grid]
