@@ -3,27 +3,23 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def safe(r): 
-    return (all(x > 0 for x in r) or all(x < 0 for x in r)) and all(abs(x) <= 3 for x in r) 
-
 def solve1(d):
-    reports = lmap(list_diff, lmap(ints, d.splitlines()))
-    return sum(lmap(safe, reports))
+    matches = re.findall(r'mul\((\d+),(\d+)\)', d)
+    return sum(int(a) * int(b) for a, b in matches)
 
 def solve2(d):
-    reports = lmap(ints, d.splitlines())
-    return sum(safe(list_diff(r)) or any(safe(list_diff(r[:i] + r[i+1:])) for i in range(0, len(r))) for r in reports)
+    use = True
+    result = 0
+    for match in re.findall(r"do\(\)|don't\(\)|mul\(\d+,\d+\)", d):
+        if match == "do()": use = True
+        elif match == "don't()": use = False
+        elif use: result += product(ints(match))
+        
+    return result
 
 
 s = """
-7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9
-
-""".strip()
+xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))""".strip()
 s2 = """
 
 """.strip()

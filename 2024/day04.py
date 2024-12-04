@@ -3,25 +3,26 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def safe(r): 
-    return (all(x > 0 for x in r) or all(x < 0 for x in r)) and all(abs(x) <= 3 for x in r) 
-
 def solve1(d):
-    reports = lmap(list_diff, lmap(ints, d.splitlines()))
-    return sum(lmap(safe, reports))
+    lines = d.splitlines()
+    result = 0
+    
+    for line in lines:
+        line = line.split()
+    
+    return result
 
 def solve2(d):
-    reports = lmap(ints, d.splitlines())
-    return sum(safe(list_diff(r)) or any(safe(list_diff(r[:i] + r[i+1:])) for i in range(0, len(r))) for r in reports)
+    lines = d.splitlines()
+    result = 0
+        
+    for line in lines:
+        line = line.split()
+    
+    return result
 
 
 s = """
-7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9
 
 """.strip()
 s2 = """
