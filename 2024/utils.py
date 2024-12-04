@@ -634,7 +634,9 @@ class UnionFind:
 #region matrices
 GRID_DELTA = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-OCT_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)] + GRID_DELTA
+DIAG_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
+
+OCT_DELTA = DIAG_DELTA + GRID_DELTA
 
 HEX_DELTA = {
     'n': (0, 1, -1),

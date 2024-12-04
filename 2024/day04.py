@@ -4,29 +4,49 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    lines = d.splitlines()
+    grid = s_to_grid(d)
     result = 0
-    
-    for line in lines:
-        line = line.split()
-    
+    for x in grid.findall('X'):
+        for delta in OCT_DELTA:
+            c2, c3, c4 = tadd(x, delta), tadd(x, tmul(delta, 2)), tadd(x, tmul(delta, 3))
+            if c2 in grid and c3 in grid and c4 in grid and grid[c2] + grid[c3] + grid[c4] == "MAS":
+                result += 1
     return result
 
+DIAG_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
+
 def solve2(d):
-    lines = d.splitlines()
+    grid = s_to_grid(d)
     result = 0
-        
-    for line in lines:
-        line = line.split()
-    
+    for a in grid.findall('A'):
+        neighbors = grid.get_neighbors_values(a, DIAG_DELTA)
+        result += len(neighbors) == 4 and "".join(neighbors) in ["SMSM", "SMMS", "MSSM", "MSMS"]
     return result
 
 
 s = """
-
+MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX
 """.strip()
 s2 = """
-
+.M.S......
+..A..MSMS.
+.M.S.MAA..
+..A.ASMSM.
+.M.S.M....
+..........
+S.S.S.S.S.
+.A.A.A.A..
+M.M.M.M.M.
+..........
 """.strip()
 
 if __name__ == '__main__':
