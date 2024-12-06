@@ -5,56 +5,37 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     grid = s_to_grid(d)
-    agent = grid.find("^")
+    curr, obstacles = grid.find("^"), set(grid.findall("#"))
     direction = CHAR_TO_DELTA['U']
-    result = 0
+    visited = set()
     
-    while agent in grid:
-        grid[agent] = "X"
-        nxt = tadd(agent, direction)
-        if nxt not in grid: break
-        if grid[nxt] == "#":
+    while curr in grid:
+        visited.add(curr)
+        while (nxt := tadd(curr, direction)) in obstacles:
             direction = turn_right(direction)
-            nxt = tadd(agent, direction)
-        agent = nxt
+        curr = nxt
     
-    return grid.count("X")
+    return len(visited)
 
 def solve2(d):
     grid = s_to_grid(d)
-    origin = grid.find("^")
+    origin, obstacles = grid.find("^"), set(grid.findall("#"))
     visited = set()
-    result = 0
     
-    def simulate(grid):
+    def simulate(obstacles=obstacles, curr=origin, direction=CHAR_TO_DELTA['U']):
         nonlocal visited
-        agent = origin
-        direction = CHAR_TO_DELTA['U']
         visited = set()
-        
-        while (agent, direction) not in visited:
-            visited.add((agent, direction))
-            nxt = tadd(agent, direction)
-            if nxt not in grid: return False
-            while grid[nxt] == "#":
+        while curr in grid and (curr, direction) not in visited:
+            visited.add((curr, direction))
+            while (nxt := tadd(curr, direction)) in obstacles:
                 direction = turn_right(direction)
-                nxt = tadd(agent, direction)
-            if nxt not in grid: return False
-            agent = nxt
-        
-        return agent in grid
+            curr = nxt
+        return curr in grid
     
-    simulate(grid)
+    simulate()
     to_check = set(x for x, _ in visited) - {origin}
     
-    valid = set()
-    for idx, coord in enumerate(to_check):
-        grid[coord] = "#"
-        if simulate(grid): valid.add(coord)
-        grid[coord] = "."
-        
-    for x, y in sorted(list(valid)):
-        print(f"{x},{y}")
+    return sum(simulate({*obstacles, x}) for x in to_check)
 
 s = """
 ....#.....
