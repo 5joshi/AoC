@@ -4,36 +4,32 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    lines = d.splitlines()
+    lines = lmap(ints, d.splitlines())
     result = 0
     
-    for line in lines:
-        total, *nums = ints(line)
-        
-        for comb in it.product(["+", "*", ""], repeat=len(nums) - 1):
-            expr = "(" * len(nums) + "".join(f"{a}){b}" for a, b in zip(nums, comb)) + str(nums[-1])+ ")"
-            r = eval(expr)
-            if total == r: 
-                result += total
-                break
+    for total, *nums in lines:        
+        outcomes = {nums[0]}
+        for num in nums[1:]:
+            new_outcomes = set()
+            for outcome in outcomes:
+                new_outcomes |= {outcome + num, outcome * num}
+            outcomes = {x for x in new_outcomes if x <= total}
+        result += total * (total in outcomes)
     
     return result
 
 def solve2(d):
-    lines = d.splitlines()
+    lines = lmap(ints, d.splitlines())
     result = 0
     
-    for line in lines:
-        total, *nums = ints(line)
-        
-        for comb in it.product(["+", "*", ""], repeat=len(nums) - 1):
-            r = nums[0]
-            for a, b in zip(comb, nums[1:]):
-                r = eval(f"{r}{a}{b}")
-            if total == r: 
-                result += total
-                print("found")
-                break
+    for total, *nums in lines:        
+        outcomes = {nums[0]}
+        for num in nums[1:]:
+            new_outcomes = set()
+            for outcome in outcomes:
+                new_outcomes |= {outcome + num, outcome * num, int(f"{outcome}{num}")}
+            outcomes = {x for x in new_outcomes if x <= total}
+        result += total * (total in outcomes)
     
     return result
 
