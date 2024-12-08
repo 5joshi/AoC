@@ -8,7 +8,7 @@ def solve1(d):
     found = set()
     
     for value in grid.unique_values() - {'.'}:
-        for a, b in it.permutations(grid.findall(value), 2):
+        for a, b in it.combinations(grid.findall(value), 2):
             found |= {tadd(b, tsub(b, a)), tsub(a, tsub(b, a))}
     
     return len({point for point in found if point in grid})
@@ -18,7 +18,7 @@ def solve2(d):
     found = set()
     
     for value in grid.unique_values() - {'.'}:
-        for a, b in it.permutations(grid.findall(value), 2):
+        for a, b in it.combinations(grid.findall(value), 2):
             found |= {tadd(b, tmul(tsub(b, a), c)) for c in range(-100, 100)}
     
     return len({point for point in found if point in grid})
