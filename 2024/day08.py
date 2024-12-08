@@ -5,10 +5,9 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     grid = s_to_grid(d)
-    values = grid.unique_values() - {'.'}
     found = set()
     
-    for value in values:
+    for value in grid.unique_values() - {'.'}:
         for a, b in it.permutations(grid.findall(value), 2):
             found |= {tadd(b, tsub(b, a)), tsub(a, tsub(b, a))}
     
@@ -16,10 +15,9 @@ def solve1(d):
 
 def solve2(d):
     grid = s_to_grid(d)
-    values = grid.unique_values() - {'.'}
     found = set()
     
-    for value in values:
+    for value in grid.unique_values() - {'.'}:
         for a, b in it.permutations(grid.findall(value), 2):
             found |= {tadd(b, tmul(tsub(b, a), c)) for c in range(-100, 100)}
     
