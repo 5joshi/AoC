@@ -864,6 +864,15 @@ class Grid(typing.Generic[T]):
     def coords(self) -> typing.List[typing.List[int]]:
         return [(r, c) for r in range(self.nrows) for c in range(self.ncols)]
     
+    def values(self) -> typing.List[T]:
+        return [self[(r, c)] for r in range(self.nrows) for c in range(self.ncols)]
+    
+    def items(self) -> typing.List[typing.Tuple[typing.Tuple[int, int], T]]:
+        return [((r, c), self[(r, c)]) for r in range(self.nrows) for c in range(self.ncols)]
+    
+    def unique_values(self) -> typing.Set[T]:
+        return set(self.values())
+    
     def get_row(self, row: int):
         assert 0 <= row < self.nrows, f"row {row} is OOB"
         return self.grid[row]

@@ -5,41 +5,25 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     grid = s_to_grid(d)
-    values = set(flatten(grid.grid)) - {'.'}
-    mappings = {value: grid.findall(value) for value in values}
-    result = 0
+    values = grid.unique_values() - {'.'}
+    found = set()
     
-    for coord in grid.coords():
-        found = False
-        for value, coords in mappings.items():
-            for a, b in it.permutations(coords, 2):
-                if dist1(coord, a) == (2 * dist1(coord, b)) and tsub(b, a) == tsub(coord, b):
-                    result += 1
-                    found = True
-                    break
-            if found: break
+    for value in values:
+        for a, b in it.permutations(grid.findall(value), 2):
+            found |= {tadd(b, tsub(b, a)), tsub(a, tsub(b, a))}
     
-    print(grid)
-    return result
+    return len({point for point in found if point in grid})
 
 def solve2(d):
     grid = s_to_grid(d)
-    values = set(flatten(grid.grid)) - {'.'}
-    mappings = {value: grid.findall(value) for value in values}
-    result = 0
+    values = grid.unique_values() - {'.'}
     found = set()
     
-
-    for value, coords in mappings.items():
-        for a, b in it.permutations(coords, 2):
-            delta = tsub(b, a)
-            found |= {tadd(a, tmul(delta, c)) for c in range(-100, 100)}
+    for value in values:
+        for a, b in it.permutations(grid.findall(value), 2):
+            found |= {tadd(b, tmul(tsub(b, a), c)) for c in range(-100, 100)}
     
-    found = {point for point in found if point in grid}
-    for point in found:
-        grid[point] = '#'
-    print(grid)
-    return len(found)
+    return len({point for point in found if point in grid})
 
 
 s = """
