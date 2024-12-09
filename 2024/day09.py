@@ -3,75 +3,34 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def fixed(l):
-    for idx, x in enumerate(l):
-        if x is None:
-            return all(t is None for t in l[idx:])
-    return True
-
 def solve1(d):
-    disk = list()
-    result = 0
-    i = 0
-    for a, b in every_n(d + "0", 2):
-        a, b = int(a), int(b)
-        disk += [i] * a
-        disk += [None] * b
-        i += 1
-    # print(disk)
-    while not fixed(disk):
-        # take the last element that is not none
-        i = disk.pop()
-        if i is not None:
-            idx = disk.index(None)
-            disk[idx] = i
-    
-    for idx, elem in enumerate(disk):
-        if elem is not None:
-            result += idx * elem
-    
-    return result
-
+    disk = list(((idx // 2 if idx % 2 == 0 else None), int(n)) for idx, n in enumerate(d)) 
+    while any(val is None for val, _ in disk[:-1]):
+        val, n = disk.pop()
+        if val is None: continue
+        while n > 0:
+            idx, space = next(((idx, n) for idx, (val, n) in enumerate(disk) if val is None), (None, n))
+            if idx is None:
+                disk.append((val, n))
+            elif n >= space:
+                disk[idx] = (val, space)
+            else:
+                disk[idx] = (val, n)
+                disk.insert(idx + 1, (None, space - n))
+            n -= space
+    return list(it.accumulate(disk, lambda x, y: (x[0] + (sum(range(x[1], x[1] + y[1])) * y[0] if y[0] else 0), x[1] + y[1]), initial=(0, 0)))[-1][0]
+        
 def solve2(d):
-    disk = list()
-    ends = list()
-    result = 0
-    i = 0
-    for a, b in every_n(d + "0", 2):
-        a, b = int(a), int(b)
-        disk.append((i, a))
-        disk.append((None, b))
-        i += 1
-
-    while disk:
-        # take the last element that is not none
-        val, i = disk.pop()
-        if val is not None:
-            found = False
-            for idx, (v, j) in enumerate(disk):
-                if v is None and j >= i:
-                    disk[idx] = (val, i)
-                    disk.insert(idx+1, (None, j - i))
-                    found = True
-                    break
-            if not found:
-                ends.insert(0, (val, i))
-            if found: 
-                ends.insert(0, (None, i))
-        else:
-            ends.insert(0, (val, i))
-        # print(disk + ends)
-    
-    disk = disk + ends
-    tmp = list()
-    for val, i in disk:
-        tmp += [val] * i
-    for idx, elem in enumerate(tmp):
-        if elem is not None:
-            result += idx * elem
-    
-    # print(tmp)
-    return result
+    disk = list(((idx // 2 if idx % 2 == 0 else None), int(n)) for idx, n in enumerate(d)) 
+    end = list()
+    while any(val is None for val, _ in disk[:-1]):
+        val, n = disk.pop()
+        idx, space = next(((idx, m) for idx, (val, m) in enumerate(disk) if val is None and m >= n), (None, None))
+        end.insert(0, (None if idx else val, n))
+        if val and idx:
+            disk[idx] = (val, n)
+            if n != space: disk.insert(idx + 1, (None, space - n))
+    return list(it.accumulate(disk + end, lambda x, y: (x[0] + (sum(range(x[1], x[1] + y[1])) * y[0] if y[0] else 0), x[1] + y[1]), initial=(0, 0)))[-1][0]
 
 
 s = """
