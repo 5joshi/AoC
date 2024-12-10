@@ -3,44 +3,29 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
+
 def solve1(d):
-    grid = s_to_grid(d)
-    grid = grid.map(int)
+    grid = s_to_grid(d).map(int)
     result = 0
-    for origin in grid.findall(0):
-        curr = 0
-        points = {origin}
-        while curr != 9:
-            new_points = set()
-            for point in points:
-                for coord, value in grid.get_neighbors_items(point, GRID_DELTA):
-                    if value == curr + 1:
-                        new_points.add(coord)
-            points = new_points
-            curr += 1
-        result += len(points)
-        
     
+    for origin in grid.findall(0):
+        curr = {origin}
+        for i in range(1, 10):
+            curr = {nc for c in curr for nc, val in grid.get_neighbors_items(c, GRID_DELTA) if val == i}
+        result += len(curr)
+        
     return result
 
 def solve2(d):
-    grid = s_to_grid(d)
-    grid = grid.map(int)
+    grid = s_to_grid(d).map(int)
     result = 0
-    for origin in grid.findall(0):
-        curr = 0
-        paths = {(origin,)}
-        while curr != 9:
-            new_paths = set()
-            for path in paths:
-                for coord, value in grid.get_neighbors_items(path[-1], GRID_DELTA):
-                    if value == curr + 1:
-                        new_paths.add(tuple([path] + [coord]))
-            paths = new_paths
-            curr += 1
-        result += len(paths)
-        
     
+    for origin in grid.findall(0):
+        curr = [origin]
+        for i in range(1, 10):
+            curr = [nc for c in curr for nc, val in grid.get_neighbors_items(c, GRID_DELTA) if val == i]
+        result += len(curr)
+        
     return result
 
 
