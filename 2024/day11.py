@@ -4,44 +4,34 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    nums = ints(d)
-    result = 0
+    counts = Counter(ints(d))
     
     for _ in range(25):
-        new_nums = list()
-        for idx, num in enumerate(nums):
-            if num == 0: new_nums.append(1)
-            elif len(str(num)) % 2 == 0: 
-                temp = str(num)
-                left = temp[:len(temp) // 2]
-                right = temp[len(temp) // 2:]
-                new_nums += [int(left), int(right)] 
-            else:
-                new_nums.append(num * 2024)
-        nums = new_nums
+        new_counts = Counter()
+        for num, count in counts.items():
+            if num == 0: new_counts[1] += count
+            elif len(s := str(num)) % 2 == 0: 
+                new_counts[int(s[len(s)//2:])] += count
+                new_counts[int(s[:len(s)//2])] += count
+            else: new_counts[num * 2024] += count
+        counts = new_counts
     
-    return len(nums)
+    return sum(counts.values())
 
 def solve2(d):
-    nums = Counter(ints(d))
-    result = 0
+    counts = Counter(ints(d))
     
     for _ in range(75):
-        new_nums = Counter()
-        for num, count in nums.items():
-            if num == 0: new_nums[1] += count
-            elif len(str(num)) % 2 == 0: 
-                temp = str(num)
-                left = temp[:len(temp) // 2]
-                right = temp[len(temp) // 2:]
-                new_nums[int(left)] += count
-                new_nums[int(right)] += count
-            else:
-                new_nums[num * 2024] += count
-        nums = new_nums
+        new_counts = Counter()
+        for num, count in counts.items():
+            if num == 0: new_counts[1] += count
+            elif len(s := str(num)) % 2 == 0: 
+                new_counts[int(s[len(s)//2:])] += count
+                new_counts[int(s[:len(s)//2])] += count
+            else: new_counts[num * 2024] += count
+        counts = new_counts
     
-    print(len(nums.items()))
-    return sum(nums.values())
+    return sum(counts.values())
 
 
 s = """
