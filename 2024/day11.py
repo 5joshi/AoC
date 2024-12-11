@@ -3,10 +3,10 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def solve1(d):
+def solve1(d, n=25):
     counts = Counter(ints(d))
     
-    for _ in range(25):
+    for _ in range(n):
         new_counts = Counter()
         for num, count in counts.items():
             if num == 0: new_counts[1] += count
@@ -19,19 +19,7 @@ def solve1(d):
     return sum(counts.values())
 
 def solve2(d):
-    counts = Counter(ints(d))
-    
-    for _ in range(75):
-        new_counts = Counter()
-        for num, count in counts.items():
-            if num == 0: new_counts[1] += count
-            elif len(s := str(num)) % 2 == 0: 
-                new_counts[int(s[len(s)//2:])] += count
-                new_counts[int(s[:len(s)//2])] += count
-            else: new_counts[num * 2024] += count
-        counts = new_counts
-    
-    return sum(counts.values())
+    return solve1(d, 75)
 
 
 s = """
