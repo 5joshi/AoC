@@ -7,14 +7,10 @@ def perimeter(coords, deltas=GRID_DELTA):
     return sum(sum(nc not in coords for nc in neighbors(c, deltas)) for c in coords)
 
 def sides(coords, deltas=GRID_DELTA):
-    result = 0
-    edges = {d: {c for c in coords if tadd(c, d) not in coords} for d in deltas}
-    for d in [CTD['U'], CTD['D']]:
-        for _, coords in it.groupby(sorted(edges[d], key=fst), fst):
-            result += 1 + sum(n > 1 for n in list_diff(sorted(y for _, y in coords)))
-    for d in [CTD['L'], CTD['R']]:
-        for _, coords in it.groupby(sorted(edges[d], key=snd), snd):
-            result += 1 + sum(n > 1 for n in list_diff(sorted(x for x, _ in coords)))
+    result = perimeter(coords, deltas)
+    for c in {nc for c in coords for nc in neighbors(c, deltas)}:
+        x1, x2, x3, x4 = c, tadd(c, CTD["L"]), tadd(c, CTD["UL"]), tadd(c, CTD["U"])
+        result -= ((x1 in coords) != (x3 in coords)) and ((x2 in coords) != (x4 in coords))
     return result
 
 def solve1(d):
