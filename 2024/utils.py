@@ -740,7 +740,13 @@ def dimensions(grid):
         grid = grid[0]
     return out
 
-def neighbors(dimensions, coord, deltas) -> typing.List[typing.Tuple[int]]:
+def neighbors(coord, deltas) -> typing.List[typing.Tuple[int]]:
+    """
+    Returns neighbors of any coord, without bound checks.
+    """
+    return [tadd(coord, delta) for delta in deltas]
+
+def neighbors2(dimensions, coord, deltas) -> typing.List[typing.Tuple[int]]:
     """
     Returns the neighbors of coords in a grid of any dimensions.
     """
@@ -915,6 +921,11 @@ class Grid(typing.Generic[T]):
         for c in self.coords():
             if self[c] == item:
                 return c
+            
+    def find_func(self, func) -> typing.Tuple[int, int]:
+        for c in self.coords():
+            if func(self[c]):
+                return c
     
     def findall(self, item: T) -> typing.Tuple[int, int]:
         result = []
@@ -982,6 +993,21 @@ class Grid(typing.Generic[T]):
                 out.append(fill)
         return out
     
+    def floodfill(self, coord, deltas, fill="."):
+        ref = self[coord]
+        todo = [coord]
+        out = set()
+        while todo:
+            curr = todo.pop()
+            self[curr] = fill
+            out.add(curr)
+            for delta in deltas:
+                nc = tadd(curr, delta)
+                if nc in out: continue
+                if nc in self and self[nc] == ref:
+                    todo.append(nc)
+        return out        
+            
     def middle(self):
         assert self.nrows % 2 == 1 and self.ncols % 2 == 1, "grid is not odd dimensions"
         return (self.nrows//2, self.ncols//2)

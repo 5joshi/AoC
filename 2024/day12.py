@@ -3,98 +3,37 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
+def perimeter(coords, deltas=GRID_DELTA):
+    return sum(sum(nc not in coords for nc in neighbors(c, deltas)) for c in coords)
+
+def sides(coords, delta=GRID_DELTA):
+    result = 0
+    edges = {d: {c for c in coords if tadd(c, d) not in coords} for d in delta}
+    for d in [CTD['U'], CTD['D']]:
+        for _, coords in it.groupby(sorted(edges[d], key=fst), fst):
+            result += 1 + sum(n > 1 for n in list_diff(sorted(y for _, y in coords)))
+    for d in [CTD['L'], CTD['R']]:
+        for _, coords in it.groupby(sorted(edges[d], key=snd), snd):
+            result += 1 + sum(n > 1 for n in list_diff(sorted(x for x, _ in coords)))
+    return result
+
 def solve1(d):
     grid = s_to_grid(d)
     result = 0
     
-    for coord in grid.coords():
-        if grid[coord] == ".": continue
-        same = {coord}
-        todo = {coord}
-        ref = grid[coord]
-        grid[coord] = "."
-        while todo:
-            c = todo.pop()
-            for nc, val in grid.get_neighbors_items(c, GRID_DELTA):
-                if val == ref and nc not in same:
-                    grid[nc] = "."
-                    same.add(nc)
-                    todo.add(nc)
-        area = len(same)
-        perimeter = 0
-        for c in same:
-            for nc, _ in grid.get_neighbors_items(c, GRID_DELTA, ""):
-                if nc not in same:
-                    perimeter += 1
-        result += area * perimeter
-        print(ref, area, perimeter)
-        # print(grid)
-    
+    while c := grid.find_func(lambda x: x != "."):
+        group = grid.floodfill(c, GRID_DELTA, ".")
+        result += len(group) * perimeter(group)
     
     return result
 
 def solve2(d):
     grid = s_to_grid(d)
     result = 0
-    
-    for coord in grid.coords():
-        if grid[coord] == ".": continue
-        same = {coord}
-        todo = {coord}
-        ref = grid[coord]
-        grid[coord] = "."
-        while todo:
-            c = todo.pop()
-            for nc, val in grid.get_neighbors_items(c, GRID_DELTA):
-                if val == ref and nc not in same:
-                    grid[nc] = "."
-                    same.add(nc)
-                    todo.add(nc)
-        area = len(same)
-        sides = set()
-        for c in same:
-            for nc, _ in grid.get_neighbors_items(c, GRID_DELTA, ""):
-                if nc not in same:
-                    sides.add((c, DELTA_TO_UDLR[tsub(nc, c)]))
-        # print([d for c, d in sides if c == (1, 0)])
-        dir_to_coords = {d: set() for d in "UDLR"}
-        for c, d in sides:
-            dir_to_coords[d].add(c)
-            
-        sides_count = 0
 
-        # print(sides_count, dir_to_coords['U'])
-        for x in set(x for x, _ in dir_to_coords['U']):
-            tmp_ys = list_diff(sorted(list(y for x2, y in dir_to_coords['U'] if x2 == x)))
-            sides_count += 1
-            for d in tmp_ys:
-                if d > 1: sides_count += 1
-        # print(sides_count)
-
-        for x in set(x for x, _ in dir_to_coords['D']):
-            tmp_ys = list_diff(sorted(list(y for x2, y in dir_to_coords['D'] if x2 == x)))
-            sides_count += 1
-            for d in tmp_ys:
-                if d > 1: sides_count += 1
-        # print(sides_count)
-
-        for y in set(y for _, y in dir_to_coords['L']):
-            tmp_xs = list_diff(sorted(list(x for x, y2 in dir_to_coords['L'] if y2 == y)))
-            sides_count += 1
-            for d in tmp_xs:
-                if d > 1: sides_count += 1
-        # print(sides_count)
-
-        for y in set(y for _, y in dir_to_coords['R']):
-            tmp_xs = list_diff(sorted(list(x for x, y2 in dir_to_coords['R'] if y2 == y)))
-            sides_count += 1
-            for d in tmp_xs:
-                if d > 1: sides_count += 1
-        # print(ref, area, sides_count)
-        result += area * sides_count
-        # print(ref, area, perimeter)
-        # print(grid)
-    
+    while c := grid.find_func(lambda x: x != "."):
+        group = grid.floodfill(c, GRID_DELTA, ".")
+        result += len(group) * sides(group)
     
     return result
 
@@ -105,6 +44,8 @@ EXXXX
 EEEEE
 EXXXX
 EEEEE
+
+
 
 
 """.strip()
