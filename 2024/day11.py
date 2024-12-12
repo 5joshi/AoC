@@ -10,9 +10,9 @@ def solve1(d, n=25):
         new_counts = Counter()
         for num, count in counts.items():
             if num == 0: new_counts[1] += count
-            elif len(s := str(num)) % 2 == 0: 
-                new_counts[int(s[len(s)//2:])] += count
-                new_counts[int(s[:len(s)//2])] += count
+            elif (d := int(math.log10(num)) + 1) % 2 == 0: 
+                new_counts[num // 10 ** (d // 2)] += count
+                new_counts[num % 10 ** (d // 2)] += count
             else: new_counts[num * 2024] += count
         counts = new_counts
     
