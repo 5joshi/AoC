@@ -6,9 +6,9 @@ inp = get_data(year=YEAR, day=DAY)
 def perimeter(coords, deltas=GRID_DELTA):
     return sum(sum(nc not in coords for nc in neighbors(c, deltas)) for c in coords)
 
-def sides(coords, delta=GRID_DELTA):
+def sides(coords, deltas=GRID_DELTA):
     result = 0
-    edges = {d: {c for c in coords if tadd(c, d) not in coords} for d in delta}
+    edges = {d: {c for c in coords if tadd(c, d) not in coords} for d in deltas}
     for d in [CTD['U'], CTD['D']]:
         for _, coords in it.groupby(sorted(edges[d], key=fst), fst):
             result += 1 + sum(n > 1 for n in list_diff(sorted(y for _, y in coords)))
