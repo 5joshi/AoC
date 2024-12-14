@@ -5,91 +5,50 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     robots = lmap(ints, d.splitlines())
-    points = defaultdict(set)
-    
+    points = defaultdict(set) 
     for px, py, vx, vy in robots:
         points[(px, py)].add((vx, vy))
-    # print(points) 
-    (minx, maxx), (miny, maxy) = min_max(lmap(fst, points.keys())), min_max(lmap(snd, points.keys()))
-    # minx, maxx = 0, 10
-    # miny, maxy = 0, 6
-    
-    # print(len(points))
+
+    maxx, maxy = max(map(fst, points.keys())), max(map(snd, points.keys()))
+
     for _ in range(100):
         new_points = defaultdict(set)
-        # print(points_to_grid(points.keys(), dimensions=[maxx, maxy]))
-        # print(points)
         for p, s in points.items():
             for v in s:
                 nx, ny = tadd(p, v)
-                if nx < minx:
-                    nx += maxx + 1
-                elif nx > maxx:
-                    nx -= maxx + 1
-                if ny < miny:
-                    ny += maxy + 1
-                elif ny > maxy:
-                    ny -= maxy + 1
-                new_points[(nx, ny)].add(v)
+                new_points[(nx % (maxx + 1), ny % (maxy + 1))].add(v)
         points = new_points
     
-    print(len(points))
-    print(points_to_grid(points.keys()))
-    TL = [len(points[(x, y)]) for x, y in points.keys() if minx <= x < minx + (maxx - minx) // 2 and miny <= y < miny + (maxy - miny) // 2]
-    TR = [len(points[(x, y)]) for x, y in points.keys() if minx + (maxx - minx) // 2 < x <= maxx and miny <= y < miny + (maxy - miny) // 2]
-    BL = [len(points[(x, y)]) for x, y in points.keys() if minx <= x < minx + (maxx - minx) // 2 and miny + (maxy - miny) // 2 < y <= maxy]
-    BR = [len(points[(x, y)]) for x, y in points.keys() if minx + (maxx - minx) // 2 < x <= maxx and miny + (maxy - miny) // 2 < y <= maxy]
-    print(TL, TR, BL, BR)
-    # print(grid, quadrants)
-    return product([sum(x) for x in [TL, TR, BL, BR]])
+    quadrants = [0] * 4
+    for x, y in points.keys():
+        if x < maxx // 2:
+            if y < maxy // 2: quadrants[0] += len(points[(x, y)])
+            elif y > maxy // 2: quadrants[2] += len(points[(x, y)])
+        elif x > maxx // 2:
+            if y < maxy // 2: quadrants[1] += len(points[(x, y)])
+            elif y > maxy // 2: quadrants[3] += len(points[(x, y)])
+            
+    return product(quadrants)
 
 def solve2(d):
     robots = lmap(ints, d.splitlines())
-    points = defaultdict(set)
-    file = open('day14.txt', 'w')
-    
+    points = defaultdict(set) 
     for px, py, vx, vy in robots:
         points[(px, py)].add((vx, vy))
-    # print(points) 
-    (minx, maxx), (miny, maxy) = min_max(lmap(fst, points.keys())), min_max(lmap(snd, points.keys()))
-    # minx, maxx = 0, 10
-    # miny, maxy = 0, 6
-    
-    # print(len(points))
-    for _ in range(101*103):
-        new_points = defaultdict(set)
-        file.write(str(_))
-        file.write('\n')
 
-        file.write(str(points_to_grid(points.keys(), flip=True)))
-        file.write('\n\n')
-        
+    maxx, maxy = max(map(fst, points.keys())), max(map(snd, points.keys()))
+
+    for time in range(10000):
+        new_points = defaultdict(set)
+        grid = points_to_grid(points)
+        if any("#" * 10 in "".join(row) for row in grid.rows()): return time
         for p, s in points.items():
             for v in s:
                 nx, ny = tadd(p, v)
-                if nx < minx:
-                    nx += maxx + 1
-                elif nx > maxx:
-                    nx -= maxx + 1
-                if ny < miny:
-                    ny += maxy + 1
-                elif ny > maxy:
-                    ny -= maxy + 1
-                new_points[(nx, ny)].add(v)
-                
-            
+                new_points[(nx % (maxx + 1), ny % (maxy + 1))].add(v)
         points = new_points
-    
-    print(len(points))
-    print(points_to_grid(points.keys(), flip=True))
-    TL = [len(points[(x, y)]) for x, y in points.keys() if minx <= x < minx + (maxx - minx) // 2 and miny <= y < miny + (maxy - miny) // 2]
-    TR = [len(points[(x, y)]) for x, y in points.keys() if minx + (maxx - minx) // 2 < x <= maxx and miny <= y < miny + (maxy - miny) // 2]
-    BL = [len(points[(x, y)]) for x, y in points.keys() if minx <= x < minx + (maxx - minx) // 2 and miny + (maxy - miny) // 2 < y <= maxy]
-    BR = [len(points[(x, y)]) for x, y in points.keys() if minx + (maxx - minx) // 2 < x <= maxx and miny + (maxy - miny) // 2 < y <= maxy]
-    print(TL, TR, BL, BR)
-    file.close()
-    return product([sum(x) for x in [TL, TR, BL, BR]])
 
+    return "Not found"
 
 s = """
 p=0,4 v=3,-3
