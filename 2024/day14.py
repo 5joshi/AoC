@@ -21,13 +21,9 @@ def solve1(d):
     
     quadrants = [0] * 4
     for x, y in points.keys():
-        if x < maxx // 2:
-            if y < maxy // 2: quadrants[0] += len(points[(x, y)])
-            elif y > maxy // 2: quadrants[2] += len(points[(x, y)])
-        elif x > maxx // 2:
-            if y < maxy // 2: quadrants[1] += len(points[(x, y)])
-            elif y > maxy // 2: quadrants[3] += len(points[(x, y)])
-            
+        if x == (maxx // 2) or y == (maxy // 2): continue
+        quadrants[(x > (maxx // 2)) + 2 * (y > (maxy // 2))] += len(points[(x, y)])
+        
     return product(quadrants)
 
 def solve2(d):
