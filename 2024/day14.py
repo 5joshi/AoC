@@ -40,15 +40,12 @@ def solve2(d):
 
     for time in range(10000):
         new_points = defaultdict(set)
-        grid = points_to_grid(points)
-        if any("#" * 10 in "".join(row) for row in grid.rows()): return time
+        if all(len(s) == 1 for s in points.values()): return time
         for p, s in points.items():
             for v in s:
                 nx, ny = tadd(p, v)
                 new_points[(nx % (maxx + 1), ny % (maxy + 1))].add(v)
         points = new_points
-
-    return "Not found"
 
 s = """
 p=0,4 v=3,-3
