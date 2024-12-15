@@ -11,110 +11,77 @@ def solve1(d):
     
     for d in dirs:
         np = tadd(robot, d)
-        if np not in grid: continue
         if grid[np] == "#": continue
         if grid[np] == "O":
             nxt = tadd(np, d)
-            while nxt in grid and grid[nxt] == "O":
+            while grid[nxt] == "O":
                 nxt = tadd(nxt, d)
-            if nxt in grid and grid[nxt] == ".":
-                grid[nxt] = "O"
-                grid[np] = "@"
-                grid[robot] = "."
-                robot = np
-        else:
-            grid[np] = "@"
-            grid[robot] = "."
-            robot = np
+            if grid[nxt] == "#": continue
+            grid[nxt] = "O"
+                
+        grid[np] = "@"
+        grid[robot] = "."
+        robot = np
 
-        # print(grid)  
-    
-    result = 0
-    for x, y in grid.findall("O"):
-        result += y + 100 * x
-    return result
+    return sum(y + 100 * x for x, y in grid.findall("O"))
 
 def solve2(d):
     grid, dirs = d.split("\n\n")
-    grid = grid.replace(".", "..").replace("#", "##").replace("O", "[]").replace("@", "@.")
-    grid = s_to_grid(grid)
+    grid = s_to_grid(multi_replace(grid, {".": "..", "#": "##", "O": "[]", "@": "@."}))
     dirs = lmap(lambda d: CTD[d], flatten(dirs.splitlines()))
     robot = grid.find("@")
-    # print(grid)
+    
     for d in dirs:
         np = tadd(robot, d)
-        if np not in grid: continue
         if grid[np] == "#": continue
         if grid[np] in "[]":
-            if d in [CTD['L'], CTD['R']]:
+            boxes = {np}
+            
+            if d in [CTD['<'], CTD['>']]:   
                 nxt = tadd(np, d)
-                while nxt in grid and grid[nxt] in '[]':
+                while grid[nxt] in "[]":
+                    boxes |= {nxt}
                     nxt = tadd(nxt, d)
-                if nxt in grid and grid[nxt] == ".":
-                    while nxt != robot:
-                        grid[nxt] = grid[tsub(nxt, d)]
-                        nxt = tsub(nxt, d)
-                    grid[robot] = "."
-                    robot = np
+                if grid[nxt] == "#": continue
             else:
-                boxes = set()
-                curr_check = {np}
-                if grid[np] == "]":
-                    curr_check.add(tadd(np, CTD['L']))
-                else:
-                    curr_check.add(tadd(np, CTD['R']))
-                
+                curr_row = {np, tadd(np, CTD['<'] if grid[np] == "]" else CTD['>'])}
                 pushable = True
-                while pushable and curr_check:
-                    nxt_check = set()
-                    # print(curr_check    )
-                    for c in curr_check:
+                while pushable and curr_row:
+                    nxt_row = set()
+                    for c in curr_row:
                         nxt = tadd(c, d)
                         if nxt in grid and grid[nxt] == "#":
                             pushable = False
                         elif nxt in grid and grid[nxt] in "[]":
-                            nxt_check.add(nxt)
-                            if grid[nxt] == "]":
-                                nxt_check.add(tadd(nxt, CTD['L']))
-                            else:
-                                nxt_check.add(tadd(nxt, CTD['R']))
-                    boxes |= curr_check
-                    curr_check = nxt_check
-                # print(boxes)
-                if pushable:
-                    vals = {c: grid[c] for c in boxes}
-                    for c in boxes:
-                        grid[c] = "."
-                    for c in boxes:
-                        grid[tadd(c, d)] = vals[c]
-                    grid[np] = "@"
-                    grid[robot] = "."
-                    robot = np
+                            nxt_row |= {nxt, tadd(nxt, CTD['<'] if grid[nxt] == "]" else CTD['>'])}
+                    boxes |= curr_row
+                    curr_row = nxt_row      
+                if not pushable: continue        
+                 
+            boxes = {c: grid[c] for c in boxes}
+            for c in boxes.keys():
+                grid[c] = "."  
+            for c, v in boxes.items():
+                grid[tadd(c, d)] = v  
                 
-            
-        else:
-            grid[np] = "@"
-            grid[robot] = "."
-            robot = np
-    # print(grid)
-    
-    result = 0
-    for x, y in grid.findall("["):
-        result += y  + 100 * x
-    return result
+        grid[np] = "@"
+        grid[robot] = "."
+        robot = np
+        
+    return sum(y + 100 * x for x, y in grid.findall("["))
 
 
 s = """
-#######
-#...#.#
-#.....#
-#..OO@#
-#..O..#
-#.....#
-#######
+########
+#..O.O.#
+##@.O..#
+#...O..#
+#.#.O..#
+#...O..#
+#......#
+########
 
-<vv<<^^<<^^
-
+<^^>>>vv<v>>v<<
 """.strip()
 s2 = """
 ##########

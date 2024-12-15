@@ -56,6 +56,8 @@ def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 def multi_replace(s, replacements):
+    if isinstance(replacements, dict):
+        replacements = replacements.items()
     for old, new in replacements:
         s = s.replace(old, new)
     return s
