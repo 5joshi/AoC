@@ -3,130 +3,34 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-def dijkstra(
-    from_node: T,
-    expand: typing.Callable[[T], typing.Iterable[typing.Tuple[int, T]]],
-    heuristic: typing.Optional[typing.Callable[[T], int]] = None,
-    to_node: typing.Optional[T] = None,
-    to_func: typing.Optional[typing.Callable[[T], bool]] = None,
-) -> typing.Tuple[typing.Dict[T, int], typing.Dict[T, T]]:
-    """
-    Returns (distances, parents).
-    expand is a function that takes a node and returns an iterable of (cost, new_node).
-    heuristic is an optional function that takes a node and returns an estimate of the distance to to_node.
-    heuristic should never overestimate the cost (heuristic = lower bound).
-    Use path_from_parents(parents, node) to get a path.
-    """
-    if heuristic is None:
-        heuristic = lambda _: 0
-    seen = set()  # type: typing.Set[T]
-    g_values = {from_node: 0}  # type: typing.Dict[T, int]
-    parents = {}  # type: typing.Dict[T, T]
-    
-    # (f, g, n)
-    todo = [(0 + heuristic(from_node), 0, from_node)]  # type: typing.List[typing.Tuple[int, int, T]]
-
-    while todo:
-        f, g, node = heapq.heappop(todo)
-
-        assert node in g_values
-        assert g_values[node] <= g
-
-        if node in seen:
-            continue
-
-        assert g_values[node] == g
-        if to_node is not None and node == to_node or to_func is not None and to_func(node):
-            break
-        seen.add(node)
-        for cost, new_node in expand(node):
-            new_g = g + cost
-            if new_node not in g_values or new_g < g_values[new_node]:
-                if new_node == ((15, 4), (0, -1)):
-                    print(node, frozenset((node,)))
-                parents[new_node] = frozenset((node,))
-                g_values[new_node] = new_g
-                heapq.heappush(todo, (new_g + heuristic(new_node), new_g, new_node))
-            elif new_g == g_values[new_node]:
-                if new_node == ((15, 4), (0, -1)):
-                    print(node, frozenset({*parents[new_node], node}))
-                parents[new_node] = frozenset({*parents[new_node], node})
-    
-    return (g_values, parents)
-
 def solve1(d):
     grid = s_to_grid(d)
-    start = grid.find("S")
+    start = (grid.find("S"), CTD["E"])
     end = grid.find("E")
     
     def expand(node):
         p, d = node
-        results = [(1000, (p, turn_left(d))), (1000, (p, turn_right(d)))]
-        if tadd(p, d) in grid and grid[tadd(p, d)] != "#":
-            results.append((1, (tadd(p, d), d)))
-        return results
+        nxt = [(1, (n, d))] if (n := tadd(p, d)) in grid and grid[n] != "#" else []
+        return nxt + [(1000, (p, turn_left(d))), (1000, (p, turn_right(d)))]
         
-    dists, parents = dijkstra((start, CTD['E']), expand=expand, to_func=lambda n: n[0] == end)
-    return {k[0]: v for k, v in dists.items()}[end]
-
-def path_from_parents(parents: typing.Dict[T, T], end: T) -> typing.List[T]:
-    """
-    Returns a path from the parents obtained from dijkstra/BFS.
-    """
-    out = [end]
-    seen = {end}
-    q = [end]
-    print(parents)
-    while q:
-        curr = q.pop(0)
-        print(curr)
-        if curr not in parents: continue
-        for p in parents[curr]:
-            if p not in seen:
-                q.append(p)
-                seen.add(p)
-            
-    out.reverse()
-    return seen
+    dists, _ = dijkstra(start, expand=expand, to_func=lambda n: n[0] == end)
+    return next(v for k, v in dists.items() if k[0] == end)
 
 def solve2(d):
     grid = s_to_grid(d)
-    start = grid.find("S")
+    start = (grid.find("S"), CTD["E"])
     end = grid.find("E")
     
-    def expand(node):
+    def expand(node, reverse=False):
         p, d = node
-        results = [(1000, (p, turn_left(d))), (1000, (p, turn_right(d)))]
-        if tadd(p, d) in grid and grid[tadd(p, d)] != "#":
-            results.append((1, (tadd(p, d), d)))
-        return results
+        nxt = [(1, (n, d))] if (n := tadd(p, d) if not reverse else tsub(p, d)) in grid and grid[n] != "#" else []
+        return nxt + [(1000, (p, turn_left(d))), (1000, (p, turn_right(d)))]
         
-    dists, parents = dijkstra((start, CTD['E']), expand=expand, to_func=lambda n: n[0] == end)
-    k = [k for k, v in dists.items() if k[0] == end][0]
-    
-    seen = {k}
-    q = [k]
-    # pprint(parents)
-    while q:
-        curr = q.pop(0)
-        # print(curr, parents[curr])
-        if curr not in parents: continue
-        for p in parents[curr]:
-            if p not in seen:
-                q.append(p)
-                seen.add(p)
-    
-    pprint(seen)
-    print(points_to_grid([x[0] for x in seen]))
-    return len(set([x[0] for x in seen]))
-    pprint(parents)
-    # path = path_from_parents(parents, k)
-    # points = set() 
-    # print(path)
-    # print([x[0] for x in path])
-    # print(points_to_grid([x[0] for x in path]))
-    # return len([path])
-    # return {k[0]: v for k, v in dists.items()}[end]
+    dists, _ = dijkstra(start, expand=expand)
+    end, dist = min([(k, v) for k, v in dists.items() if k[0] == end], key=snd)
+
+    rev, _ = dijkstra(end, expand=lambda n: expand(n, reverse=True))
+    return len({k[0] for k in dists.keys() if (dists[k] + rev[k]) == dist})
 
 
 s = """
