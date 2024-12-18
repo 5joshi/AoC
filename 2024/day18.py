@@ -4,44 +4,32 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d, n=1024, x=70):
-    coords = every_n(ints(d), 2)[:n]
-    start = (0, 0)
-    end = (x, x)
-    grid = points_to_grid(coords)
-    print(grid)
+    grid = points_to_grid(every_n(ints(d), 2)[:n])
+    start, end = (0, 0), (x, x)
+    
     def expand(c):
-        r = []
-        for neighbor in GRID_DELTA:
-            new = tadd(c, neighbor)
-            if new in grid and grid[new] != "#":
-                r.append((1, new))
-        return r
-    dists, _ = dijkstra(start, expand=expand,to_node=end)
-    # print(dists)
+        return [(1, n) for n, v in grid.get_neighbors_items(c, GRID_DELTA, '#') if v != "#"]
+    
+    dists, _ = dijkstra(start, expand=expand, to_node=end)
     return dists[end]
     
-    # return result
-
 def solve2(d, n=1024, x=70):
-    start = (0, 0)
-    end = (x, x)
-    points = every_n(ints(d), 2)
-    result = n
+    coords = every_n(ints(d), 2)
+    start, end = (0, 0), (x, x)
     
-    while True:
-        curr = points[:result]
-        grid = points_to_grid(curr)
-        def expand(c):
-            r = []
-            for neighbor in GRID_DELTA:
-                new = tadd(c, neighbor)
-                if new in grid and grid[new] != "#":
-                    r.append((1, new))
-            return r
-        dists, _ = dijkstra(start, expand=expand,to_node=end)
-        if end not in dists:
-            return points[result-1]
-        result += 1
+    def expand(c):
+        return [(1, n) for n, v in grid.get_neighbors_items(c, GRID_DELTA, '#') if v != "#"]
+    
+    grid = points_to_grid(coords[:n])
+    dists, parents = dijkstra(start, expand=expand, to_node=end)
+    path = path_from_parents(parents, end)
+    for x in range(n, len(coords)):
+        if coords[x] not in path: continue
+        grid = points_to_grid(coords[:x+1])
+        dists, parents = dijkstra(start, expand=expand, to_node=end)
+        if end not in dists: return ",".join(map(str, coords[x]))
+        path = path_from_parents(parents, end)
+    
 
 
 s = """
