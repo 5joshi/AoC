@@ -640,6 +640,13 @@ DELTA_TO_NESW = {
     (0, -1): "W",
 }
 
+DELTA_TO_ARROW = {
+    (-1, 0): "^",
+    (0, 1): ">",
+    (1, 0): "v",
+    (0, -1): "<",
+}
+
 def best_delta(x, y=(0, 0), deltas=OCT_DELTA, dist=dist1):
     """
     Returns the delta in deltas that leads to the shortest path (minimizes dist(x + delta, y)).
@@ -795,10 +802,16 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
         grid[(x, y)] = d[(x, y)]
     return grid
 
-def s_to_grid(s, flip=False):
+def s_to_grid(s, flip=False, fill=None):
     """
     Converts a string to a grid.
     """
+    if fill: 
+        width = max(map(len, t := s.splitlines()))
+        for idx in range(len(t)):
+            t[idx] += fill * (width - len(t[idx]))
+        s = '\n'.join(t)
+        
     grid = map(list, s.splitlines())
     if flip: grid = transpose(*grid)
     return Grid([*grid])
