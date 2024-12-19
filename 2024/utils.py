@@ -851,10 +851,17 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
         grid[(x, y)] = d[(x, y)]
     return grid
 
-def s_to_grid(s, flip=False):
+
+def s_to_grid(s, flip=False, fill=None):
     """
     Converts a string to a grid.
     """
+    if fill: 
+        width = max(map(len, t := s.splitlines()))
+        for idx in range(len(t)):
+            t[idx] += fill * (width - len(t[idx]))
+        s = '\n'.join(t)
+        
     grid = map(list, s.splitlines())
     if flip: grid = transpose(*grid)
     return Grid([*grid])

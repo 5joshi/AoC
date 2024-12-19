@@ -15,6 +15,7 @@ import re
 import sys
 import timeit
 import typing
+# import numpy as np
 from collections import Counter, defaultdict, deque
 from copy import deepcopy
 from functools import reduce, lru_cache
@@ -55,6 +56,8 @@ def words_and_ints(s: str) -> typing.List[typing.Union[str, int]]:
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 def multi_replace(s, replacements):
+    if isinstance(replacements, dict):
+        replacements = replacements.items()
     for old, new in replacements:
         s = s.replace(old, new)
     return s
@@ -102,8 +105,17 @@ def lnorm(l):
 def lmul(l, c):
     return [c * i for i in l]
 
+def ldiv(l, c):
+    return [i / c for i in l]
+
+def lidiv(l, c):
+    return [i // c for i in l]
+
 def ldot(x, y):
     return sum(a * b for a, b in zip(x, y))
+
+def lmod(l, c):
+    return [i % c for i in l]
 
 def tmap(func, *iterables):
     return tuple(map(func, *iterables))
@@ -134,6 +146,15 @@ def tnorm(l):
 
 def tmul(l, c):
     return tuple(c * i for i in l)
+
+def tdiv(l, c):
+    return tuple(i / c for i in l)
+
+def tidiv(l, c):
+    return tuple(i // c for i in l)
+
+def tmod(l, c):
+    return tuple(i % c for i in l)
 
 def avg(l):
     return sum(l) / len(l)
@@ -201,6 +222,13 @@ def invert_dict(d, single=True):
     return out
 #endregion
 #region numbers
+def seq_next(seq):
+    result = seq[-1]
+    while any(seq):
+        seq = list_diff(seq)
+        result += seq[-1]
+    return result
+
 def gauss_sum(n):
     return (n * (n + 1)) // 2
 
@@ -425,7 +453,7 @@ def a_star(
         check = [(g, n) for n, g in g_values.items() if to_func(n)]
         if not check:
             raise Exception("couldn't reach to_node")
-        best = check[0]
+        best = min(check)
         return (best[0], path_from_parents(parents, best[1]))
 
 
@@ -481,8 +509,28 @@ def bfs_single(
         check = [(g, n) for n, g in g_values.items() if to_func(n)]
         if not check:
             raise Exception("couldn't reach to_node")
-        best = check[0]
+        best = min(check)
         return (best[0], path_from_parents(parents, best[1]))
+    
+def dfs(from_node: T, expand: typing.Callable[[T], typing.Iterable[T]]) -> typing.List[T]:
+    """
+    Returns a list containing dfs of the nodes.
+    expand is a function that takes a node and returns an iterable of new_nodes.
+    """
+    seen = set()  # type: typing.Set[T]
+    out = []  # type: typing.List[T]
+
+    def aux(node):
+        nonlocal seen, out
+        if node in seen:
+            return
+        seen.add(node)
+        out.append(node)
+        for new_node in expand(node):
+            aux(new_node)
+    
+    aux(from_node)
+    return out
 #endregion
 #region distances
 BLANK = object()
@@ -588,7 +636,9 @@ class UnionFind:
 #region matrices
 GRID_DELTA = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-OCT_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)] + GRID_DELTA
+DIAG_DELTA = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
+
+OCT_DELTA = DIAG_DELTA + GRID_DELTA
 
 HEX_DELTA = {
     'n': (0, 1, -1),
@@ -638,13 +688,6 @@ DELTA_TO_NESW = {
     (0, 1): "E",
     (1, 0): "S",
     (0, -1): "W",
-}
-
-DELTA_TO_ARROW = {
-    (-1, 0): "^",
-    (0, 1): ">",
-    (1, 0): "v",
-    (0, -1): "<",
 }
 
 def best_delta(x, y=(0, 0), deltas=OCT_DELTA, dist=dist1):
@@ -699,7 +742,13 @@ def dimensions(grid):
         grid = grid[0]
     return out
 
-def neighbors(dimensions, coord, deltas) -> typing.List[typing.Tuple[int]]:
+def neighbors(coord, deltas) -> typing.List[typing.Tuple[int]]:
+    """
+    Returns neighbors of any coord, without bound checks.
+    """
+    return [tadd(coord, delta) for delta in deltas]
+
+def neighbors2(dimensions, coord, deltas) -> typing.List[typing.Tuple[int]]:
     """
     Returns the neighbors of coords in a grid of any dimensions.
     """
@@ -802,6 +851,7 @@ def map_to_grid(d, sub_min=True, flip=False, fill='.'):
         grid[(x, y)] = d[(x, y)]
     return grid
 
+
 def s_to_grid(s, flip=False, fill=None):
     """
     Converts a string to a grid.
@@ -828,6 +878,15 @@ class Grid(typing.Generic[T]):
     
     def coords(self) -> typing.List[typing.List[int]]:
         return [(r, c) for r in range(self.nrows) for c in range(self.ncols)]
+    
+    def values(self) -> typing.List[T]:
+        return [self[(r, c)] for r in range(self.nrows) for c in range(self.ncols)]
+    
+    def items(self) -> typing.List[typing.Tuple[typing.Tuple[int, int], T]]:
+        return [((r, c), self[(r, c)]) for r in range(self.nrows) for c in range(self.ncols)]
+    
+    def unique_values(self) -> typing.Set[T]:
+        return set(self.values())
     
     def get_row(self, row: int):
         assert 0 <= row < self.nrows, f"row {row} is OOB"
@@ -871,6 +930,11 @@ class Grid(typing.Generic[T]):
         for c in self.coords():
             if self[c] == item:
                 return c
+            
+    def find_func(self, func) -> typing.Tuple[int, int]:
+        for c in self.coords():
+            if func(self[c]):
+                return c
     
     def findall(self, item: T) -> typing.Tuple[int, int]:
         result = []
@@ -906,6 +970,7 @@ class Grid(typing.Generic[T]):
             for c in range(top_left[1], bottom_right[1]+1):
                 self.grid[r][c] = func(self.grid[r][c])
             
+            
     def get_neighbors(self, coord, deltas):
         out = []
         for delta in deltas:
@@ -937,6 +1002,21 @@ class Grid(typing.Generic[T]):
                 out.append(fill)
         return out
     
+    def floodfill(self, coord, deltas, fill="."):
+        ref = self[coord]
+        todo = [coord]
+        out = set()
+        while todo:
+            curr = todo.pop()
+            self[curr] = fill
+            out.add(curr)
+            for delta in deltas:
+                nc = tadd(curr, delta)
+                if nc in out: continue
+                if nc in self and self[nc] == ref:
+                    todo.append(nc)
+        return out        
+            
     def middle(self):
         assert self.nrows % 2 == 1 and self.ncols % 2 == 1, "grid is not odd dimensions"
         return (self.nrows//2, self.ncols//2)
@@ -1005,6 +1085,22 @@ class Grid(typing.Generic[T]):
             self.grid = self.grid[::-1]
         else:
             return Grid(self.grid[::-1])
+        
+    def surround(self, fill=None):
+        return Grid([fill] * (self.ncols + 2) + [[fill] + row + [fill] for row in self.grid] + [fill] * (self.ncols + 2))
+    
+    def corners(self):
+        return [(0, 0), (0, self.ncols-1), (self.nrows-1, 0), (self.nrows-1, self.ncols-1)]
+    
+    def central_edges(self):
+        return [(0, self.ncols//2), (self.nrows//2, 0), (self.nrows-1, self.ncols//2), (self.nrows//2, self.ncols-1)]
+    
+    def read(self, coord, delta, length):
+        out = []
+        for _ in range(length):
+            if coord in self: out.append(self[coord])
+            coord = tadd(coord, delta)
+        return "".join(out)
     
     def map(self, func, inplace=False):
         if inplace:
