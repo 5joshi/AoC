@@ -6,64 +6,27 @@ inp = get_data(year=YEAR, day=DAY)
 def neighbor_dist(c, n):
     return {tadd(c, (dx, dy)) for dx in range(-n, n+1) for dy in range(-n, n+1) if dist1((dx, dy)) <= n}
 
-def solve1(d):
+def solve1(d, n=2):
     grid = s_to_grid(d)
-    start = grid.find('S')
-    end = grid.find('E')
+    start, end = grid.find('S'), grid.find('E')
+    results = []
     
-    def expand(node):
-        return [(1, n) for n in neighbors(node, GRID_DELTA) if n in grid and grid[n] != '#']
+    def expand(c):
+        return [(1, nc) for nc in grid.get_neighbors(c, GRID_DELTA) if grid[nc] != '#']
     
     dists, _ = dijkstra(start, expand=expand)
-    real = dists[end]
+    real_dist = dists[end]
     rev, _ = dijkstra(end, expand=expand)
-    results = []
 
     for c in dists:
-        for nc in neighbor_dist(c, 2):
+        for nc in neighbor_dist(c, n):
             if nc not in grid or nc not in rev or grid[nc] == "#": continue
-            
-            results.append(shortcut := (real - (dists[c] + rev[nc]) - dist1(c, nc)))
+            results.append(real_dist - (dists[c] + rev[nc]) - dist1(c, nc))
 
     return sum(n >= 100 for n in results)
-        
-
-# def solve1(d):
-#     grid = s_to_grid(d)
-#     start = grid.find('S')
-#     end = grid.find('E')
-    
-#     def expand2(node):
-#         p, c = node
-#         if c == (-1, -1):
-#             return [(n, (n if grid[n] == "#" else (-1, -1))) for n in neighbors(p, GRID_DELTA) if n in grid]
-#         return [(n, c) for n in neighbors(c, GRID_DELTA) if n in grid and grid[n] != "#"]
-    
-#     dists, _ = bfs((start, (-1, -1)), expand=expand2)
-    
-#     print({dist for dist in dists if dist[0] == end})
-
 
 def solve2(d):
-    grid = s_to_grid(d)
-    start = grid.find('S')
-    end = grid.find('E')
-    
-    def expand(node):
-        return [(1, n) for n in neighbors(node, GRID_DELTA) if n in grid and grid[n] != '#']
-    
-    dists, _ = dijkstra(start, expand=expand)
-    real = dists[end]
-    rev, _ = dijkstra(end, expand=expand)
-    results = []
-
-    for c in dists:
-        for nc in neighbor_dist(c, 20):
-            if nc not in grid or nc not in rev or grid[nc] == "#": continue
-            
-            results.append(shortcut := (real - (dists[c] + rev[nc]) - dist1(c, nc)))
-
-    return sum(n >= 100 for n in results)
+    return solve1(d, 20)
 
 
 s = """
