@@ -690,6 +690,13 @@ DELTA_TO_NESW = {
     (0, -1): "W",
 }
 
+DELTA_TO_ARROW = {
+    (-1, 0): "^",
+    (0, 1): ">",
+    (1, 0): "v",
+    (0, -1): "<",
+}
+
 def best_delta(x, y=(0, 0), deltas=OCT_DELTA, dist=dist1):
     """
     Returns the delta in deltas that leads to the shortest path (minimizes dist(x + delta, y)).
