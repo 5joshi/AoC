@@ -11,171 +11,66 @@ DOOR = s_to_grid("""789
 ROBOT = s_to_grid(""" ^A
 <v>""")
 
-def solve1(d):
-    codes = d.splitlines()
-    result = 0
-    
-    for code in codes:
-        coords = lmap(lambda c: DOOR.find(c), code)
-        
-        def go(frm, to, door=False):
-            if frm == to: return ["A"]
-            delta = lsub(to, frm)
-            result = ""
-            while delta[0] < 0:
-                delta[0] += 1
-                result += "^"
-            while delta[0] > 0:
-                delta[0] -= 1
-                result += "v"
-            while delta[1] < 0:
-                delta[1] += 1
-                result += "<"
-            while delta[1] > 0:
-                delta[1] -= 1
-                result += ">"
-                
-            return [result + "A", result[::-1] + "A"]
-        
-        def check_ext(frm, ext, door=False):
-            curr=frm
-            for c in ext[:-1]:
-                curr=tadd(curr, CTD[c])
-                if (door and DOOR[curr]) == " " or (not door and ROBOT[curr] == " "):
-                    return False
-            return True
-        
-        paths = {p for p in go(DOOR.find('A'), coords[0]) if check_ext(DOOR.find('A'), p, door=True)}
-        for frm, to in windows(coords, 2):
-            paths = {path + ext for path in paths for ext in go(frm, to) if check_ext(frm, ext, door=True)}
-            
-        # print(paths)
-        def cost(path):
-            result = 0
-            for c, nc in windows("A" + path, 2):
-                result += dist1(ROBOT.find(c), ROBOT.find(nc))
-            return result
-        
-                
-                
-            
-        for i in range(2):
-            new_paths = set()
-            # prune paths
-            best_cost = min(cost(path) for path in paths)
-            paths = {path for path in paths if cost(path) == best_cost}
-            # print(paths)
-            for path in paths:
-                coords = lmap(lambda c: ROBOT.find(c), path)
-                curr_paths = {p for p in go(ROBOT.find('A'), coords[0]) if check_ext(ROBOT.find('A'), p)}
-                for frm, to in windows(coords, 2):
-                    curr_paths = {path + ext for path in curr_paths for ext in go(frm, to) if check_ext(frm, ext)}
-                new_paths |= curr_paths
-            paths = new_paths
-    
-        # print(len(min(paths, key=len)), ints(code)[0], min(paths, key=len))
-        result += len(min(paths, key=len)) * ints(code)[0]
-        
-    return result
+def kpvalid(frm, p):
+    curr = frm
+    for c in p:
+        curr = tadd(curr, CTD[c])
+        if DOOR[curr] == " ": return False
+    return True
 
-def solve2(d):
-    codes = d.splitlines()
+def kpmove(frm, to):
+    frm, to = DOOR.find(frm), DOOR.find(to)
+    dx, dy = tsub(to, frm)
+    path = abs(dx) * ("v" if dx > 0 else "^") + abs(dy) * (">" if dy > 0 else "<")
+    return {p + "A" for p in [path, path[::-1]] if kpvalid(frm, p)}
+    
+@lru_cache
+def rmove(frm, to):
+    if frm == to: return "A"
+    if frm == 'v':
+        if to == 'A': return "^>A"
+        return f"{to}A"
+    elif frm == '^':
+        if to == 'A': return ">A"
+        return f"v{rmove('v', to)}"
+    elif frm == '<':
+        if to == 'A': return ">>^A"
+        return f">{rmove('v', to)}"
+    elif frm == '>':
+        if to == 'A': return "^A"
+        return f"<{rmove('v', to)}"
+    
+    if to == '^': return "<A"
+    elif to == '>': return "vA"
+    elif to == 'v': return "<vA"
+    return "v<<A"   
+
+def solve1(d, n=2):
     result = 0
     
-    for code in codes:
-        coords = lmap(lambda c: DOOR.find(c), code)
-        
-        def go(frm, to):
-            if frm == to: return ["A"]
-            delta = lsub(to, frm)
-            result = ""
-            while delta[0] < 0:
-                delta[0] += 1
-                result += "^"
-            while delta[0] > 0:
-                delta[0] -= 1
-                result += "v"
-            while delta[1] < 0:
-                delta[1] += 1
-                result += "<"
-            while delta[1] > 0:
-                delta[1] -= 1
-                result += ">"
-                
-            return [result + "A", result[::-1] + "A"]
-        
-        def check_ext(frm, ext):
-            curr=frm
-            for c in ext[:-1]:
-                curr=tadd(curr, CTD[c])
-                if DOOR[curr] == " ":
-                    return False
-            return True
-        
-        paths = {p for p in go(DOOR.find('A'), coords[0]) if check_ext(DOOR.find('A'), p)}
-        for frm, to in windows(coords, 2):
-            paths = {path + ext for path in paths for ext in go(frm, to) if check_ext(frm, ext)}
-            
-        # print(paths)
-        def cost(path):
-            result = 0
-            for c, nc in windows("A" + path, 2):
-                result += dist1(ROBOT.find(c), ROBOT.find(nc))
-            return result
-        
-        best_cost = min(cost(path) for path in paths)
-        paths = {path for path in paths if cost(path) == best_cost}
-          
-        @lru_cache      
-        def go(frm, to):
-            if frm == to: return "A"
-            if frm == 'v':
-                if to == 'A': return "^>A"
-                return f"{to}A"
-            elif frm == '^':
-                if to == 'A': return ">A"
-                return f"v{go('v', to)}"
-            elif frm == '<':
-                if to == 'A': return ">>^A"
-                return f">{go('v', to)}"
-            elif frm == '>':
-                if to == 'A': return "^A"
-                return f"<{go('v', to)}"
-            
-            if to == '^': return "<A"
-            elif to == '>': return "vA"
-            elif to == 'v': return "<vA"
-            return "v<<A"        
-            
-        # print(paths)
+    for code in d.splitlines():
+        paths = kpmove('A', code[0])
+        for frm, to in windows(code, 2):
+            paths = {path + ext for path in paths for ext in kpmove(frm, to)}
+
         results = []
         for path in paths:
             pairs = Counter(windows("A" + path, 2))
-            for i in range(25):
+            for _ in range(n):
                 new_pairs = Counter()
                 for (a, b), count in pairs.items():
-                    for pair in windows("A" + go(a, b), 2):
+                    for pair in windows("A" + rmove(a, b), 2):
                         new_pairs[pair] += count
                 pairs = new_pairs
-            # print(code, sum(pairs.values()), ints(code)[0], sum(pairs.values()) * ints(code)[0])
-            results.append(sum(pairs.values()) * ints(code)[0])
-        # print(results, min(results))
-        result += min(results)
-        # print(result)
-            
-            # paths = {"".join(go(a, b) for a, b in windows('A' + path, 2)) for path in paths}
-            # for path in paths:
-            #     curr_paths = go('A', path[0])
-            #     for frm, to in windows(coords, 2):
-            #         curr_paths = {path + ext for path in curr_paths for ext in go(frm, to) if check_ext(frm, ext)}
-            #     new_paths |= curr_paths
-            # paths = new_paths
-            # print(paths)
-    
-        # print(len(min(paths, key=len)), ints(code)[0], min(paths, key=len))
-        # result += len(min(paths, key=len)) * ints(code)[0]
+            results.append(sum(pairs.values()))
+        
+        result += min(results) * ints(code)[0]
         
     return result
+        
+
+def solve2(d):
+    return solve1(d, n=25)
 
 
 s = """
