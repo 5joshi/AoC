@@ -245,7 +245,7 @@ def solve2(d):
         def go(frm, to):
             if frm == to: return "A"
             if frm == 'v':
-                if to == 'A': return ">^A"
+                if to == 'A': return "^>A"
                 return f"{to}A"
             elif frm == '^':
                 if to == 'A': return ">A"
@@ -262,11 +262,23 @@ def solve2(d):
             elif to == 'v': return "<vA"
             return "v<<A"        
             
-        print(paths)
-        for i in tqdm(range(25)):
-
+        # print(paths)
+        results = []
+        for path in paths:
+            pairs = Counter(windows("A" + path, 2))
+            for i in range(25):
+                new_pairs = Counter()
+                for (a, b), count in pairs.items():
+                    for pair in windows("A" + go(a, b), 2):
+                        new_pairs[pair] += count
+                pairs = new_pairs
+            # print(code, sum(pairs.values()), ints(code)[0], sum(pairs.values()) * ints(code)[0])
+            results.append(sum(pairs.values()) * ints(code)[0])
+        # print(results, min(results))
+        result += min(results)
+        # print(result)
             
-            paths = {"".join(go(a, b) for a, b in windows('A' + path, 2)) for path in paths}
+            # paths = {"".join(go(a, b) for a, b in windows('A' + path, 2)) for path in paths}
             # for path in paths:
             #     curr_paths = go('A', path[0])
             #     for frm, to in windows(coords, 2):
@@ -275,8 +287,8 @@ def solve2(d):
             # paths = new_paths
             # print(paths)
     
-        print(len(min(paths, key=len)), ints(code)[0], min(paths, key=len))
-        result += len(min(paths, key=len)) * ints(code)[0]
+        # print(len(min(paths, key=len)), ints(code)[0], min(paths, key=len))
+        # result += len(min(paths, key=len)) * ints(code)[0]
         
     return result
 
