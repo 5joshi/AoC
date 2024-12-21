@@ -18,7 +18,7 @@ import typing
 # import numpy as np
 from collections import Counter, defaultdict, deque
 from copy import deepcopy
-from functools import reduce, lru_cache
+from functools import reduce, cache
 from pprint import pprint
 from aocd import get_data, submit
 from tqdm import tqdm

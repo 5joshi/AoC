@@ -24,7 +24,7 @@ def kpmove(frm, to):
     path = abs(dx) * ("v" if dx > 0 else "^") + abs(dy) * (">" if dy > 0 else "<")
     return {p + "A" for p in [path, path[::-1]] if kpvalid(frm, p)}
     
-@lru_cache
+@cache
 def rmove(frm, to):
     if frm == to: return "A"
     if frm == 'v':
