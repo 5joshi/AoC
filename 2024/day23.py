@@ -4,47 +4,39 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    conns = defaultdict(set)
     result = 0
-    for line in d.splitlines():
-        a, b = line.split('-')
+    conns = defaultdict(set)
+    for a, b in every_n(words(d), 2):
         conns[a].add(b)
         conns[b].add(a)
         
-    keys = set(conns.keys())
-    tkeys = {k for k in keys if k.startswith('t')}
-    for t, k1, k2 in it.combinations(keys, 3):
-        if not any(x in tkeys for x in (t, k1, k2)): continue
-        if t == k1 or k1 == k2 or t == k2: continue
-        if k1 in conns[t] and k2 in conns[t] and k1 in conns[k2]:
-            result += 1
-            # print(t, k1, k2)
+    for k1, k2, k3 in it.combinations(conns.keys(), 3):
+        if not any(k.startswith('t') for k in (k1, k2, k3)): continue
+        if k1 in conns[k2] and k2 in conns[k3] and k1 in conns[k3]: result += 1
+
     return result
     
 
 def solve2(d):
     conns = defaultdict(set)
-    result = 0
-    for line in d.splitlines():
-        a, b = line.split('-')
+    for a, b in every_n(words(d), 2):
         conns[a].add(b)
         conns[b].add(a)
         
-    keys = set(conns.keys())
-    largest_group, largest_len = None, 0
-    for k in keys:
-        group = {k}
-        stack = [k]
-        while stack:
-            curr = stack.pop()
+    best, lbest = None, 0
+    for k in conns.keys():
+        seen, todo = {k}, [k]
+        while todo:
+            curr = todo.pop()
             for c in conns[curr]:
-                if c not in group and all(x in conns[c] for x in group):
-                    group.add(c)
-                    stack.append(c)
-        if len(group) > largest_len:
-            largest_group = group
-            largest_len = len(group)  
-    return sorted(largest_group)
+                if c not in seen and all(x in conns[c] for x in seen):
+                    seen.add(c)
+                    todo.append(c)
+                    
+        if len(seen) > lbest:
+            best, lbest = seen, len(seen)
+            
+    return ','.join(sorted(best))
 
 
 s = """
