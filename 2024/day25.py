@@ -4,8 +4,7 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    d = [g.replace('\n', '') for g in d.split('\n\n')]
-    return sum(("#", "#") not in zip(k, l) for k, l in it.combinations(d, 2))
+    return sum(("#", "#") not in zip(k, l) for k, l in it.combinations(d.split('\n\n'), 2))
 
 
 s = """
