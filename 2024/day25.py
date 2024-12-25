@@ -4,45 +4,8 @@ YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
-    grids = d.split("\n\n")
-    result = 0
-    keys = []
-    locks = []
-    
-    for grid in grids:
-        grid = s_to_grid(grid)
-        if all(x == "#" for x in grid.rows()[0]):
-            locks.append([x.count("#") for x in grid.cols()])
-        else:
-            assert all(x == "#" for x in grid.rows()[-1])
-            keys.append([x.count("#") for x in grid.cols()])
-    
-    for key in keys:
-        # print(key)
-        for lock in locks:
-            # print(lock)
-            match = True
-            for x, y in zip(key, lock):
-                # print(x, y, x+y)
-                if x+y > 7: 
-                    match = False
-                    break
-            if match: 
-                result += 1
-            
-        
-        
-    
-    return result
-
-def solve2(d):
-    lines = d.splitlines()
-    result = 0
-        
-    for line in lines:
-        line = line.split()
-    
-    return result
+    d = [g.replace('\n', '') for g in d.split('\n\n')]
+    return sum(("#", "#") not in zip(k, l) for k, l in it.combinations(d, 2))
 
 
 s = """
@@ -98,14 +61,8 @@ if __name__ == '__main__':
     if e1 and s != "": print("Example Solution:", solve1(s))
     if ex1: print("Example 2 Solution:", solve1(s2))
     if r1: print("Actual Solution:", sol1 := solve1(inp))
-
-    if e2 or ex2 or r2: print("PART 2")
-    if e2 and s != "": print("Example Solution:", solve2(s))
-    if ex2: print("Example 2 Solution:", solve2(s2))
-    if r2: print("Actual Solution:", sol2 := solve2(inp))
     
-    if (one and r1) or (two and r2):
+    if (one and r1):
         go = input('Submit? [y/N] ')
         if go == 'y':
             if one and r1: submit(sol1, part=1, year=YEAR, day=DAY)
-            if two and r2: submit(sol2, part=2, year=YEAR, day=DAY)
