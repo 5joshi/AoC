@@ -20,7 +20,7 @@ from collections import Counter, defaultdict, deque
 from copy import deepcopy
 from functools import reduce, cache
 from pprint import pprint
-# from aocd import get_data, submit
+from aocd import get_data, submit
 from tqdm import tqdm
 #endregion
 
