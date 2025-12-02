@@ -9,8 +9,8 @@ def solve1(d):
     
     for frm, to in ranges:
         for i in range(frm, to+1):
-            tmp = str(i)
-            result += i * (tmp[:len(tmp) // 2] * 2 == tmp)
+            s = str(i)
+            result += i * (s[:len(s) // 2] * 2 == s)
     
     return result
 
@@ -20,8 +20,8 @@ def solve2(d):
     
     for frm, to in ranges:
         for i in range(frm, to+1):
-            tmp = str(i)
-            result += i * any((tmp[:j] * (len(tmp) // j)) == tmp for j in range(1, len(tmp) // 2 + 1))
+            s = str(i)
+            result += i * any(s == s[j:] + s[:j] for j in range(1, len(s) // 2 + 1))
     
     return result
                 
