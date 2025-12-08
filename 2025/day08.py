@@ -5,23 +5,16 @@ inp = get_data(year=YEAR, day=DAY)
 
 def solve1(d):
     boxes = lmap(ints, d.splitlines())
-    best = 5000000000000
-    pair = (None, None)
-    
     circuits = []
-    dists = []
+    dists = [(dist2(x, y), tuple(x), tuple(y)) for x, y in it.combinations(boxes, 2)]
 
-    for x, y in it.combinations(boxes, 2):
-        dists.append((dist2(x, y), tuple(x), tuple(y)))
     for d, x, y in sorted(dists)[:1000]:
         changes = set()
         for i, c in enumerate(circuits):
-            if x in c: 
-                circuits[i].add(y)
-                changes.add(i)
-            elif y in c: 
-                circuits[i].add(x)
-                changes.add(i)
+            if x in c: circuits[i].add(y)
+            elif y in c: circuits[i].add(x)
+            else: continue
+            changes.add(i)
         if not changes: 
             circuits.append({x, y})
         elif len(changes) > 1:
@@ -31,28 +24,20 @@ def solve1(d):
                 circuits.pop(i)
             circuits.append(merged)
         
-        
     return product(len(c) for c in sorted(circuits, key=len, reverse=True)[:3])
 
 def solve2(d):
     boxes = lmap(ints, d.splitlines())
-    best = 5000000000000
-    pair = (None, None)
-    
     circuits = []
-    dists = []
+    dists = [(dist2(x, y), tuple(x), tuple(y)) for x, y in it.combinations(boxes, 2)]
 
-    for x, y in it.combinations(boxes, 2):
-        dists.append((dist2(x, y), tuple(x), tuple(y)))
     for d, x, y in sorted(dists):
         changes = set()
         for i, c in enumerate(circuits):
-            if x in c: 
-                circuits[i].add(y)
-                changes.add(i)
-            elif y in c: 
-                circuits[i].add(x)
-                changes.add(i)
+            if x in c: circuits[i].add(y)
+            elif y in c: circuits[i].add(x)
+            else: continue
+            changes.add(i)
         if not changes: 
             circuits.append({x, y})
         elif len(changes) > 1:
