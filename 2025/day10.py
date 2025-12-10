@@ -3,16 +3,6 @@ from utils import *
 YEAR, DAY = ints(__file__)
 inp = get_data(year=YEAR, day=DAY)
 
-
-# def a_star(
-#     from_node: T,
-#     expand: typing.Callable[[T], typing.Iterable[typing.Tuple[int, T]]],
-#     heuristic: typing.Optional[typing.Callable[[T], int]] = None,
-#     to_node: typing.Optional[T] = None,
-#     to_func: typing.Optional[typing.Callable[[T], bool]] = None,
-# ) -> typing.Tuple[int, typing.List[T]]:
-#     """
-
 def solve1(d):
     lines = d.splitlines()
     result = 0
@@ -38,15 +28,13 @@ def solve1(d):
 
 from z3 import *
 
-
 def solve2(d):
     lines = d.splitlines()
     result = 0
     
     for line in lines:
         target = tuple(ints(line.split()[-1]))
-        buttons = line.split()[1:-1]
-        buttons = lmap(ints, buttons)    
+        buttons = lmap(ints, line.split()[1:-1])
         
         solver = Optimize()
         button_vars = [Int(f'button_{i}') for i in range(len(buttons))]
@@ -65,38 +53,8 @@ def solve2(d):
         if solver.check() == sat:
             model = solver.model()
             result += sum([model.evaluate(b).as_long() for b in button_vars])
-    return result
-
-def _solve2(d):
-    lines = d.splitlines()
-    result = 0
-    
-    for line in lines:
-        to = tuple(ints(line.split()[-1]))
-        options = line.split()[1:-1]
-        options = lmap(ints, options)
-        
-        def expand(state):
-            out = []
-            for option in options:
-                new_state = list(state)
-                for idx in option:
-                    new_state[idx] = new_state[idx] + 1
-                out.append((1, tuple(new_state)))
-            return out
-        
-        def heuristic(state):
-            for x, y in zip(state, to):
-                if x > y:
-                    return 50000000000
-            return 0
             
-    
-        result += a_star(tuple([0] * len(to)), expand, heuristic, to_node=to)[0]
-            
-    
     return result
-
 
 s = """
 [.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
